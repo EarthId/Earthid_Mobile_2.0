@@ -42,7 +42,7 @@ const ProfileScreen = ({ navigation }: IHomeScreenProps) => {
   const [isCamerVisible, setIsCameraVisible] = useState(false);
   const [Response, setResponse] = useState<any>('');
   const [pic, setPic] = useState<any>('');
-
+console.log('userDetails',userDetails)
   const camRef: any = useRef();
   const { colors } = useTheme();
   const disPatch = useAppDispatch();
@@ -346,14 +346,24 @@ const setResponseData =(data: any)=>{
           </View>
           <View style={styles.category}>
             <Info
-              title={"username"}
-              subtitle={userDetails?.responseData?.username}
+              title={"firstname"}
+              subtitle={userDetails?.responseData?.firstname}
               style={{
                 title: styles.title,
                 subtitle: styles.subtitle,
                 container: styles.textContainer,
               }}
             />
+              <Info
+              title={"lastname"}
+              subtitle={userDetails?.responseData?.lastname}
+              style={{
+                title: styles.title,
+                subtitle: styles.subtitle,
+                container: styles.textContainer,
+              }}
+            />
+
 
             <Info
            //   tailIcondisabled={userDetails?.responseData?.mobileApproved ? 0.2 : 0.9}

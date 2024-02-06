@@ -60,11 +60,11 @@ const EditProfile = ({ navigation }: IHomeScreenProps) => {
   const _navigateAction = () => {
     let overallResponseData = {
       ...userDetails.responseData,
-      ...{ username: fullName },
+      ...{ firstname: fullName ,lastname: lastname},
     };
     const userNameDetails =medialList[0]
     userNameDetails.VALUE =fullName
-    replaceObjectByName(medialList,'username',userNameDetails)
+    replaceObjectByName(medialList,'firstname',userNameDetails)
     disPatch(saveProfileDetails(medialList)).then(() => {
       disPatch(byPassUserDetailsRedux(overallResponseData)).then(() => {
         setIsLoading(true);
@@ -97,21 +97,22 @@ function replaceObjectByName(array, nameToFind, replacementObject) {
     valueChangeHandler: fullNameChangeHandler,
     inputFocusHandler: fullNameFocusHandlur,
     inputBlurHandler: fullNameBlurHandler,
-  } = useFormInput(userDetails?.responseData?.username, true, nameValidator);
+  } = useFormInput(userDetails?.responseData?.firstname, true, nameValidator);
+
 
   const {
-    value: dateOfBirth,
-    isFocused: dateOfBirthFocus,
+    value: lastname,
+    isFocused: lastnameFocus,
     validationResult: {
-      hasError: dateOfBirthError,
-      errorMessage: dateOfBirthErrorMessage,
+      hasError: islastnameError,
+      errorMessage: islastnameErrorMessage,
     },
-    valueChangeHandler: dateOfBirthChangeHandler,
-    inputFocusHandler: dateOfBirthocusHandlur,
-    inputBlurHandler: dateOfBirthlurHandler,
-  } = useFormInput("22/02/1995", true, nameValidator);
+    valueChangeHandler: lastnameChangeHandler,
+    inputFocusHandler: lastnameFocusHandlur,
+    inputBlurHandler: lastnameBlurHandler,
+  } = useFormInput(userDetails?.responseData?.lastname, true, nameValidator);
 
- 
+
 
 
   useEffect(()=>{
@@ -351,7 +352,7 @@ console.log('medialList=============>,',medialList)
           ></Header>
           <View style={styles.category}>
             <Info
-              title={"username"}
+              title={"firstname"}
               style={{
                 title: styles.title,
                 subtitle: styles.subtitle,
@@ -381,6 +382,39 @@ console.log('medialList=============>,',medialList)
               isFocused={fullNameFocus}
               value={fullName}
               onChangeText={fullNameChangeHandler}
+             
+            />
+              <Info
+              title={"lastname"}
+              style={{
+                title: styles.title,
+                subtitle: styles.subtitle,
+                container: styles.textContainer,
+              }}
+            />
+
+            <TextInput
+              style={{
+                container: [
+                  styles.textInputContainer,
+                  {
+                    borderColor: nameFocus
+                      ? Screens.colors.primary
+                      : Screens.grayShadeColor,
+                    borderWidth: nameFocus ? 2 : 1,
+                  },
+                ],
+              }}
+              isError={islastnameError}
+              errorText={islastnameErrorMessage}
+              onFocus={lastnameFocusHandlur}
+              onBlur={lastnameBlurHandler}
+              // onFocus={() => setNameFocus(true)}
+              // onBlur={() => setNameFocus(false)}
+              maxLength={60}
+              isFocused={lastnameFocus}
+              value={lastname}
+              onChangeText={lastnameChangeHandler}
              
             />
           </View>

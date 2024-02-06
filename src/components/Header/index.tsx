@@ -231,7 +231,7 @@ const Header = ({
                 absoluteCircleInnerImage={absoluteCircleInnerImage}
                 isProfileAvatar={isProfileAvatar}
                 isUploaded={isUploaded}
-                text={hideUser ? "" : userDetails?.responseData?.username}
+                text={hideUser ? "" : userDetails?.responseData?.firstname+" "+ userDetails?.responseData?.lastname}
                 iconSource={picUri ? { uri: picUri } : LocalImages.avatarImage}
               ></Avatar>
             )}
