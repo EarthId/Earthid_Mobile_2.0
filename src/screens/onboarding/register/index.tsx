@@ -218,8 +218,8 @@ const Register = ({ navigation }: IRegister) => {
     if (superAdminResponse && superAdminResponse[0]?.Id) {
       const payLoad: IUserAccountRequest = {
         firstname: firstName,
-        username:firstName,
-        lastname: firstName,
+        username:firstName+" "+lastName,
+        lastname: lastName,
         deviceID: token + Math.random(),
         deviceIMEI: token,
         deviceName: deviceName,

@@ -30,7 +30,11 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
-
+subprojects { subproject ->
+    if(project['name'] == 'react-native-doc-viewer'){
+        project.configurations { compile { } }
+    }
+}
 allprojects {
     repositories {
            google()

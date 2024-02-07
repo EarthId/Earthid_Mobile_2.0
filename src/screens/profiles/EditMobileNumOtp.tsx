@@ -56,6 +56,7 @@ const EditMobileNumOtp = (props: any) => {
         earthId: userDetails?.responseData?.earthId,
         publicKey: userDetails?.responseData?.publicKey,
       };
+      console.log('postData==>',JSON.stringify(postData))
       fetch(updatePhone, postData, "POST");
      }
      
