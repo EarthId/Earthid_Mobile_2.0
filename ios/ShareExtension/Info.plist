@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>HostAppBundleIdentifier</key>
-	<string>com.earthid</string>
+	<string>org-globallid-tech</string>
 	<key>HostAppURLScheme</key>
 	<string>mycustomscheme://</string>
 	<key>NSAppTransportSecurity</key>

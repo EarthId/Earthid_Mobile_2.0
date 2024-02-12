@@ -46,17 +46,21 @@ const EditMobileNumOtp = (props: any) => {
   };
   console.log("userDetails", userDetails);
   const verfified = () => {
-      if(newCode==null || newCode.length < 6){
+     if(oldCode== null || oldCode?.length < 6){
+      SnackBar({
+        indicationMessage: "Please enter the old mobile OTP code",
+      });
+     }
+     else if(newCode==null || newCode.length < 6){
       SnackBar({
         indicationMessage: "Please enter the new mobile OTP code",
-      });     }
-      else{
+      });     }else{
       var postData = {
+        oldEmailOTP: oldCode,
         newEmailOTP: newCode,
         earthId: userDetails?.responseData?.earthId,
         publicKey: userDetails?.responseData?.publicKey,
       };
-      console.log('postData==>',JSON.stringify(postData))
       fetch(updatePhone, postData, "POST");
      }
      
@@ -142,6 +146,72 @@ const EditMobileNumOtp = (props: any) => {
 
             <View />
           </View>
+
+          <GenericText
+            style={[
+              {
+                fontSize: 16,
+                color: Screens.grayShadeColor,
+                fontWeight: "500",
+                alignSelf: "center",
+                marginTop: 15,
+              },
+            ]}
+          >
+            {"enterotprevoldmobile"}
+          </GenericText>
+          <GenericText
+            style={[
+              {
+                fontSize: 16,
+                color: Screens.grayShadeColor,
+                fontWeight: "500",
+                alignSelf: "center",
+              },
+            ]}
+          >
+            {userDetails?.responseData?.countryCode +
+              " " +
+              userDetails.responseData.phone}
+          </GenericText>
+
+          <View style={{ alignSelf: "center", marginTop: 25 }}>
+            <SmoothPinCodeInput
+              cellStyle={{
+                borderWidth: 0.5,
+                borderColor: Screens.grayShadeColor,
+                borderRadius: 5,
+              }}
+              cellStyleFocused={{
+                borderColor: Screens.colors.primary,
+                borderWidth: 2,
+              }}
+              password
+              cellSize={50}
+              codeLength={6}
+              value={oldCode}
+              onTextChange={onPinCodeChangeForOld}
+            />
+          </View>
+
+          <TouchableOpacity onPress={() => _reSend()}>
+            <GenericText
+              style={[
+                {
+                  fontSize: 13,
+                  color: "#293FEE",
+                  fontWeight: "500",
+                  alignSelf: "flex-end",
+                  marginRight: 35,
+                  marginTop: 8,
+                  textDecorationLine: "underline",
+                },
+              ]}
+            >
+              {"resendcode"}
+            </GenericText>
+          </TouchableOpacity>
+
           <GenericText
             style={[
               {
