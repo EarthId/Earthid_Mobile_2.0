@@ -83,7 +83,7 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
       console.log("bucket already existed");
     } else {
       const userSW3 = await createUserSpecificBucket(
-        userDetails?.responseData.username
+        userDetails?.responseData.firstname+userDetails?.responseData.lastname
       );
       const responseUserSpecificBucket = await _s3responseHandler(userSW3);
       bucketName = responseUserSpecificBucket;

@@ -35,6 +35,7 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 import ImageResizer from "react-native-image-resizer";
 import RNFS from "react-native-fs";
 import AWS from "aws-sdk";
+import { deleteAllBuckets } from "../../../utils/awsSetup";
 
 interface IDocumentScreenProps {
   navigation?: any;
