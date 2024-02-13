@@ -14,18 +14,22 @@ import PhoneInput from "react-native-phone-number-input";
 import Button from "../../components/Button";
 import AnimatedLoader from "../../components/Loader/AnimatedLoader";
 import GenericText from "../../components/Text";
-import { useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useFetch } from "../../hooks/use-fetch";
-import { updatephoneOtp } from "../../utils/earthid_account";
+import { updatephoneOtp,unVerifiedPhone } from "../../utils/earthid_account";
 import { KeyboardAvoidingScrollView } from "react-native-keyboard-avoiding-scroll-view";
 import Header from "../../components/Header";
+import Loader from "../../components/Loader";
+import { byPassUserDetailsRedux, saveProfileDetails } from "../../redux/actions/authenticationAction";
 
 const EditMobileNumber = (props: any) => {
   const [callingCode, setcallingCode] = useState<string>("1");
   const phoneInput: any = useRef();
+  const disPatch = useAppDispatch();
   const userDetails = useAppSelector((state) => state.account);
   const [code, setCode] = useState();
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [successResponse, setsuccessResponse] = useState(false);
   const [isMobileEmpty, setMobileEmpty] = useState<boolean>(false);
   const [countryCode, setcountryCode] = useState("US");
   const { loading, data, error, fetch } = useFetch();
@@ -45,6 +49,21 @@ const EditMobileNumber = (props: any) => {
     fetch(updatephoneOtp, postData, "POST");
   };
 
+  const unverifiedMobileUpdate =()=>{
+    var postData = {
+      username: userDetails?.responseData?.username,
+      firstname: userDetails?.responseData?.firstname,
+      lastname: userDetails?.responseData?.lastname,
+      phone: mobileNumber,
+      countryCode: "+" + callingCode,
+      earthId: userDetails?.responseData?.earthId,
+      publicKey: userDetails?.responseData?.publicKey,
+     // email: userDetails?.responseData?.email,
+    };
+    console.log("postData", postData);
+    fetch(unVerifiedPhone, postData, "POST");
+  }
+
   const onMobileNumberFocus = () => {
     setKeyboardVisible(true);
   };
@@ -54,7 +73,13 @@ const EditMobileNumber = (props: any) => {
   };
 
   const navigateAction = () => {
-    sentOtp();
+    if( userDetails?.responseData?.mobileApproved){
+      sentOtp();
+    }
+    else{
+      unverifiedMobileUpdate()
+    }
+ 
   };
 
   useEffect(() => {
@@ -63,10 +88,26 @@ const EditMobileNumber = (props: any) => {
     console.log("userdetails", userDetails.responseData.countryCode);
 
     if (data) {
-      props.navigation.navigate("EditMobileNumOtp", {
-        newPhone: mobileNumber,
-        callingCode,
-      });
+      if( userDetails?.responseData?.mobileApproved){
+        props.navigation.navigate("EditMobileNumOtp", {
+          newPhone: mobileNumber,
+          callingCode,
+        });
+       
+      }
+      else{
+        setsuccessResponse(true);
+        let overallResponseData = {
+          ...userDetails.responseData,
+          ...{phone:mobileNumber },
+        };
+          disPatch(byPassUserDetailsRedux(overallResponseData)).then(() => {
+            setTimeout(() => {
+              setsuccessResponse(false);
+              props.navigation.goBack(null)
+            }, 7000);
+          });
+        } 
     }
   }, [data]);
 
@@ -211,6 +252,13 @@ const EditMobileNumber = (props: any) => {
                   </Text>
                 )}
         <AnimatedLoader isLoaderVisible={loading} loadingText="Loading..." />
+        <Loader
+            loadingText={
+             'Phone Number Updated SuccessFully'
+            }
+            Status="status"
+            isLoaderVisible={successResponse}
+          ></Loader>
       </View>
     </KeyboardAvoidingScrollView>
   );

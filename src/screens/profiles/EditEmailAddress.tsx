@@ -8,25 +8,34 @@ import Button from "../../components/Button";
 import AnimatedLoader from "../../components/Loader/AnimatedLoader";
 import TextInput from "../../components/TextInput";
 import { useFetch } from "../../hooks/use-fetch";
-import { useAppSelector } from "../../hooks/hooks";
-import { updateEmailOtp } from "../../utils/earthid_account";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { unVerifiedPhone, updateEmailOtp } from "../../utils/earthid_account";
 import useFormInput from "../../hooks/use-text-input";
 import { emailValidator } from "../../utils/inputValidations";
 import { KeyboardAvoidingScrollView } from "react-native-keyboard-avoiding-scroll-view";
 import Header from "../../components/Header";
+import { byPassUserDetailsRedux } from "../../redux/actions/authenticationAction";
+import Loader from "../../components/Loader";
 
 const EditEmailAddress = (props: any) => {
   const { loading, data, error, fetch } = useFetch();
+  const [successResponse, setsuccessResponse] = useState(false);
   const userDetails = useAppSelector((state) => state.account);
-  const navigateAction = () => {};
-
-  const _navigateAction = () => {
-    if (isValid()) {
-      sendOtp();
-    } else {
-      emailBlurHandler();
+  const disPatch = useAppDispatch();
+  const navigateAction = () => {
+    if( userDetails?.responseData?.emailApproved){
+      if (isValid()) {
+        sendOtp();
+      } else {
+        emailBlurHandler();
+      }
     }
+    else{
+      unverifiedMobileUpdate()
+    }
+ 
   };
+
 
   const isValid = () => {
     if (!emailValidator(email, true).hasError) {
@@ -46,7 +55,23 @@ const EditEmailAddress = (props: any) => {
   useEffect(() => {
     console.log("data", data);
     if (data) {
-      props.navigation.navigate("EditEmailAddOtp", { newEmail: email });
+      if( userDetails?.responseData?.mobileApproved){
+        props.navigation.navigate("EditEmailAddOtp", { newEmail: email });
+      }
+      else{
+        setsuccessResponse(true);
+        let overallResponseData = {
+          ...userDetails.responseData,
+          ...{email:email },
+        };
+          disPatch(byPassUserDetailsRedux(overallResponseData)).then(() => {
+            setTimeout(() => {
+              setsuccessResponse(false);
+              props.navigation.goBack(null)
+            }, 7000);
+          });
+      }
+     
     }
   }, [data]);
   const {
@@ -61,6 +86,19 @@ const EditEmailAddress = (props: any) => {
     inputBlurHandler: emailBlurHandler,
   } = useFormInput("", true, emailValidator);
 
+  const unverifiedMobileUpdate =()=>{
+    var postData = {
+      username: userDetails?.responseData?.username,
+      firstname: userDetails?.responseData?.firstname,
+      lastname: userDetails?.responseData?.lastname,
+      earthId: userDetails?.responseData?.earthId,
+      publicKey: userDetails?.responseData?.publicKey,
+      email: email,
+    };
+    console.log("postData", postData);
+    fetch(unVerifiedPhone, postData, "POST");
+  }
+
   return (
     <KeyboardAvoidingScrollView
       stickyFooter={
@@ -71,7 +109,7 @@ const EditEmailAddress = (props: any) => {
           }}
         >
           <Button
-            onPress={_navigateAction}
+            onPress={navigateAction}
             style={{
               buttonContainer: {
                 elevation: 5,
@@ -137,6 +175,13 @@ const EditEmailAddress = (props: any) => {
         />
 
         <AnimatedLoader isLoaderVisible={loading} loadingText="Loading..." />
+        <Loader
+            loadingText={
+             'Email Updated SuccessFully'
+            }
+            Status="status"
+            isLoaderVisible={successResponse}
+          ></Loader>
       </View>
     </KeyboardAvoidingScrollView>
   );

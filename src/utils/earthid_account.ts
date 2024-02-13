@@ -17,6 +17,7 @@ export const updatePhone = BASE_URL + "/verification/verifiedPhoneVerify";
 export const QrcodeApis = BASE_URL + "/customer/shareDoc";
 export const generateCredientials = `https://ssi-gbg.myearth.id/api/issuer/schemas`;
 export const CreateVarifiableCredientails = `https://ssi-gbg.myearth.id/api/issuer/verifiableCredential`;
+export const unVerifiedPhone =`https://stage-apiv2.myearth.id/user/updatePhoneMail`
 
 export const createAccountApi = BASE_URL + "/authorize/createAccount";
 export const getRecordByTxApi = BASE_URL + "/authorize/getRecordByTx?txId";
