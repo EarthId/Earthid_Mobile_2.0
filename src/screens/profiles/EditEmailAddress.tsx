@@ -50,12 +50,13 @@ const EditEmailAddress = (props: any) => {
       earthId: userDetails?.responseData?.earthId,
       publicKey: userDetails?.responseData?.publicKey,
     };
+    console.log('JSO',JSON.stringify(postData))
     fetch(updateEmailOtp, postData, "POST");
   };
   useEffect(() => {
     console.log("data", data);
     if (data) {
-      if( userDetails?.responseData?.mobileApproved){
+      if( userDetails?.responseData?.emailApproved){
         props.navigation.navigate("EditEmailAddOtp", { newEmail: email });
       }
       else{
