@@ -88,7 +88,7 @@ const EditMobileNumber = (props: any) => {
     console.log("userdetails", userDetails.responseData.countryCode);
 
     if (data) {
-      if( userDetails?.responseData?.mobileApproved){
+      if(userDetails?.responseData?.mobileApproved){
         props.navigation.navigate("EditMobileNumOtp", {
           newPhone: mobileNumber,
           callingCode,

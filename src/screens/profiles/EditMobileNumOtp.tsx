@@ -21,6 +21,7 @@ import { updatePhone, updatephoneOtp } from "../../utils/earthid_account";
 import { byPassUserDetailsRedux } from "../../redux/actions/authenticationAction";
 import { KeyboardAvoidingScrollView } from "react-native-keyboard-avoiding-scroll-view";
 import { SnackBar } from "../../components/SnackBar";
+import { isEarthId } from "../../utils/PlatFormUtils";
 
 const EditMobileNumOtp = (props: any) => {
   const userDetails = useAppSelector((state) => state.account);
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
   sectionHeaderContainer: {
     flexDirection: "row",
     height: 120,
-    backgroundColor: "#8b88db",
+    backgroundColor:isEarthId()? '#8059D0':  Screens.colors.primary,
     borderBottomRightRadius: 25,
     borderBottomLeftRadius: 25,
     justifyContent: "space-between",
