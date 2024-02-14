@@ -141,6 +141,7 @@ const Payment = (props) => {
       // Check if the request was successful
       if (!response.ok) {
         setLoading(false);
+        console.log('response',response)
         throw new Error("Network response was not ok");
       }
 
@@ -172,7 +173,7 @@ const Payment = (props) => {
   
       // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
       const response = await fetch(
-        "https://api.4wrd.tech/manage-accounts/api/2.0/accounts?provider=AB4WRD",
+        "https:/api.4wrd.tech:8243/manage-accounts/api/2.0/accounts?provider=AB4WRD",
         {
           method: "GET",
           headers: {
