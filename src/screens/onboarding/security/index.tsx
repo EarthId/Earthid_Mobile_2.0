@@ -35,7 +35,7 @@ const Register = ({ navigation }: IHomeScreenProps) => {
   useEffect(() => {
     setMetrics();
   }, []);
-
+console.log('sec=======>',securityReducer)
   const setMetrics = async () => {
     await AsyncStorage.setItem("pageName", "Security");
   };
@@ -68,7 +68,7 @@ const Register = ({ navigation }: IHomeScreenProps) => {
       }
 
       dispatch(SaveSecurityConfiguration(payLoad));
-      navigation.navigate(re_Direct,{isHide});
+      navigation.navigate(re_Direct, { isHide });
     } else {
       if (payLoad.length === 0) {
         payLoad.push({
@@ -78,7 +78,7 @@ const Register = ({ navigation }: IHomeScreenProps) => {
       }
 
       dispatch(SaveSecurityConfiguration(payLoad));
-      navigation.navigate(re_Direct,{isHide});
+      navigation.navigate(re_Direct, { isHide });
     }
   };
   const getSelectedDState = (type: any) => {
@@ -97,7 +97,7 @@ const Register = ({ navigation }: IHomeScreenProps) => {
     }
     return selected;
   };
-   useEffect(()=>{
+  useEffect(() => {
     if (securityReducer && securityReducer?.securityData) {
       console.log(
         "securityReducer?.securityData",
@@ -109,15 +109,15 @@ const Register = ({ navigation }: IHomeScreenProps) => {
           (item: { enabled: boolean }) => item.enabled
         )
       ) {
-        navigation.navigate('SetPin',{isHide:true});
+        navigation.navigate("SetPin", { isHide: true });
       } else {
         // navigation.navigate("Security");
       }
     } else {
       //navigation.navigate("Security");
     }
-   },[securityReducer])
-  const saveSelectionSecuritiess = async() => {
+  }, [securityReducer]);
+  const saveSelectionSecuritiess = async () => {
     let payLoad = [];
     payLoad.push({
       types: ESecurityTypes.FACE,
@@ -125,13 +125,7 @@ const Register = ({ navigation }: IHomeScreenProps) => {
     });
     await AsyncStorage.setItem("FaceID", ESecurityTypes.FACE);
     dispatch(SaveSecurityConfiguration(payLoad)).then(() => {
-      saveSelectionSecurities(
-        ESecurityTypes.PASSCORD,
-        false,
-        "SetPin",
-        true
-      );
-
+      saveSelectionSecurities(ESecurityTypes.PASSCORD, false, "SetPin", true);
     });
   };
   const showAlert = () => {
@@ -219,7 +213,10 @@ const Register = ({ navigation }: IHomeScreenProps) => {
             </GenericText>
             <Button
               selected={getSelectedDState(ESecurityTypes.FINGER)}
-              disabled={getSelectedDState(ESecurityTypes.FINGER)}
+              disabled={
+                getSelectedDState(ESecurityTypes.FINGER) ||
+                getSelectedDState(ESecurityTypes.FACE)
+              }
               onPress={() => {
                 disableTouchId
                   ? showAlert()
@@ -232,16 +229,23 @@ const Register = ({ navigation }: IHomeScreenProps) => {
               style={{
                 buttonContainer: {
                   opacity: disableTouchId ? 0.5 : 1,
-                  backgroundColor: getSelectedDState(ESecurityTypes.FINGER)
+                  backgroundColor: getSelectedDState(ESecurityTypes.FACE)
+                    ? "#D3D3D3"
+                    : getSelectedDState(ESecurityTypes.FINGER)
                     ? "#e6ffe6"
                     : "#fff",
+
                   elevation: 2,
-                  borderColor: getSelectedDState(ESecurityTypes.FINGER)
+                  borderColor: getSelectedDState(ESecurityTypes.FACE)
+                    ? "#D3D3D3"
+                    : getSelectedDState(ESecurityTypes.FINGER)
                     ? "green"
                     : Screens.colors.primary,
                 },
                 iconStyle: {
-                  tintColor: Screens.colors.primary,
+                  tintColor: getSelectedDState(ESecurityTypes.FACE)
+                    ? "grey"
+                    : Screens.colors.primary,
                 },
               }}
               leftIcon={LocalImages.touchidpic}
@@ -251,10 +255,12 @@ const Register = ({ navigation }: IHomeScreenProps) => {
             <View style={{ marginTop: -20 }}>
               <Button
                 selected={getSelectedDState(ESecurityTypes.FACE)}
-                 disabled={getSelectedDState(ESecurityTypes.FACE)}
+                disabled={
+                  getSelectedDState(ESecurityTypes.FACE) ||
+                  getSelectedDState(ESecurityTypes.FINGER)
+                }
                 onPress={() => {
                   rnBiometrics.isSensorAvailable().then((resultObject) => {
-        
                     const { available, biometryType } = resultObject;
                     if (available && biometryType === BiometryTypes.FaceID) {
                       rnBiometrics
@@ -263,10 +269,8 @@ const Register = ({ navigation }: IHomeScreenProps) => {
                           const { success } = resultObject;
                           console.log("resultObject===>", resultObject);
                           if (success) {
-                            saveSelectionSecuritiess(
-                        
-                            );
-                            
+                            saveSelectionSecuritiess();
+
                             console.log("successful biometrics provided");
                           } else {
                             console.log("user cancelled biometric prompt");
@@ -286,16 +290,22 @@ const Register = ({ navigation }: IHomeScreenProps) => {
                 }}
                 style={{
                   buttonContainer: {
-                    backgroundColor: getSelectedDState(ESecurityTypes.FACE)
+                    backgroundColor: getSelectedDState(ESecurityTypes.FINGER)
+                      ? "#D3D3D3"
+                      : getSelectedDState(ESecurityTypes.FACE)
                       ? "#e6ffe6"
                       : "#fff",
                     elevation: 2,
-                    borderColor: getSelectedDState(ESecurityTypes.FACE)
+                    borderColor: getSelectedDState(ESecurityTypes.FINGER)
+                      ? "#D3D3D3"
+                      : getSelectedDState(ESecurityTypes.FACE)
                       ? "green"
                       : Screens.colors.primary,
                   },
                   iconStyle: {
-                    tintColor: Screens.colors.primary,
+                    tintColor: getSelectedDState(ESecurityTypes.FINGER)
+                      ? "grey"
+                      : Screens.colors.primary,
                   },
                 }}
                 leftIcon={LocalImages.faceidpic}
@@ -311,7 +321,7 @@ const Register = ({ navigation }: IHomeScreenProps) => {
                     ESecurityTypes.PASSCORD,
                     false,
                     "SetPin",
-                  false
+                    false
                   );
                 }}
                 style={{

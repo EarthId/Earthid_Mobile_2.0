@@ -58,7 +58,7 @@ const CustomDrawer = (props: any) => {
       dispatch(FlushData()).then(async () => {
         await AsyncStorage.removeItem("passcode");
         await AsyncStorage.removeItem("fingerprint");
-        await AsyncStorage.removeItem("FaceId");
+        await AsyncStorage.removeItem("FaceID");
         await AsyncStorage.removeItem("pageName");
         await AsyncStorage.removeItem("profilePic");
         await AsyncStorage.removeItem("vcCred");
@@ -67,7 +67,7 @@ const CustomDrawer = (props: any) => {
     } else if (item.route === "delete") {
       await AsyncStorage.removeItem("passcode");
       await AsyncStorage.removeItem("fingerprint");
-      await AsyncStorage.removeItem("FaceId");
+      await AsyncStorage.removeItem("FaceID");
       await AsyncStorage.removeItem("pageName");
       await AsyncStorage.removeItem("profilePic");
       await AsyncStorage.removeItem("vcCred");
@@ -111,7 +111,7 @@ const CustomDrawer = (props: any) => {
       dispatch(FlushData()).then(async () => {
         await AsyncStorage.removeItem("passcode");
         await AsyncStorage.removeItem("fingerprint");
-        await AsyncStorage.removeItem("FaceId");
+        await AsyncStorage.removeItem("FaceID");
         await AsyncStorage.removeItem("pageName");
         await AsyncStorage.removeItem("profilePic");
         await AsyncStorage.removeItem("signatureKey");
