@@ -839,8 +839,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions"
   RNQrGenerator:
     :path: "../node_modules/rn-qr-generator"
-  RNReactNativeDocViewer:
-    :path: "../node_modules/react-native-doc-viewer"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
