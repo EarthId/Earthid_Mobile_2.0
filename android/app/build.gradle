@@ -145,8 +145,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
       missingDimensionStrategy 'react-native-camera', 'mlkit' 
-        versionCode 28
-        versionName "5.9.3"
+        versionCode 26
+        versionName "5.9.1"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -269,6 +269,7 @@ dependencies {
    implementation "com.facebook.react:react-native:0.70.4!!"  // From node_modules
  implementation project(':react-native-splash-screen')
     implementation project(':react-native-share-menu')
+    implementation project(':react-native-doc-viewer')
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0"
 implementation "androidx.lifecycle:lifecycle-viewmodel:2.5.0"

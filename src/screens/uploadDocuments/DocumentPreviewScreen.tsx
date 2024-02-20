@@ -10,7 +10,7 @@ import {
   AsyncStorage,
   Dimensions,
 } from "react-native";
-// import OpenFile from "react-native-doc-viewer";
+import OpenFile from "react-native-doc-viewer";
 import NetInfo from "@react-native-community/netinfo";
 import Button from "../../components/Button";
 import { LocalImages } from "../../constants/imageUrlConstants";
@@ -198,44 +198,43 @@ const DocumentPreviewScreen = (props: any) => {
     }
   }, [data]);
   const handlePressb64 = (type: string) => {
-    Alert.alert('Unsupported file')
-    // if (Platform.OS === "ios") {
-    //   OpenFile.openDocb64(
-    //     [
-    //       {
-    //         base64: fileUri?.base64,
-    //         fileName: fileUri?.imageName,
-    //         fileType: type === "application/msword" ? "doc" : "docx",
-    //       },
-    //     ],
-    //     (error: any, url: any) => {
-    //       if (error) {
-    //         console.error(error);
-    //       } else {
-    //         console.log(url);
-    //       }
-    //     }
-    //   );
-    // } else {
-    //   //Android
-    //   OpenFile.openDocb64(
-    //     [
-    //       {
-    //         base64: fileUri?.base64,
-    //         fileName: fileUri?.imageName,
-    //         fileType: type === "application/msword" ? "doc" : "docx",
-    //         cache: true /*Use Cache Folder Android*/,
-    //       },
-    //     ],
-    //     (error: any, url: any) => {
-    //       if (error) {
-    //         console.error(error);
-    //       } else {
-    //         console.log(url);
-    //       }
-    //     }
-    //   );
-    // }
+    if (Platform.OS === "ios") {
+      OpenFile.openDocb64(
+        [
+          {
+            base64: fileUri?.base64,
+            fileName: fileUri?.imageName,
+            fileType: type === "application/msword" ? "doc" : "docx",
+          },
+        ],
+        (error: any, url: any) => {
+          if (error) {
+            console.error(error);
+          } else {
+            console.log(url);
+          }
+        }
+      );
+    } else {
+      //Android
+      OpenFile.openDocb64(
+        [
+          {
+            base64: fileUri?.base64,
+            fileName: fileUri?.imageName,
+            fileType: type === "application/msword" ? "doc" : "docx",
+            cache: true /*Use Cache Folder Android*/,
+          },
+        ],
+        (error: any, url: any) => {
+          if (error) {
+            console.error(error);
+          } else {
+            console.log(url);
+          }
+        }
+      );
+    }
   };
   const createPayLoadFromDocumentData = async (documentResponseData: any) => {
     console.log(

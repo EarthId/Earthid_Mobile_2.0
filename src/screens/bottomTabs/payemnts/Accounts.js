@@ -17,13 +17,7 @@ import {
   createUserSignature,
   saveDocuments,
 } from "../../../redux/actions/authenticationAction";
-import {
-  PlaidLink,
-  LinkSuccess,
-  LinkExit,
-  LinkLogLevel,
-  LinkIOSPresentationStyle,
-} from "react-native-plaid-link-sdk";
+
 const Accounts = (props) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);

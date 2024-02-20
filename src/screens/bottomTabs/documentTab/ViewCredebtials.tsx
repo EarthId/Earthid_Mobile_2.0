@@ -11,7 +11,7 @@ import {
   Text,
 } from "react-native";
 import PDFView from "react-native-view-pdf";
-// import OpenFile from "react-native-doc-viewer";
+import OpenFile from "react-native-doc-viewer";
 import SuccessPopUp from "../../../components/Loader";
 import AnimatedLoader from "../../../components/Loader/AnimatedLoader";
 import GenericText from "../../../components/Text";
@@ -125,44 +125,43 @@ const DocumentPreviewScreen = (props: any) => {
   // };
 
   const handlePressb64 = (type: string) => {
-    Alert.alert('Unsupported file')
-    // if (Platform.OS === "ios") {
-    //   OpenFile.openDocb64(
-    //     [
-    //       {
-    //         base64: documentDetails.base64,
-    //         fileName: documentDetails?.docName,
-    //         fileType: type === "application/msword" ? "doc" : "docx",
-    //       },
-    //     ],
-    //     (error: any, url: any) => {
-    //       if (error) {
-    //         console.error(error);
-    //       } else {
-    //         console.log(url);
-    //       }
-    //     }
-    //   );
-    // } else {
-    //   //Android
-    //   OpenFile.openDocb64(
-    //     [
-    //       {
-    //         base64: documentDetails.base64,
-    //         fileName: documentDetails?.docName,
-    //         fileType: type === "application/msword" ? "doc" : "docx",
-    //         cache: true /*Use Cache Folder Android*/,
-    //       },
-    //     ],
-    //     (error: any, url: any) => {
-    //       if (error) {
-    //         console.error(error);
-    //       } else {
-    //         console.log(url);
-    //       }
-    //     }
-    //   );
-    // }
+    if (Platform.OS === "ios") {
+      OpenFile.openDocb64(
+        [
+          {
+            base64: documentDetails.base64,
+            fileName: documentDetails?.docName,
+            fileType: type === "application/msword" ? "doc" : "docx",
+          },
+        ],
+        (error: any, url: any) => {
+          if (error) {
+            console.error(error);
+          } else {
+            console.log(url);
+          }
+        }
+      );
+    } else {
+      //Android
+      OpenFile.openDocb64(
+        [
+          {
+            base64: documentDetails.base64,
+            fileName: documentDetails?.docName,
+            fileType: type === "application/msword" ? "doc" : "docx",
+            cache: true /*Use Cache Folder Android*/,
+          },
+        ],
+        (error: any, url: any) => {
+          if (error) {
+            console.error(error);
+          } else {
+            console.log(url);
+          }
+        }
+      );
+    }
   };
 
   const deleteItem = () => {
@@ -184,7 +183,7 @@ const DocumentPreviewScreen = (props: any) => {
             setisBottomSheetForSideOptionVisible(false);
             const newData = documentsDetailsList?.responseData;
             const findIndex = newData?.findIndex(
-              (item: { id: any; }) => item.id === selectedItem?.id
+              (item) => item.id === selectedItem?.id
             );
             findIndex >= -1 && newData?.splice(findIndex, 1);
             // console.log('helpArra',helpArra)

@@ -19,13 +19,7 @@ import {
   createUserSignature,
   saveDocuments,
 } from "../../../redux/actions/authenticationAction";
-import {
-  PlaidLink,
-  LinkSuccess,
-  LinkExit,
-  LinkLogLevel,
-  LinkIOSPresentationStyle,
-} from "react-native-plaid-link-sdk";
+
 import { TouchableOpacity } from "react-native-gesture-handler";
 const Payment = (props) => {
   const [loading, setLoading] = useState(false);
