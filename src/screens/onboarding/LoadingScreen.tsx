@@ -2,6 +2,7 @@ import { StackActions } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import {
   ActivityIndicator,
+  Alert,
   AsyncStorage,
   Platform,
   StyleSheet,
@@ -32,6 +33,8 @@ const LoadingScreen = ({ navigation }: ILoadingScreen) => {
   const securityReducer: any = useAppSelector((state) => state.security);
   console.log("securityReducer====>", securityReducer?.securityData);
   const rnBiometrics = new ReactNativeBiometrics();
+
+  const AsyncPass = AsyncStorage.getItem("passcode");
 
   const aunthenticateBioMetricInfo = () => {
     if (Platform.OS === "ios") {
@@ -89,18 +92,9 @@ const LoadingScreen = ({ navigation }: ILoadingScreen) => {
         });
     }
   };
-  const checkAuth = async () => {
-    const fingerPrint = await AsyncStorage.getItem("fingerprint");
-    const passcode = await AsyncStorage.getItem("passcode");
-    const FaceID = await AsyncStorage.getItem("FaceID");
 
-    console.log("FaceID===>", FaceID);
-    console.log("fingerprint===>", fingerPrint);
-    console.log("passcode===>", passcode);
-
-    if (fingerPrint && passcode) {
-      aunthenticateBioMetricInfo();
-    } else if (FaceID && passcode) {
+  const fingerwopasscode = () => {
+    if (Platform.OS === "ios") {
       rnBiometrics.isSensorAvailable().then((resultObject) => {
         let epochTimeSeconds = Math.round(
           new Date().getTime() / 1000
@@ -114,7 +108,7 @@ const LoadingScreen = ({ navigation }: ILoadingScreen) => {
               const { success } = resultObject;
               console.log("resultObject===>", resultObject);
               if (success) {
-                navigation.dispatch(StackActions.replace("DrawerNavigator"));
+                navigation.dispatch(StackActions.replace("PasswordCheck"));
               } else {
                 console.log("user cancelled biometric prompt");
               }
@@ -126,12 +120,60 @@ const LoadingScreen = ({ navigation }: ILoadingScreen) => {
           navigation.dispatch(StackActions.replace("FaceCheck"));
         }
       });
+    } else {
+      TouchID.isSupported(optionalConfigObject)
+        .then(async (biometryType) => {
+          console.log("biometryType123-->", biometryType);
+          // Success code
+          if (biometryType === "FaceID") {
+          } else {
+            TouchID.authenticate("", optionalConfigObject)
+              .then(async (success: any) => {
+                console.log("success", success);
 
+                navigation.dispatch(StackActions.replace("DrawerNavigator"));
+              })
+              .catch((e: any) => {
+                aunthenticateBioMetricInfo();
+              });
+            console.log("TouchID is supported.");
+          }
+        })
+        .catch((error) => {
+          // Failure code
+          console.log(error);
+        });
+    }
+  };
+
+  const checkAuth = async () => {
+    const fingerPrint = await AsyncStorage.getItem("fingerprint");
+    const passcode = await AsyncStorage.getItem("passcode");
+    const FaceID = await AsyncStorage.getItem("FaceID");
+
+    console.log("FaceID===>", FaceID);
+    console.log("fingerprint===>", fingerPrint);
+    console.log("passcode===>", passcode);
+
+    if (fingerPrint) {
+      if (fingerPrint && passcode) {
+        aunthenticateBioMetricInfo();
+      } else {
+        fingerwopasscode();
+      }
+    } else if (FaceID) {
+      if (FaceID && passcode) {
+        navigation.dispatch(StackActions.replace("FaceCheck"));
+      } else {
+
+        navigation.dispatch(StackActions.replace("FaceCheck"));
+      }
       // navigation.dispatch(StackActions.replace("FaceCheck"));
     } else if (passcode) {
       navigation.dispatch(StackActions.replace("PasswordCheck"));
     } else {
       navigation.dispatch(StackActions.replace("AuthStack"));
+      //Alert.alert('hi')
     }
   };
 

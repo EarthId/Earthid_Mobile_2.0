@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   sectionHeaderContainer: {
     flexDirection: "row",
     height: 120,
-    backgroundColor:isEarthId()? '#8059D0':  Screens.colors.primary,
+    backgroundColor: isEarthId() ? "#8059D0" : Screens.colors.primary,
     borderBottomRightRadius: 25,
     borderBottomLeftRadius: 25,
     justifyContent: "space-between",
