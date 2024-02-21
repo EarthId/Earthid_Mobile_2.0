@@ -26,6 +26,8 @@ import DocumentMask from "../uploadDocuments/DocumentMask";
 
 const LivenessCameraScreen = (props: any) => {
   const [maskedColor, setmaskedColor] = useState("#fff");
+  const passcodes = AsyncStorage.getItem("passcode");
+
   const [data, setData] = useState();
   const dispatch = useAppDispatch();
   const userDetails = useAppSelector((state) => state.contract);
@@ -108,8 +110,8 @@ const LivenessCameraScreen = (props: any) => {
             };
             const data = await camRef.current.takePictureAsync(options);
             if (data) {
-              saveSelectionSecurities();
-            }
+             saveSelectionSecurities();
+            } 
           } else {
             SnackBar({
               indicationMessage: "I can still see you moving",
@@ -124,17 +126,22 @@ const LivenessCameraScreen = (props: any) => {
     }
   };
 
-  const saveSelectionSecurities = async() => {
+  const saveSelectionSecurities = async () => {
     const passcode = await AsyncStorage.getItem("passcode");
-    if(passcode){
+    if (passcode) {
       props.navigation.dispatch(StackActions.replace("PasswordCheck"));
-    }else{
+    } else {
       props.navigation.dispatch(
         StackActions.replace("DrawerNavigator", { type: "Faceid" })
       );
     }
-   
   };
+
+  // const faceidonly = () => {
+  //   props.navigation.dispatch(
+  //     StackActions.replace("DrawerNavigator", { type: "Faceid" })
+  //   );
+  // };
 
   const { colors } = useTheme();
   const camRef: any = useRef();
