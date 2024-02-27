@@ -37,7 +37,7 @@ const Info = ({
               style={{ justifyContent: "space-between", flexDirection: "row" }}
             >
               <View style={styles.titleTextContainer}>
-                <View style={{ flexDirection: "column" }}>
+                <View style={{ flexDirection: "column", width: "65%" }}>
                   <GenericText style={[styles.subtitle, style.subtitle]}>
                     {subtitle}
                   </GenericText>
@@ -53,6 +53,7 @@ const Info = ({
                 </View>
                 {subtitleRowText && (
                   <TouchableOpacity onPress={subTitlePress}>
+                    {/* //verify */}
                     <View style={styles.titleTextContainer}>
                       <View
                         style={{
@@ -167,6 +168,5 @@ const styles = StyleSheet.create({
     opacity: 0.4,
     fontSize: 12,
     paddingVertical: 1.5,
-    marginLeft: -20,
   },
 });

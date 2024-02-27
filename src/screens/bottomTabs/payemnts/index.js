@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   StyleSheet,
-  Image
+  Image,
 } from "react-native";
 import ShareMenu, { ShareMenuReactView } from "react-native-share-menu";
 import { Screens } from "../../../themes";
@@ -21,6 +21,7 @@ import {
 } from "../../../redux/actions/authenticationAction";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 const Payment = (props) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -30,7 +31,7 @@ const Payment = (props) => {
   const [accessTokenNew, setAccessTokenNew] = useState(null);
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const [accounts, setAccounts] = useState([]);
-
+  const navigation = useNavigation();
   const createVerifiableCred = (verifyVcCred) => {
     var date = dateTime();
     setLoading(true);
@@ -93,7 +94,7 @@ const Payment = (props) => {
         const result = await response.json();
         console.log("result:::::", result);
         createAccessToken(result?.access_token);
-        setAccessToken(result?.access_token)
+        setAccessToken(result?.access_token);
 
         // Set the data in the state
         // Depending on your use case, you may handle the result here
@@ -135,14 +136,13 @@ const Payment = (props) => {
       // Check if the request was successful
       if (!response.ok) {
         setLoading(false);
-        console.log('response',response)
+        console.log("response", response);
         throw new Error("Network response was not ok");
       }
 
       // Get the response text directly
       const result = await response.json();
-      setAccessTokenNew(result?.access_token)
-  
+      setAccessTokenNew(result?.access_token);
 
       setLoading(false);
       // Set the data in the state
@@ -153,18 +153,16 @@ const Payment = (props) => {
     }
   };
 
-  useEffect(()=>{
-    if(accessTokenNew){
-      getAccounts()
+  useEffect(() => {
+    if (accessTokenNew) {
+      getAccounts();
     }
-  
-  },[accessTokenNew])
-   
+  }, [accessTokenNew]);
+
   const getAccounts = async () => {
-    console.log('token====>',`Bearer ${accessToken}`)
+    console.log("token====>", `Bearer ${accessToken}`);
     setLoading(true);
     try {
-  
       // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
       const response = await fetch(
         "https:/api.4wrd.tech:8243/manage-accounts/api/2.0/accounts?provider=AB4WRD",
@@ -172,10 +170,9 @@ const Payment = (props) => {
           method: "GET",
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "token-id":accessTokenNew
+            "token-id": accessTokenNew,
             // You may need to include additional headers here, such as authentication headers
           },
-      
         }
       );
       console.log("Response Status:123", response.status);
@@ -187,7 +184,7 @@ const Payment = (props) => {
 
       // Get the response text directly
       const result = await response.json();
-      setAccounts(result?.Data?.Account)
+      setAccounts(result?.Data?.Account);
 
       setLoading(false);
       // Set the data in the state
@@ -198,26 +195,43 @@ const Payment = (props) => {
     }
   };
   const renderItem = ({ item }) => (
-    <View style={{ borderBottomWidth: 1, borderBottomColor: '#000', padding: 10 }}>
+    <View
+      style={{ borderBottomWidth: 1, borderBottomColor: "#000", padding: 10 }}
+    >
       <Text>{`Account ID: ${item.AccountId}`}</Text>
       <Text>{`Status: ${item.Status}`}</Text>
       <Text>{`Currency: ${item.Currency}`}</Text>
       {/* Add more fields as needed */}
       {item.Account && (
-        <View style={{ marginVertical: 10 ,backgroundColor:Screens.colors.header.middleColor,padding:10,borderRadius:20}}>
-          <Text style={{ fontWeight: 'bold',color:'#fff' }}>Account Details:</Text>
+        <View
+          style={{
+            marginVertical: 10,
+            backgroundColor: Screens.colors.header.middleColor,
+            padding: 10,
+            borderRadius: 20,
+          }}
+        >
+          <Text style={{ fontWeight: "bold", color: "#fff" }}>
+            Account Details:
+          </Text>
           {item.Account.map((subAccount, index) => (
             <View key={index}>
-              <Text style={{color:'#fff',fontSize:10}}>{`Scheme Name: ${subAccount.SchemeName}`}</Text>
-              <Text style={{color:'#fff',fontSize:10}}>{`Identification: ${subAccount.Identification}`}</Text>
-              <Text style={{color:'#fff',fontSize:10}}>{`Secondary Identification: ${subAccount.SecondaryIdentification}`}</Text>
+              <Text
+                style={{ color: "#fff", fontSize: 10 }}
+              >{`Scheme Name: ${subAccount.SchemeName}`}</Text>
+              <Text
+                style={{ color: "#fff", fontSize: 10 }}
+              >{`Identification: ${subAccount.Identification}`}</Text>
+              <Text
+                style={{ color: "#fff", fontSize: 10 }}
+              >{`Secondary Identification: ${subAccount.SecondaryIdentification}`}</Text>
             </View>
           ))}
         </View>
       )}
       {item.Balance && (
         <View style={{ marginVertical: 10 }}>
-          <Text style={{ fontWeight: 'bold' }}>Balance:</Text>
+          <Text style={{ fontWeight: "bold" }}>Balance:</Text>
           {item.Balance.map((balance, index) => (
             <View key={index}>
               <Text>{`Type: ${balance.Type}`}</Text>
@@ -226,62 +240,58 @@ const Payment = (props) => {
           ))}
         </View>
       )}
-      <TouchableOpacity onPress={()=>createVerifiableCred()}>
+      <TouchableOpacity onPress={() => createVerifiableCred()}>
+        <View>
           <View
-      
+            style={{
+              width: 140,
+              height: 50,
+              backgroundColor: Screens.colors.primary,
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 30,
+            }}
           >
-            <View
-              style={{
-                width: 140,
-                height: 50,
-                backgroundColor: Screens.colors.primary,
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius:30
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "bold" }}>
-               Create VC
-              </Text>
-            </View>
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>Create VC</Text>
           </View>
-        </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
     </View>
   );
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-            <Header
-          letfIconPress={() => getBack()}
-          isLogoAlone={true}
-          headingText={"Payments"}
-          linearStyle={styles.linearStyle}
-          containerStyle={{
-            iconStyle: {
-              width: 205,
-              height: 72,
-              marginTop: 30,
-            },
-            iconContainer: styles.alignCenter,
-          }}
-        ></Header>
-            <TouchableOpacity
-          onPress={() => navigation.goBack()}
+      <Header
+        letfIconPress={() => getBack()}
+        isLogoAlone={true}
+        headingText={"Payments"}
+        linearStyle={styles.linearStyle}
+        containerStyle={{
+          iconStyle: {
+            width: 205,
+            height: 72,
+            marginTop: 30,
+          },
+          iconContainer: styles.alignCenter,
+        }}
+      ></Header>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{
+          position: "absolute",
+          marginTop: 38,
+          marginLeft: 20,
+        }}
+      >
+        <Image
+          source={LocalImages.backImage}
           style={{
-            position: "absolute",
-            marginTop: 38,
-            marginLeft: 20,
+            height: 20,
+            width: 20,
+            resizeMode: "contain",
+            tintColor: isEarthId() ? Screens.pureWhite : Screens.black,
           }}
-        >
-          <Image
-            source={LocalImages.backImage}
-            style={{
-              height: 20,
-              width: 20,
-              resizeMode: "contain",
-              tintColor: isEarthId() ? Screens.pureWhite : Screens.black,
-            }}
-          />
-        </TouchableOpacity>
+        />
+      </TouchableOpacity>
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -289,34 +299,46 @@ const Payment = (props) => {
           <ActivityIndicator size={"large"} color={"red"}></ActivityIndicator>
         </View>
       ) : (
-        <View style={{justifyContent:'center',alignItems:'center',marginTop:40,padding:5,paddingHorizontal:20}}>
-           <Text>
-           Please connect with bank in order to access the account details. Thanks!
-    </Text>
-    <TouchableOpacity onPress={()=>props.navigation.navigate('BankLoginScreen',{accounts:accounts})}>
-          <View
-      
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 40,
+            padding: 5,
+            paddingHorizontal: 20,
+          }}
+        >
+          <Text>
+            Please connect with bank in order to access the account details.
+            Thanks!
+          </Text>
+          <TouchableOpacity
+            onPress={() =>
+              props.navigation.navigate("BankLoginScreen", {
+                accounts: accounts,
+              })
+            }
           >
-            <View
-              style={{
-                width: 170,
-                height: 50,
-                marginTop:100,
-                backgroundColor: Screens.colors.primary,
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius:30,
-                alignSelf:'center'
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "bold" }}>
-             Connect with bank
-              </Text>
+            <View>
+              <View
+                style={{
+                  width: 170,
+                  height: 50,
+                  marginTop: 100,
+                  backgroundColor: Screens.colors.primary,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 30,
+                  alignSelf: "center",
+                }}
+              >
+                <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                  Connect with bank
+                </Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </View>
-   
       )}
     </View>
   );
