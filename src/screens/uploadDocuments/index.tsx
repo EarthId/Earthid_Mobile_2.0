@@ -7,8 +7,13 @@ import {
   TouchableOpacity,
   Platform,
   ActivityIndicator,
+  Modal,
   PermissionsAndroid,
+  Pressable,
   Alert,
+  Text,
+  Dimensions,
+  TouchableWithoutFeedback
 } from "react-native";
 import { RNCamera } from "react-native-camera";
 import DocumentPicker from "react-native-document-picker";
@@ -25,9 +30,12 @@ import { encodeBase64 } from "react-native-image-base64";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { saveDocuments } from "../../redux/actions/authenticationAction";
 import { dateTime } from "../../utils/encryption";
-
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 const UploadScreen = (props: any) => {
   const { colors } = useTheme();
+  const [visible, setVisible] = useState(false);
+
   const camRef: any = useRef();
   const { loading } = useFetch();
   const [successResponse, setsuccessResponse] = useState(false);
@@ -186,7 +194,7 @@ const UploadScreen = (props: any) => {
                   typePDF: resp[0].uri,
                 },
               });
-            }else if(resp[0].type == "application/msword"){
+            } else if (resp[0].type == "application/msword") {
               props.navigation.navigate("DocumentPreviewScreen", {
                 fileUri: {
                   uri: `data:image/png;base64,${res}`,
@@ -197,9 +205,11 @@ const UploadScreen = (props: any) => {
                   route: "gallery",
                   typePDF: resp[0].uri,
                 },
-              }); 
-            }
-            else if(resp[0].type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
+              });
+            } else if (
+              resp[0].type ===
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ) {
               props.navigation.navigate("DocumentPreviewScreen", {
                 fileUri: {
                   uri: `data:image/png;base64,${res}`,
@@ -210,9 +220,8 @@ const UploadScreen = (props: any) => {
                   route: "gallery",
                   typePDF: resp[0].uri,
                 },
-              }); 
-            }
-             else {
+              });
+            } else {
               console.log("check==>####", resp[0]);
               props.navigation.navigate("DocumentPreviewScreen", {
                 fileUri: {
@@ -230,14 +239,16 @@ const UploadScreen = (props: any) => {
             console.log("real error====>", out);
           });
       } else {
-        Alert.alert("Warning", "This format is not supported", [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        // Alert.alert("Warning", "This format is not supported", [
+        //   {
+        //     text: "Cancel",
+        //     onPress: () => console.log("Cancel Pressed"),
+        //     style: "cancel",
+        //   },
+        //   { text: "OK", onPress: () => console.log("OK Pressed") },
+        // ]);
+
+        setVisible(true);
       }
     } catch (err) {
       console.log("data==>", err);
@@ -286,8 +297,6 @@ const UploadScreen = (props: any) => {
   //     }
   //   });
   // };
-
-  useEffect(() => {}, []);
 
   return (
     <View style={styles.sectionContainer}>
@@ -395,6 +404,89 @@ const UploadScreen = (props: any) => {
         textContent={"Loading..."}
         textStyle={styles.spinnerTextStyle}
       />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setVisible(!visible);
+        }}
+      >
+        {/* <TouchableWithoutFeedback
+        onPress={()=>setVisible(!visible)}
+        > */}
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Image
+              resizeMode="contain"
+              style={{ height: "35%", width: "40%" }}
+              source={LocalImages.condition}
+            ></Image>
+            <Text
+              style={{
+                fontFamily: "Roboto",
+                fontSize: 20,
+                fontWeight: "bold",
+                color: "#000",
+                top: 2,
+              }}
+            >
+              Unsupported File Type
+            </Text>
+            <Text
+              style={{
+                fontFamily: "Roboto",
+                fontSize: 13,
+                fontWeight: "200",
+                color: "#000",
+                top: 4,
+              }}
+            >
+              The file type is not supported.Supported {"\n"}
+            </Text>
+            <Text
+              style={{
+                fontFamily: "Roboto",
+                fontSize: 12,
+                fontWeight: "200",
+                color: "#000",
+                bottom: 10,
+              }}
+            >
+              types are PDF, JPG, and PNG.
+            </Text>
+
+            <TouchableOpacity
+              style={{
+                top: 10,
+                height: (windowHeight / 80) * 3.5,
+                width: (windowWidth / 80) * 9,
+                borderColor: "#357AB4",
+                borderRadius: 6,
+                borderWidth: 1,
+                justifyContent: "center",
+                backgroundColor: "#357AB4",
+              }}
+              onPress={() => setVisible(!visible)}
+            >
+              <Text
+                style={{
+                  fontFamily: "Roboto",
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  color: "#fff",
+                  textAlign: "center",
+                }}
+              >
+                OK
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* </TouchableWithoutFeedback> */}
+      </Modal>
     </View>
   );
 };
@@ -422,6 +514,50 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     tintColor: "#fff",
+  },
+  //Modal
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 30,
+    padding: 15,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: (windowWidth / 6) * 4.8,
+    height: (windowHeight / 20) * 6,
+  },
+
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });
 

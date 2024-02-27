@@ -1,5 +1,6 @@
 import { isEarthId } from "../utils/PlatFormUtils";
 export const LocalImages = {
+  condition:require("../../resources/images/xbox.png"),
   homeImage: require("../../resources/images/user.png"),
   moreImage: require("../../resources/images/more.png"),
   email: require("../../resources/images/mail.png"),

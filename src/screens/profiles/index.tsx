@@ -40,9 +40,9 @@ const ProfileScreen = ({ navigation }: IHomeScreenProps) => {
   const userDetails = useAppSelector((state) => state.account);
   const profilePicture = useAppSelector((state) => state.savedPic);
   const [isCamerVisible, setIsCameraVisible] = useState(false);
-  const [Response, setResponse] = useState<any>('');
-  const [pic, setPic] = useState<any>('');
-console.log('userDetails',userDetails)
+  const [Response, setResponse] = useState<any>("");
+  const [pic, setPic] = useState<any>("");
+  console.log("userDetails", userDetails);
   const camRef: any = useRef();
   const { colors } = useTheme();
   const disPatch = useAppDispatch();
@@ -63,17 +63,15 @@ console.log('userDetails',userDetails)
 
   const _navigateEditMobile = () => {
     navigation.navigate("EditMobileNumber");
-   
   };
 
   const _navigateEditEmail = () => {
     navigation.navigate("EditEmailAddress");
   };
 
-
   const _renderItem = ({ item }: any) => {
     return (
-      <View style={{ paddingHorizontal: 10}}>
+      <View style={{ paddingHorizontal: 10 }}>
         <Image
           resizeMode="contain"
           style={styles.logoContainers}
@@ -108,51 +106,47 @@ console.log('userDetails',userDetails)
     setisCameraOptionVisible(true);
   };
 
-
-
-  async function auditFlowApi(){
-
+  async function auditFlowApi() {
     const min = 1;
     const max = 666666;
     const minid = 1;
     const maxid = 6666667777;
     const randomNumtopic = Math.floor(Math.random() * (max - min + 1)) + min;
-    const randomNumtransID = Math.floor(Math.random() * (maxid - minid + 1)) + minid;
+    const randomNumtransID =
+      Math.floor(Math.random() * (maxid - minid + 1)) + minid;
     const currentTimestamp = new Date().toISOString();
-    const urlRequest:any = "https://w3storage.myearth.id/api/subs/publish"
+    const urlRequest: any = "https://w3storage.myearth.id/api/subs/publish";
 
     const postData = {
-      topic: '0.0.'+randomNumtopic,
+      topic: "0.0." + randomNumtopic,
       message: JSON.stringify({
         transactionID: randomNumtransID,
-        flowName: 'ProfileChangeFlow',
-        topicId: '0.0.'+randomNumtopic,
-        timestamp:currentTimestamp
-      })
+        flowName: "ProfileChangeFlow",
+        topicId: "0.0." + randomNumtopic,
+        timestamp: currentTimestamp,
+      }),
     };
 
     const headersToSend = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
-   await postApi(urlRequest,postData,headersToSend)
-    .then((res:any)=>{
-      console.log("resData",res)
-    })
-    .catch((e:any)=>{
-      console.log("error",e);
-    })
+    await postApi(urlRequest, postData, headersToSend)
+      .then((res: any) => {
+        console.log("resData", res);
+      })
+      .catch((e: any) => {
+        console.log("error", e);
+      });
   }
-
-
 
   const openCamera = async () => {
     const options = { quality: 0.1, base64: true };
     const data = await camRef.current.takePictureAsync(options);
     console.log("data", data);
     if (data) {
-      auditFlowApi()
-      AsyncStorage.setItem("profilePic",data?.uri)
+      auditFlowApi();
+      AsyncStorage.setItem("profilePic", data?.uri);
       disPatch(savingProfilePictures(data?.uri));
       setIsCameraVisible(false);
       setcameraDataUri(data?.uri);
@@ -174,11 +168,11 @@ console.log('userDetails',userDetails)
       console.log(err);
     }
   };
-const setResponseData =(data: any)=>{
-  setResponse(data)
-  auditFlowApi()
-  setisCameraOptionVisible(false)
-}
+  const setResponseData = (data: any) => {
+    setResponse(data);
+    auditFlowApi();
+    setisCameraOptionVisible(false);
+  };
   const openFilePicker = async () => {
     if (Platform.OS == "android") {
       await requestPermission();
@@ -187,7 +181,7 @@ const setResponseData =(data: any)=>{
       ImagePicker.launchImageLibrary(
         ImagePicker.ImageLibraryOptions,
         setResponseData
-      )
+      );
 
       // const resp: any = await DocumentPicker.pick({
       //   type: [DocumentPicker.types.allFiles],
@@ -202,40 +196,34 @@ const setResponseData =(data: any)=>{
     }
   };
 
-  useEffect(()=>{
-    getImage()
-  },[])
+  useEffect(() => {
+    getImage();
+  }, []);
 
-
-  const getImage= async ()=>{
-    const profilePic = await AsyncStorage.getItem("profilePic")
-    console.log('profilePic',profilePic)
+  const getImage = async () => {
+    const profilePic = await AsyncStorage.getItem("profilePic");
+    console.log("profilePic", profilePic);
     setcameraDataUri(profilePic);
     disPatch(savingProfilePictures(profilePic));
-  }
-
+  };
 
   useEffect(() => {
- 
-    if(Response && Response?.assets){
-      console.log('Response==>sddwsdxsw',Response)
-      saveImage()
+    if (Response && Response?.assets) {
+      console.log("Response==>sddwsdxsw", Response);
+      saveImage();
     }
   }, [Response]);
 
-    const saveImage = async() =>{
-      if(Response?.assets?.length>0){
-        console.log('ImageResult==>',Response?.assets[0]?.uri)
-        let fileUri = Response?.assets[0]?.uri;
-              disPatch(savingProfilePictures(fileUri));
-        setIsCameraVisible(false);
-        setcameraDataUri(fileUri);
-        await AsyncStorage.setItem("profilePic",fileUri)
-  
-    
-      }
+  const saveImage = async () => {
+    if (Response?.assets?.length > 0) {
+      console.log("ImageResult==>", Response?.assets[0]?.uri);
+      let fileUri = Response?.assets[0]?.uri;
+      disPatch(savingProfilePictures(fileUri));
+      setIsCameraVisible(false);
+      setcameraDataUri(fileUri);
+      await AsyncStorage.setItem("profilePic", fileUri);
     }
-
+  };
 
   const mobileVerifyAction = () => {
     navigation.navigate("OTPScreen", { type: "phone" });
@@ -305,7 +293,7 @@ const setResponseData =(data: any)=>{
       ) : (
         <ScrollView contentContainerStyle={styles.sectionContainer}>
           <Header
-          hideUser={true}
+            hideUser={true}
             picUri={local_img == "" ? profilePicture?.profileData : local_img}
             actionIcon={LocalImages.editImage}
             avatarClick={_avatarClick}
@@ -354,7 +342,7 @@ const setResponseData =(data: any)=>{
                 container: styles.textContainer,
               }}
             />
-              <Info
+            <Info
               title={"lastname"}
               subtitle={userDetails?.responseData?.lastname}
               style={{
@@ -364,10 +352,9 @@ const setResponseData =(data: any)=>{
               }}
             />
 
-
             <Info
-           //   tailIcondisabled={userDetails?.responseData?.mobileApproved ? 0.2 : 0.9}
-              tailIconPress={ _navigateEditMobile}
+              //   tailIcondisabled={userDetails?.responseData?.mobileApproved ? 0.2 : 0.9}
+              tailIconPress={_navigateEditMobile}
               tailIcon={LocalImages.editIcon}
               subTitlePress={
                 userDetails?.responseData?.mobileApproved
@@ -401,7 +388,7 @@ const setResponseData =(data: any)=>{
             />
             <Info
               // tailIcondisabled={userDetails?.responseData?.emailApproved ? 0.2 : 0.9}
-              tailIconPress={ ()=> _navigateEditEmail() }
+              tailIconPress={() => _navigateEditEmail()}
               tailIcon={LocalImages.editIcon}
               subTitlePress={
                 userDetails?.responseData?.emailApproved
@@ -452,10 +439,10 @@ const setResponseData =(data: any)=>{
               }}
             >
               <ColoumnOption
-                avatarClick={async() => {
+                avatarClick={async () => {
                   setisCameraOptionVisible(false);
                   disPatch(savingProfilePictures(undefined));
-                 await AsyncStorage.removeItem("profilePic")
+                  await AsyncStorage.removeItem("profilePic");
                 }}
                 title={"removephone"}
                 icon={LocalImages.deleteImage}
@@ -472,9 +459,8 @@ const setResponseData =(data: any)=>{
 
               <ColoumnOption
                 avatarClick={() => {
-                
                   openFilePicker();
-                 // setisCameraOptionVisible(false)
+                  // setisCameraOptionVisible(false)
                 }}
                 title={"gallery"}
                 icon={LocalImages.galleryImage}
