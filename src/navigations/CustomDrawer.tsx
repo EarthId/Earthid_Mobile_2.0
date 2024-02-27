@@ -8,12 +8,17 @@ import {
   Alert,
   Linking,
   AsyncStorage,
+  Platform,
 } from "react-native";
 import { Screens } from "../themes/index";
 import { values } from "lodash";
 import { LocalImages } from "../constants/imageUrlConstants";
 import { ABOUT_ROUTES } from "../constants/Routes";
-import { StackActions } from "@react-navigation/native";
+import {
+  StackActions,
+  useIsFocused,
+  useNavigation,
+} from "@react-navigation/native";
 import GenericText from "../components/Text";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { FlushData } from "../redux/actions/authenticationAction";
@@ -22,6 +27,8 @@ import { EARTHID_DEV_BASE } from "../constants/URLContstants";
 import { isEarthId } from "../utils/PlatFormUtils";
 import Header from "../components/Header";
 import { deleteSingleBucket } from "../utils/awsSetup";
+import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
+import TouchID from "react-native-touch-id";
 
 const CustomDrawer = (props: any) => {
   const dispatch = useAppDispatch();
@@ -50,11 +57,198 @@ const CustomDrawer = (props: any) => {
       color,
     })
   );
+  const rnBiometrics = new ReactNativeBiometrics();
+  const navigation = useNavigation();
+
+  const optionalConfigObject = {
+    title: "Authentication Required", // Android
+    imageColor: "#2AA2DE", // Android
+    imageErrorColor: "#ff0000", // Android
+    sensorDescription: "Touch sensor", // Android
+    sensorErrorDescription: "Failed", // Android
+    cancelText: "Cancel", // Android
+    fallbackLabel: "Show Passcode", // iOS (if empty, then label is hidden)
+    unifiedErrors: false, // use unified error messages (default false)
+    passcodeFallback: false, // iOS - allows the device to fall back to using the passcode, if faceid/touch is not available. this does not mean that if touchid/faceid fails the first few times it will revert to passcode, rather that if the former are not enrolled, then it will use the passcode.
+  };
+
+  const aunthenticateBioMetricInfo = () => {
+    if (Platform.OS === "ios") {
+      rnBiometrics.isSensorAvailable().then((resultObject) => {
+        let epochTimeSeconds = Math.round(
+          new Date().getTime() / 1000
+        ).toString();
+        let payload = epochTimeSeconds + "some message";
+        const { available, biometryType } = resultObject;
+        if (available && biometryType === BiometryTypes.FaceID) {
+          rnBiometrics
+            .simplePrompt({ promptMessage: "Confirm fingerprint" })
+            .then((resultObject) => {
+              const { success } = resultObject;
+              console.log("resultObject===>", resultObject);
+              if (success) {
+                navigation.dispatch(StackActions.replace("PasswordCheck"));
+              } else {
+                console.log("user cancelled biometric prompt");
+              }
+            })
+            .catch(() => {
+              console.log("biometrics failed");
+            });
+        } else {
+          navigation.dispatch(StackActions.replace("FaceCheck",{
+            type:"true"
+          }));
+        }
+      });
+    } else {
+      TouchID.isSupported(optionalConfigObject)
+        .then(async (biometryType) => {
+          console.log("biometryType123-->", biometryType);
+          // Success code
+          if (biometryType === "FaceID") {
+          } else {
+            TouchID.authenticate("", optionalConfigObject)
+              .then(async (success: any) => {
+                console.log("success", success);
+                const getItem = await AsyncStorage.getItem("passcode");
+                if (getItem) {
+                  //navigation.dispatch(StackActions.replace("PasswordCheck"));
+                  navigation.navigate("PasswordCheck", { type: "true" });
+                } else {
+                  navigation.dispatch(StackActions.replace("DrawerNavigator"));
+                }
+              })
+              .catch((e: any) => {
+                aunthenticateBioMetricInfo();
+              });
+            console.log("TouchID is supported.");
+          }
+        })
+        .catch((error) => {
+          // Failure code
+          console.log(error);
+        });
+    }
+  };
+  const deleteuserData = async () => {
+    const paramsUrl = `${EARTHID_DEV_BASE}/user/deleteUser?earthId=${userDetails?.responseData?.earthId}&publicKey=${userDetails?.responseData?.publicKey}`;
+    await AsyncStorage.removeItem("passcode");
+    await AsyncStorage.removeItem("fingerprint");
+    const requestBoady = {
+      publicKey: userDetails?.responseData?.publicKey,
+    };
+
+    deleteFetch(paramsUrl, requestBoady, "DELETE");
+    // const bucketName = `idv-sessions-${userDetails?.username.toLowerCase()}`;
+    // deleteSingleBucket(bucketName);
+    await AsyncStorage.removeItem("apiCalled");
+    await AsyncStorage.removeItem("signatureKey");
+    Alert.alert("Hiiiii=>,deleteuserData");
+
+    setTimeout(() => {
+      navigation.dispatch(StackActions.replace("AuthStack"));
+    }, 1000);
+  };
+
+  const fingerwopasscode = () => {
+    if (Platform.OS === "ios") {
+      rnBiometrics.isSensorAvailable().then((resultObject) => {
+        let epochTimeSeconds = Math.round(
+          new Date().getTime() / 1000
+        ).toString();
+        let payload = epochTimeSeconds + "some message";
+        const { available, biometryType } = resultObject;
+        if (available && biometryType === BiometryTypes.FaceID) {
+          rnBiometrics
+            .simplePrompt({ promptMessage: "Confirm fingerprint" })
+            .then((resultObject) => {
+              const { success } = resultObject;
+              console.log("resultObject===>", resultObject);
+              if (success) {
+                navigation.dispatch(
+                  StackActions.replace("PasswordCheck", { type: "true" })
+                );
+              } else {
+                console.log("user cancelled biometric prompt");
+              }
+            })
+            .catch(() => {
+              console.log("biometrics failed");
+            });
+        } else {
+          navigation.dispatch(StackActions.replace("FaceCheck",{
+            type:"true"
+          }));
+        }
+      });
+    } else {
+      TouchID.isSupported(optionalConfigObject)
+        .then(async (biometryType) => {
+          console.log("biometryType123-->", biometryType);
+          // Success code
+          if (biometryType === "FaceID") {
+          } else {
+            TouchID.authenticate("", optionalConfigObject)
+              .then(async (success: any) => {
+                console.log("success", success);
+                deleteuserData()
+              })
+              .catch((e: any) => {
+                aunthenticateBioMetricInfo();
+              });
+            console.log("TouchID is supported.");
+          }
+        })
+        .catch((error) => {
+          // Failure code
+          console.log(error);
+        });
+    }
+  };
+
+  const checkAuth = async () => {
+    const fingerPrint = await AsyncStorage.getItem("fingerprint");
+    const passcode = await AsyncStorage.getItem("passcode");
+    const FaceID = await AsyncStorage.getItem("FaceID");
+
+    console.log("FaceID===>", FaceID);
+    console.log("fingerprint===>", fingerPrint);
+    console.log("passcode===>", passcode);
+
+    if (fingerPrint) {
+      if (fingerPrint && passcode) {
+        aunthenticateBioMetricInfo();
+      } else {
+        fingerwopasscode();
+      }
+    } else if (FaceID) {
+      if (FaceID && passcode) {
+        navigation.dispatch(StackActions.replace("FaceCheck",{
+          type:"true"
+        }));
+      } else {
+        navigation.dispatch(StackActions.replace("FaceCheck",{
+          type:"true"
+        }));
+      }
+      // navigation.dispatch(StackActions.replace("FaceCheck"));
+    } else if (passcode) {
+      navigation.dispatch(
+        StackActions.replace("PasswordCheck", {
+          type: "true",
+        })
+      );
+    } else {
+      navigation.dispatch(StackActions.replace("AuthStack"));
+      //Alert.alert('hi')
+    }
+  };
 
   const _navigateAction = async (item: any) => {
     if (item.route === "Logout") {
       const bucketName = `idv-sessions-${userDetails?.username.toLowerCase()}`;
-      deleteSingleBucket(bucketName)
+      deleteSingleBucket(bucketName);
       dispatch(FlushData()).then(async () => {
         await AsyncStorage.removeItem("passcode");
         await AsyncStorage.removeItem("fingerprint");
@@ -65,15 +259,15 @@ const CustomDrawer = (props: any) => {
         props.navigation.dispatch(StackActions.replace("AuthStack"));
       });
     } else if (item.route === "delete") {
-      await AsyncStorage.removeItem("passcode");
-      await AsyncStorage.removeItem("fingerprint");
-      await AsyncStorage.removeItem("FaceID");
-      await AsyncStorage.removeItem("pageName");
-      await AsyncStorage.removeItem("profilePic");
-      await AsyncStorage.removeItem("vcCred");
-      // const bucketName = `idv-sessions-${userDetails?.username.toLowerCase()}`;
-      // deleteSingleBucket(bucketName)
-      await AsyncStorage.removeItem('apiCalled');
+      // await AsyncStorage.removeItem("passcode");
+      // await AsyncStorage.removeItem("fingerprint");
+      // await AsyncStorage.removeItem("FaceID");
+      // await AsyncStorage.removeItem("pageName");
+      // await AsyncStorage.removeItem("profilePic");
+      // await AsyncStorage.removeItem("vcCred");
+      // // const bucketName = `idv-sessions-${userDetails?.username.toLowerCase()}`;
+      // // deleteSingleBucket(bucketName)
+      // await AsyncStorage.removeItem("apiCalled");
       deleteUser();
     } else if (item.route === "about") {
       Linking.openURL(
@@ -94,34 +288,30 @@ const CustomDrawer = (props: any) => {
     } else {
       props.navigation.navigate(item.route, { type: item.route });
     }
+
+    console.log("item====>", item);
   };
 
-  const deleteuserData = () => {
-    const paramsUrl = `${EARTHID_DEV_BASE}/user/deleteUser?earthId=${userDetails?.responseData?.earthId}&publicKey=${userDetails?.responseData?.publicKey}`;
+  console.log("deletedRespopnse==>", deletedRespopnse);
+  const isFocused = useIsFocused();
 
-    
-    const requestBoady = {
-      publicKey: userDetails?.responseData?.publicKey,
-    };
-    deleteFetch(paramsUrl, requestBoady, "DELETE");
-  };
-
-  useEffect(() => {
-    if (deletedRespopnse) {
-      dispatch(FlushData()).then(async () => {
-        await AsyncStorage.removeItem("passcode");
-        await AsyncStorage.removeItem("fingerprint");
-        await AsyncStorage.removeItem("FaceID");
-        await AsyncStorage.removeItem("pageName");
-        await AsyncStorage.removeItem("profilePic");
-        await AsyncStorage.removeItem("signatureKey");
-        await AsyncStorage.removeItem("apiCalled");
-        const bucketName = `idv-sessions-${userDetails?.username?.toLowerCase()}`;
-       await deleteSingleBucket(bucketName)
-        props.navigation.dispatch(StackActions.replace("AuthStack"));
-      });
-    }
-  }, [deletedRespopnse]);
+  // useEffect(() => {
+  //   if (deletedRespopnse) {
+  //     dispatch(FlushData()).then(async () => {
+  //       //  await AsyncStorage.removeItem("passcode");
+  //       await AsyncStorage.removeItem("fingerprint");
+  //       await AsyncStorage.removeItem("FaceID");
+  //       await AsyncStorage.removeItem("pageName");
+  //       await AsyncStorage.removeItem("profilePic");
+  //       //await AsyncStorage.removeItem("signatureKey");
+  //       // await AsyncStorage.removeItem("apiCalled");
+  //       const bucketName = `idv-sessions-${userDetails?.username?.toLowerCase()}`;
+  //       await deleteSingleBucket(bucketName);
+  //       Alert.alert("delete ayduchu");
+  //       props.navigation.dispatch(StackActions.replace("AuthStack"));
+  //     });
+  //   }
+  // }, [deletedRespopnse, isFocused]);
 
   const _toggleDrawer = () => {
     props.navigation.closeDrawer();
@@ -137,8 +327,7 @@ const CustomDrawer = (props: any) => {
         {
           text: "Yes",
           onPress: async () => {
-            await AsyncStorage.removeItem("signatureKey");
-            deleteuserData();
+            await checkAuth();
           },
           style: "cancel",
         },
@@ -162,7 +351,7 @@ const CustomDrawer = (props: any) => {
             // dispatch(FlushData()).then(() => {
             //   props.navigation.dispatch(StackActions.replace("AuthStack"));
             // });
-            deleteuserData();
+            //deleteuserData();
           },
           style: "cancel",
         },
@@ -222,9 +411,7 @@ const CustomDrawer = (props: any) => {
   );
   const _keyExtractor = ({ title }: any) => title.toString();
 
-  useEffect(() => {
-
-  });
+  useEffect(() => {});
 
   return (
     <View style={styles.sectionContainer}>

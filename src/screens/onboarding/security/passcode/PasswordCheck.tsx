@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -13,15 +13,56 @@ import { Screens } from "../../../../themes";
 import Button from "../../../../components/Button";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import { LocalImages } from "../../../../constants/imageUrlConstants";
-import { StackActions } from "@react-navigation/native";
+import { StackActions, useRoute } from "@react-navigation/native";
 import GenericText from "../../../../components/Text";
+import { useAppSelector } from "../../../../hooks/hooks";
+import { deleteSingleBucket } from "../../../../utils/awsSetup";
+import { isEarthId } from "../../../../utils/PlatFormUtils";
+import { EARTHID_DEV_BASE } from "../../../../constants/URLContstants";
+import { useFetch } from "../../../../hooks/use-fetch";
 
 interface IHomeScreenProps {
   navigation?: any;
   route?: any;
 }
 
-const PasswordCheck = ({ navigation, route }: IHomeScreenProps) => {
+const PasswordCheck = ({ navigation }: IHomeScreenProps) => {
+  const route = useRoute();
+
+  const types = route?.params?.type;
+
+  const userDetails = useAppSelector((state) => state.account);
+  const {
+    loading,
+    data: deletedRespopnse,
+    error,
+    fetch: deleteFetch,
+  } = useFetch();
+
+  const deleteuserData = async () => {
+    const paramsUrl = `${EARTHID_DEV_BASE}/user/deleteUser?earthId=${userDetails?.responseData?.earthId}&publicKey=${userDetails?.responseData?.publicKey}`;
+    await AsyncStorage.removeItem("passcode");
+    await AsyncStorage.removeItem("fingerprint");
+    await AsyncStorage.removeItem("FaceID");
+    await AsyncStorage.removeItem("pageName");
+    await AsyncStorage.removeItem("profilePic");
+    await AsyncStorage.removeItem("vcCred");
+    await AsyncStorage.removeItem("apiCalled");
+    await AsyncStorage.removeItem("signatureKey");
+
+    const requestBoady = {
+      publicKey: userDetails?.responseData?.publicKey,
+    };
+
+    deleteFetch(paramsUrl, requestBoady, "DELETE");
+    // const bucketName = `idv-sessions-${userDetails?.username.toLowerCase()}`;
+    // deleteSingleBucket(bucketName);
+
+    setTimeout(() => {
+      navigation.dispatch(StackActions.replace("AuthStack"));
+    }, 3000);
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [code, setCode] = useState();
   const [count, setCount] = useState(4);
@@ -31,14 +72,31 @@ const PasswordCheck = ({ navigation, route }: IHomeScreenProps) => {
     var format = code?.replace(/[^0-9]/g, "");
     setCode(format);
   };
+  useEffect(() => {
+    console.log("route===>", types);
+  }, []);
 
   const _navigateAction = async () => {
     const getItem = await AsyncStorage.getItem("passcode");
 
+    console.log("code====>", code);
+    console.log("type@@@@@@@@@@@@@@@@@@@@@@@@@@@@==>", types);
+
     if (code?.length > 5) {
       if (getItem === code?.toString()) {
         setIsLoading(true);
-        navigation.dispatch(StackActions.replace("DrawerNavigator"));
+        if (
+          types === "false" ||
+          types === null ||
+          types === undefined ||
+          types === "facecheck"
+        ) {
+          navigation.dispatch(StackActions.replace("DrawerNavigator"));
+        } else if (types === "true") {
+          deleteuserData();
+        } else {
+          deleteuserData();
+        }
       } else if (count == 0) {
         Alert.alert("Oops!", `Too many attempts try again after sometimes`, [
           {
