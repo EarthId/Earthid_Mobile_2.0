@@ -280,11 +280,11 @@ console.log('sec=======>',securityReducer)
                           console.log("biometrics failed");
                         });
                     } else {
-                      saveSelectionSecurities(
-                        ESecurityTypes.FACE,
-                        false,
-                        "RegisterFace"
-                      );
+                      // saveSelectionSecurities(
+                      //   ESecurityTypes.FACE,
+                      //   false,
+                      //   "RegisterFace"
+                      // );
                     }
                   });
                 }}
