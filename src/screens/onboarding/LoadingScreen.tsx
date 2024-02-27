@@ -75,7 +75,9 @@ const LoadingScreen = ({ navigation }: ILoadingScreen) => {
                 console.log("success", success);
                 const getItem = await AsyncStorage.getItem("passcode");
                 if (getItem) {
-                  navigation.dispatch(StackActions.replace("PasswordCheck"));
+                  navigation.dispatch(StackActions.replace("PasswordCheck",{
+                    type:"false"
+                  }));
                 } else {
                   navigation.dispatch(StackActions.replace("DrawerNavigator"));
                 }
@@ -163,14 +165,22 @@ const LoadingScreen = ({ navigation }: ILoadingScreen) => {
       }
     } else if (FaceID) {
       if (FaceID && passcode) {
-        navigation.dispatch(StackActions.replace("FaceCheck"));
+        navigation.dispatch(StackActions.replace("FaceCheck",{
+          type:"false"
+        }));
       } else {
-
-        navigation.dispatch(StackActions.replace("FaceCheck"));
+        navigation.dispatch(StackActions.replace("FaceCheck",{
+          type:"facecheck"
+        }));
       }
       // navigation.dispatch(StackActions.replace("FaceCheck"));
     } else if (passcode) {
-      navigation.dispatch(StackActions.replace("PasswordCheck"));
+      // navigation.dispatch(StackActions.replace("PasswordCheck",{
+      //   type:"false"
+      // }));
+      navigation.navigate("PasswordCheck", {
+        type: "false",
+      });
     } else {
       navigation.dispatch(StackActions.replace("AuthStack"));
       //Alert.alert('hi')

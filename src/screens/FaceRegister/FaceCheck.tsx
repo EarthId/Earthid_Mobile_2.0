@@ -1,4 +1,9 @@
-import { StackActions, useTheme } from "@react-navigation/native";
+import {
+  StackActions,
+  useNavigation,
+  useRoute,
+  useTheme,
+} from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -23,10 +28,21 @@ import { ESecurityTypes } from "../../typings/enums/Security";
 import { getDeviceId } from "../../utils/encryption";
 import { SERVICE } from "../../utils/securityServices";
 import DocumentMask from "../uploadDocuments/DocumentMask";
+import { EARTHID_DEV_BASE } from "../../constants/URLContstants";
+import { useFetch } from "../../hooks/use-fetch";
 
 const LivenessCameraScreen = (props: any) => {
   const [maskedColor, setmaskedColor] = useState("#fff");
   const passcodes = AsyncStorage.getItem("passcode");
+  const route = useRoute();
+  const {
+    loading,
+    data: deletedRespopnse,
+    error,
+    fetch: deleteFetch,
+  } = useFetch();
+  const navigation = useNavigation();
+  const types = route?.params?.type;
 
   const [data, setData] = useState();
   const dispatch = useAppDispatch();
@@ -110,8 +126,8 @@ const LivenessCameraScreen = (props: any) => {
             };
             const data = await camRef.current.takePictureAsync(options);
             if (data) {
-             saveSelectionSecurities();
-            } 
+              saveSelectionSecurities();
+            }
           } else {
             SnackBar({
               indicationMessage: "I can still see you moving",
@@ -126,10 +142,51 @@ const LivenessCameraScreen = (props: any) => {
     }
   };
 
+  const deleteuserData = async () => {
+    const paramsUrl = `${EARTHID_DEV_BASE}/user/deleteUser?earthId=${userDetails?.responseData?.earthId}&publicKey=${userDetails?.responseData?.publicKey}`;
+    await AsyncStorage.removeItem("passcode");
+    await AsyncStorage.removeItem("fingerprint");
+    await AsyncStorage.removeItem("FaceID");
+    await AsyncStorage.removeItem("pageName");
+    await AsyncStorage.removeItem("profilePic");
+    await AsyncStorage.removeItem("vcCred");
+    await AsyncStorage.removeItem("apiCalled");
+    await AsyncStorage.removeItem("signatureKey");
+
+    const requestBoady = {
+      publicKey: userDetails?.responseData?.publicKey,
+    };
+
+    deleteFetch(paramsUrl, requestBoady, "DELETE");
+    // const bucketName = `idv-sessions-${userDetails?.username.toLowerCase()}`;
+    // deleteSingleBucket(bucketName);
+
+    setTimeout(() => {
+      navigation.dispatch(StackActions.replace("AuthStack"));
+    }, 1000);
+  };
+
   const saveSelectionSecurities = async () => {
     const passcode = await AsyncStorage.getItem("passcode");
-    if (passcode) {
-      props.navigation.dispatch(StackActions.replace("PasswordCheck"));
+    const faceID = await AsyncStorage.getItem("FaceID");
+    if (passcode && types === "false") {
+      props.navigation.dispatch(
+        StackActions.replace("PasswordCheck", {
+          type: "facecheck",
+        })
+      );
+    } else if (passcode && types === "true") {
+      props.navigation.dispatch(
+        StackActions.replace("PasswordCheck", {
+          type: "true",
+        })
+      );
+    } else if (types === "true") {
+      deleteuserData();
+    } else if (types === "false" || types === "facecheck") {
+      props.navigation.dispatch(
+        StackActions.replace("DrawerNavigator", { type: "Faceid" })
+      );
     } else {
       props.navigation.dispatch(
         StackActions.replace("DrawerNavigator", { type: "Faceid" })
