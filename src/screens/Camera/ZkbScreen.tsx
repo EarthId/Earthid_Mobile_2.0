@@ -21,6 +21,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { LocalImages } from "../../constants/imageUrlConstants";
 import { SCREENS } from "../../constants/Labels";
+
 export const QrScannerMaskedWidget = ({
   createVerifiableCredentials,
   setIsCamerVisible,
@@ -28,10 +29,29 @@ export const QrScannerMaskedWidget = ({
   setisDocumentModalkyc,
   isLoading,
 }: any) => {
-  const documentsDetailsList = useAppSelector((state) => state.Documents);
+  const documentsDetailsList = useAppSelector((state) => state?.Documents);
+  console.log("documentsDetailsList==>", documentsDetailsList);
   const [showVisibleDOB, setshowVisibleDOB] = useState(false);
   const [expandedItem, setExpandedItem] = useState(null);
-  const [showVisibleBalance, setshowVisibleBalance] = useState(false);
+  const [parentCheckbox, setParentCheckbox] = useState(false);
+  const [childCheckboxes, setChildCheckboxes] = useState([]);
+
+  const handleParentCheckboxChange = () => {
+    setParentCheckbox(!parentCheckbox);
+    setChildCheckboxes(childCheckboxes.map(() => !parentCheckbox));
+  };
+
+  const handleChildCheckboxChange = (childIndex: number) => {
+    const updatedChildCheckboxes = [...childCheckboxes];
+    updatedChildCheckboxes[childIndex] = !updatedChildCheckboxes[childIndex];
+    setChildCheckboxes(updatedChildCheckboxes);
+
+    if (updatedChildCheckboxes.every((checkbox) => checkbox)) {
+      setParentCheckbox(true);
+    } else if (updatedChildCheckboxes.every((checkbox) => !checkbox)) {
+      setParentCheckbox(false);
+    }
+  };
   const data = [
     {
       id: "1",
@@ -50,7 +70,9 @@ export const QrScannerMaskedWidget = ({
     // Add more data as needed
   ];
   const renderItem = ({ item, index }) => (
-    <TouchableOpacity onPress={() => setExpandedItem(item.id)}>
+    <TouchableOpacity
+      onPress={() => (setExpandedItem(item.id), handleParentCheckboxChange())}
+    >
       <View
         style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: "#ccc" }}
       >
@@ -98,7 +120,11 @@ export const QrScannerMaskedWidget = ({
             </View>
           </View>
 
-          <CheckBox disabled={false} value={index === 0 ? false : true} />
+          <CheckBox
+            disabled={false}
+            value={parentCheckbox}
+            onValueChange={handleParentCheckboxChange}
+          />
         </View>
 
         {expandedItem === item.id && (
@@ -113,7 +139,13 @@ export const QrScannerMaskedWidget = ({
               }}
             >
               <Text>Name: vicky</Text>
-              <CheckBox disabled={false} value={true} />
+              <CheckBox
+                disabled={false}
+                value={childCheckboxes[0]}
+                onValueChange={() => (
+                  setParentCheckbox(true), handleChildCheckboxChange(0)
+                )}
+              />
             </View>
             <View style={{ marginTop: 8 }}>
               <View
@@ -126,7 +158,13 @@ export const QrScannerMaskedWidget = ({
                 }}
               >
                 <Text>Age: 25</Text>
-                <CheckBox disabled={false} value={true} />
+                <CheckBox
+                  disabled={false}
+                  value={childCheckboxes[1]}
+                  onValueChange={() => (
+                    setParentCheckbox(true), handleChildCheckboxChange(1)
+                  )}
+                />
               </View>
             </View>
             <View style={{ marginTop: 8 }}>
@@ -140,7 +178,13 @@ export const QrScannerMaskedWidget = ({
                 }}
               >
                 <Text>Address: chennai</Text>
-                <CheckBox disabled={false} value={true} />
+                <CheckBox
+                  disabled={false}
+                  value={childCheckboxes[2]}
+                  onValueChange={() => (
+                    setParentCheckbox(true), handleChildCheckboxChange(2)
+                  )}
+                />
               </View>
             </View>
           </View>
@@ -169,89 +213,95 @@ export const QrScannerMaskedWidget = ({
   };
 
   const checkDisable = () => {
-    return getDropDownList().length > 0;
+    return getDropDownList()?.length > 0;
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff", zIndex: 100 }}>
       <ScrollView>
-      <View>
-      <View style={{ margin: 20 }}>
-        <TouchableOpacity
-          onPress={() => {
-            setisDocumentModalkyc(false);
-            setIsCamerVisible(true);
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            style={{ width: 15, height: 15, tintColor: "#000" }}
-            source={LocalImages.closeImage}
-          ></Image>
-        </TouchableOpacity>
-      </View>
-      <GenericText
-        style={{
-          padding: 5,
-          color: "#000",
-          fontSize: 16,
-          fontWeight: "900",
-          marginTop: 20,
-        }}
-      >
-        {"Select which details to share?"}
-      </GenericText>
-      <GenericText
-        style={{
-          padding: 5,
-          color: "#000",
-          fontSize: 16,
-          marginTop: 1,
-        }}
-      >
-        {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
-      </GenericText>
-      {isLoading ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator color={"red"} size="large" />
-        </View>
-      ) : (
-        <View style={{ flex: 1, paddingHorizontal: 5 }}></View>
-      )}
-
-      <View style={{ marginTop: 10 }}>
-        <FlatList
-          data={documentsDetailsList?.responseData?.filter((item)=>item.isVc)}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
-
-      <View style={{ flex: 1 }}>
-        {!isLoading && (
-          <TouchableOpacity
-            style={{
-              opacity: !checkDisable() ? 0.5 : 1,
-              backgroundColor: "#0163f7",
-              marginHorizontal: 10,
-              padding: 15,
-              borderRadius: 20,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            disabled={!checkDisable()}
-            onPress={createVerifiableCredentials}
-          >
-            <GenericText
-              style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}
+        <View>
+          <View style={{ margin: 20 }}>
+            <TouchableOpacity
+              onPress={() => {
+                setisDocumentModalkyc(false);
+                setIsCamerVisible(true);
+              }}
             >
-              {"SHARE"}
-            </GenericText>
-          </TouchableOpacity>
-        )}
-        {/* <TouchableOpacity
+              <Image
+                resizeMode="contain"
+                style={{ width: 15, height: 15, tintColor: "#000" }}
+                source={LocalImages.closeImage}
+              ></Image>
+            </TouchableOpacity>
+          </View>
+          <GenericText
+            style={{
+              padding: 5,
+              color: "#000",
+              fontSize: 16,
+              fontWeight: "900",
+              marginTop: 20,
+            }}
+          >
+            {"Select which details to share?"}
+          </GenericText>
+          <GenericText
+            style={{
+              padding: 5,
+              color: "#000",
+              fontSize: 16,
+              marginTop: 1,
+            }}
+          >
+            {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
+          </GenericText>
+          {isLoading ? (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <ActivityIndicator color={"red"} size="large" />
+            </View>
+          ) : (
+            <View style={{ flex: 1, paddingHorizontal: 5 }}></View>
+          )}
+
+          <View style={{ marginTop: 10 }}>
+            <FlatList
+              data={documentsDetailsList?.responseData?.filter(
+                (item) => item.isVc
+              )}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+
+          <View style={{ flex: 1 }}>
+            {!isLoading && (
+              <TouchableOpacity
+                style={{
+                  opacity: !checkDisable() ? 0.5 : 1,
+                  backgroundColor: "#0163f7",
+                  marginHorizontal: 10,
+                  padding: 15,
+                  borderRadius: 20,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                disabled={!checkDisable()}
+                onPress={createVerifiableCredentials}
+              >
+                <GenericText
+                  style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}
+                >
+                  {"SHARE"}
+                </GenericText>
+              </TouchableOpacity>
+            )}
+            {/* <TouchableOpacity
               onPress={() => {
                 setisDocumentModalkyc(false);
                 setIsCamerVisible(true);
@@ -264,13 +314,11 @@ export const QrScannerMaskedWidget = ({
               </GenericText>
             </TouchableOpacity>
           */}
-      </View>
-      </View>
+          </View>
+        </View>
       </ScrollView>
     </View>
   );
 };
 
 export default QrScannerMaskedWidget;
-
-
