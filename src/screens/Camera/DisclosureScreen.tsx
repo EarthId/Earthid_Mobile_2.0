@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, TouchableOpacity, View, AsyncStorage } from "react-native";
 import { Screens } from "../../themes";
 import QrCodeMask from "react-native-qrcode-mask";
 import GenericText from "../../components/Text";
@@ -25,6 +25,20 @@ export const QrScannerMaskedWidget = ({createVerifiableCredentials,setValue,navi
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const [showVisibleDOB,setshowVisibleDOB] = useState(false)
   const [showVisibleBalance,setshowVisibleBalance] = useState(false)
+
+  const [userDOB, setUserDOB] = useState<string | null>(null); // Changed to accept null value
+
+  useEffect(() => {
+    // Retrieve user's DOB from AsyncStorage
+    AsyncStorage.getItem("userDOB").then((dob: React.SetStateAction<string | null>) => {
+      setUserDOB(dob);
+    }).catch((error: any) => {
+      console.log("Error retrieving user's DOB from AsyncStorage: ", error);
+    });
+  }, []);
+
+
+
     const getDropDownList = () => {
         let datas = [];
         datas = documentsDetailsList?.responseData;
@@ -278,7 +292,7 @@ export const QrScannerMaskedWidget = ({createVerifiableCredentials,setValue,navi
 
                               }}
                             >
-                             {barCodeDataDetails?.requestType?.request==='minAge'?showVisibleDOB?'09/01/1998':'.. .. ....':showVisibleBalance?"$ "+item?.amount: '$.....'}
+                             {barCodeDataDetails?.requestType?.request==='minAge'?showVisibleDOB?(userDOB ? userDOB : 'Date of birth not available'):'.. .. ....':showVisibleBalance?"$ "+item?.amount: '$.....'}
                             </GenericText>
                         </View>
                       

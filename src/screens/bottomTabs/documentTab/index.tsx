@@ -50,7 +50,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const [documentsDetailsList, setdocumentsDetailsList] = useState(
     documentsDetailsListData
   );
-  console.log('documentsDetailsListData===>',documentsDetailsListData)
+ // console.log('documentsDetailsListData===>',documentsDetailsListData)
   const [selectedDocuments, setselectedDocuments] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
   let [qrBase64, setBase64] = useState("");
@@ -392,7 +392,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   };
 
   const deleteItem = () => {
-    console.log("selectedItem?.id", selectedItem);
+   // console.log("selectedItem?.id", selectedItem);
     Alert.alert(
       "Confirmation! ",
       "Are you sure you want to delete this document ?",
@@ -481,7 +481,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
     if (searchedData.length === 0 && searchText != "") {
       return []; // earlier []
     }
-    console.log('data',data)
+   // console.log('data',data)
   return getItemsForSection(data)
   };
 

@@ -284,7 +284,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
         const imagePath = data;
         console.log("imagePath====>", imagePath);
         const base64 = await RNFS.readFile(imagePath, "base64");
-        console.log("data====>", base64);
+       // console.log("data====>", base64);
         const fileUri = {
           base64: base64,
           type: mimeType,
@@ -316,7 +316,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
         const imagePath = extraData?.data?.replaceAll("%20", " ");
     
         const base64 = await RNFS.readFile(imagePath, "base64");
-        console.log("imagePath123", base64);
+       // console.log("imagePath123", base64);
         const fileUri = {
           base64: base64,
           type: extraData?.mimeType,
@@ -332,7 +332,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
       } else {
         const imagePath = extraData?.data?.replaceAll("%20", " ");
         const base64 = await RNFS.readFile(imagePath, "base64");
-        console.log("data====>", base64);
+        //console.log("data====>", base64);
         const fileUri = {
           base64: base64,
           type: extraData?.mimeType,
@@ -369,10 +369,10 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
         isVc: false,
         color: "rgba(191, 245, 206, 1)",
       };
-      console.log(
-        "documentsDetailsList?.responseData",
-        documentsDetailsList?.responseData
-      );
+      // console.log(
+      //   "documentsDetailsList?.responseData",
+      //   documentsDetailsList?.responseData
+      // );
       var DocumentList = documentsDetailsList?.responseData
         ? documentsDetailsList?.responseData
         : [];
@@ -383,7 +383,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
     }, 200);
   };
   useEffect(() => {
-    console.log("recentData====>", recentData);
+   // console.log("recentData====>", recentData);
     if (documentsDetailsList) {
       let recentDataFillerWithColor: any =
         recentData &&
@@ -576,7 +576,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
 
     //
 
-    console.log('data',data)
+   // console.log('data',data)
   return getItemsForSection(data)
   };
 

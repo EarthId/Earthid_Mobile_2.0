@@ -111,6 +111,20 @@ const CameraScreen = (props: any) => {
 
   const [createSignatureKey, setCreateSignatureKey] = useState();
 
+
+  //const [sharedData, setSharedData] = useState<{ selectedFields: any, documentVc: any } | null>(null);
+  // const [selectedFields, setSelectedFields] = useState(null);
+  // const [documentVc, setDocumentVc] = useState(null);
+
+  // useEffect(() => {
+  //   if (sharedData) {
+  //     console.log('Shared data received...:', sharedData);
+  //     if (sharedData && sharedData.selectedFields && sharedData.documentVc) {
+  //       getData(); // Call getData when sharedData is available
+  //     }
+  //   }
+  // }, [sharedData]);
+
   const issurDid = keys?.responseData?.issuerDid;
   const UserDid = keys?.responseData?.newUserDid;
   const privateKey = keys?.responseData?.generateKeyPair?.privateKey;
@@ -127,7 +141,7 @@ const CameraScreen = (props: any) => {
   var base64Pic = documentsDetailsList?.responseData
     ? documentsDetailsList?.responseData[0]?.base64
     : null;
-  console.log("baseee", base64Pic);
+  //console.log("baseee", base64Pic);
 
   console.log("url===>", url);
 
@@ -137,6 +151,62 @@ const CameraScreen = (props: any) => {
     setIsCamerVisible(true);
     getVcdata();
   }, []);
+
+ 
+
+  const getSDDData = async () => {
+    const selectedFields: any = await AsyncStorage.getItem("selectedFields");
+    const documentVc: any = await AsyncStorage.getItem("selectedVc");
+    const selectedFieldsjson: any = JSON.parse(selectedFields)
+    const selectedVcjson: any = JSON.parse(documentVc)
+
+   const data = {
+      sessionKey: barCodeDataDetails?.sessionKey,
+      encrypted_object: {
+        earthId: userDetails?.responseData?.earthId,
+        pressed: false,
+        userName: userDetails?.responseData?.username,
+        userEmail: userDetails?.responseData?.email,
+        userMobileNo: userDetails?.responseData?.phone,
+        OrganizationID: userDetails?.responseData?.orgId,
+        selectedFields: selectedFieldsjson.selectedFields,
+  documentVc: selectedVcjson.documentVc.uploadDocVcResponse, 
+  
+        // countryCode: userDetails?.responseData?.countryCode,
+        // emailVerified: userDetails?.responseData?.emailVerified,
+        // mobileVerified: userDetails?.responseData?.mobileVerified,
+        //documents: documentsDetailsList?.responseData,
+        requestType: barCodeDataDetails?.requestType,
+        reqNo: barCodeDataDetails?.reqNo,
+        //signature: createSignatureKey,
+        //base64: getArrayOfBase64(),
+        //docName:getArrayOfDocName(),
+        //type:getTypesOfDoc(),
+        //kycToken: "6hrFDATxrG9w14QY9wwnmVhLE0Wg6LIvwOwUaxz761m1JfRp4rs8Mzozk5xhSkw0_MQz6bpcJnrFUDwp5lPPFC157dHxbkKlDiQ9XY3ZIP8zAGCsS8ruN2uKjIaIargX",
+      },
+    };
+
+  console.log('earthid req==>',JSON.stringify(data))
+    sendDatatoServiceProvider(QrcodeApis, data, "POST");
+
+    
+    await AsyncStorage.removeItem("selectedFields");
+    await AsyncStorage.removeItem("selectedVc");
+    // Check if the request was successful
+    if (!response.ok) {
+      setisLoading(false)
+      throw new Error('Network response was not ok');
+    }
+    
+   
+    
+  
+
+   // return {selectedFields, documentVc}
+  };
+
+
+
 
   const getVcdata = async () => {
     const getvcCred: any = await AsyncStorage.getItem("vcCred");
@@ -281,6 +351,212 @@ const CameraScreen = (props: any) => {
   
     fetchData();
   }
+
+
+  const generateAgeVC = async (success: { request: string; value: string; } | undefined) => {
+    //const amount =  documentsDetailsList?.responseData?.filter((item: { amount: any; })=>item?.amount)[0]?.amount
+    const dateOfBirth : any = await AsyncStorage.getItem("userDOB");
+    console.log('Userdetails for dob:.............', dateOfBirth)
+    console.log('datapayload===>12345',JSON.stringify({
+      "Content-Type": "application/json",
+      "publicKey": publicKey,
+      "did":UserDid,
+      "X-API-KEY": '01a41742-aa8e-4dd6-8c71-d577ac7d463c',
+    }))
+    try {
+      // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
+      const response = await fetch("https://ssi-test.myearth.id/api/issuer/verifiableCredential", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "publicKey": publicKey,
+          "did":UserDid,
+          "X-API-KEY": '01a41742-aa8e-4dd6-8c71-d577ac7d463c',
+        },
+        body:JSON.stringify({"schemaName": "UserAgeSchema:1",
+        "isEncrypted": true,
+        "dependantVerifiableCredential": [
+        ],
+        "credentialSubject": {
+          "earthId":userDetails?.responseData?.earthId,
+          "dateOfBirth": dateOfBirth
+        }
+      }),
+      });
+   
+      console.log("Response Status:", response);
+      // Check if the request was successful
+      if (!response.ok) {
+       
+        throw new Error("Network response was not ok");
+      }
+
+      // Get the response text directly
+      const resulst = await response.json();
+
+      console.log('response?.data?.verifiableCredential',resulst?.data?.verifiableCredential)
+      let payload 
+   
+     if(success?.request === 'minAge'){
+
+      payload ={dateOfBirth: {
+        type: "date",
+        value:parseInt(success?.value),
+        unit: "years"
+      },
+      verifyParams: [
+        `dateOfBirth=${(dateOfBirth)}`
+      ],
+      credentials:resulst?.data?.verifiableCredential
+    }
+     }else{
+       payload ={
+        dateOfBirth: success,
+        verifyParams: [
+          "dateOfBirth=1998-01-09"
+        ],
+        credentials:  {
+          "@context": [
+              "https://www.w3.org/2018/credentials/v1"
+          ],
+          id: "UserBalanceSchema:1:1b4efb3c-f39d-4890-b9c6-c1c2f42517c5",
+          type: [
+              "VerifiableCredential",
+              "UserBalanceSchema:1",
+              "Encrypted"
+          ],
+          version: "UserBalanceSchema:1",
+          credentialSchema: {
+              id: "http://ssi-test.myearth.id/schema/UserBalanceSchema",
+              type: "JsonSchemaValidator2018"
+          },
+          issuer: "did:earthid:testnet:H8xsGiJMKq9D3KewDwCMnTo8Xs7PexCivnZyC9EgUkdV;earthid:testnet:fid=0.0.2239011",
+          credentialSubject: [
+              {
+                  id: "MzMsMTU1LDg1LDU5LDEzMywzNSwxNzMsNTgsMTA1LDg0LDQ4LDIxNSwxOTAsNDMsMjMsMjA1LDIwMSwxOCwxMzcsMTgxLDEwNCwxNjUsMTgxLDg4LDM4LDIyNywxNTEsMjEwLDE1OSw5NywzNCw2Nw==",
+                  earthId: "MjA4LDIwNCw5MSwxNzAsNzMsMTQ5LDI0OCwyMjIsNzQsMjAxLDE4MSw5MiwxNCw4LDg5LDI0LDEyOCw0MCwxNjcsMjMsMTU0LDE2NCwxMiwyMDUsMTc0LDcyLDIyOSwzOSwxMTEsNDUsMTExLDIyNQ==",
+                  balance: "MTM3LDI1LDU1LDIwMyw1MSw4MCwyMiwyMzMsMTk5LDcsNzYsNTUsMTI5LDIyMCwxNzcsNTQsNzgsMTIsMTAyLDcsNTEsMTY4LDEzNiwxNTUsMTkwLDE3NCwxMzEsMjMwLDE3MCwxMTcsMTU1LDIzMA=="
+              }
+          ],
+          issuanceDate: "2023-11-24T07:00:18.993Z",
+          expirationDate: "2024-11-24T07:00:17.504Z",
+          proof: {
+              type: "Ed25519Signature2018",
+              creator: "did:earthid:testnet:H8xsGiJMKq9D3KewDwCMnTo8Xs7PexCivnZyC9EgUkdV;earthid:testnet:fid=0.0.2239011",
+              created: "2023-11-24T07:00:18.993Z",
+              proofPurpose: "assertionMethod",
+              vcVerificationMethod: "did:earthid:testnet:H8xsGiJMKq9D3KewDwCMnTo8Xs7PexCivnZyC9EgUkdV;earthid:testnet:fid=0.0.2239011#did-root-key",
+              jws: "eyJjcml0IjpbImI2NCJdLCJiNjQiOmZhbHNlLCJhbGciOiJFZERTQSJ9..MDQ4YzQzZmYzYmJjMzYxZDI5NTkwNWE2YWMwMWMwNmFkZTdmZmMzMWNiYWI0MjFjNWVhYmY1ZjUzODkxZTIwZDg1YTdlMjA0MWEzNjdkYjhmNjlkYTM1ZWY1ZmM4YmM5OWYzYjQwODFhNWY1N2RlOWUxZWQ0YzRlZjUxMzlhMGM="
+          },
+          biometrics: {
+              face: null,
+              iris: null,
+              finger: null
+          },
+          credentialStatus: ""
+      }
+      }
+    }
+      try {
+        console.log('payload=====>',JSON.stringify(payload))
+        
+        // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
+        const response = await fetch('https://ssi-test.myearth.id/api/issuer/createZkp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-KEY':'01a41742-aa8e-4dd6-8c71-d577ac7d463c'
+            // You may need to include additional headers here, such as authentication headers
+          },
+          body: JSON.stringify(payload),
+        });
+    
+        const result = await response.json();
+        console.log('setZkpSignature',result)
+        if(result){
+          if(success?.request === 'balance'){
+            documentsDetailsList?.responseData?.filter((item: { amount: any; })=>item?.amount)[0]?.amount
+            
+            if(result?.data){
+              if(result?.data?.certificate?.balance){
+                setTimeout(()=>{    
+                  setisLoading(false)            
+                  Alert.alert('Proof of funds is verified successfully')
+                },5000)
+              }
+              else{
+                setTimeout(()=>{    
+                  setisLoading(false)            
+                  Alert.alert('Proof of funds verification failed')
+                },5000)
+               
+              }
+            }
+          }
+          if(success?.request === 'minAge'){
+            if(result?.data){
+              if(result?.data?.certificate?.dateOfBirth){
+                setTimeout(()=>{    
+                  setisLoading(false)            
+                  Alert.alert('Proof of age is verified successfully')
+                },5000)
+              }
+              else{
+                setTimeout(()=>{    
+                  setisLoading(false)            
+                  Alert.alert('Proof of age verification failed')
+                },5000)
+               
+              }
+            }
+          }
+        }
+        setZkpSignature(result)
+      
+       const  data = {
+          sessionKey: barCodeDataDetails?.sessionKey,
+          encrypted_object:{
+            earthId: userDetails?.responseData?.earthId,
+            pressed: false,
+            userName: userDetails?.responseData?.username,
+            userEmail: userDetails?.responseData?.email,
+            userMobileNo: userDetails?.responseData?.phone,
+            OrganizationID: userDetails?.responseData?.orgId,...result?.data},
+            zkbType:success?.request
+        };
+
+      console.log('earthid req==>',JSON.stringify(data))
+        sendDatatoServiceProvider(QrcodeApis, data, "POST");
+        // Check if the request was successful
+        if (!response.ok) {
+          setisLoading(false)
+          throw new Error('Network response was not ok');
+        }
+        console.log('setZkpSignature',result)
+       
+        
+        // Set the data in the state
+        //setData(result);
+      } catch (error) {
+        setisLoading(false)
+        console.error('Error fetching data:', error);
+      }
+      console.log("result:::::", result);
+      
+
+      // Set the data in the state
+      // Depending on your use case, you may handle the result here
+    } catch (error) {
+  
+      console.error("Error fetching data:1234", error);
+    }
+
+
+   
+      
+  };
+
+
   const generateBalanceVC = async (success: { request: string; minimum: string; } | undefined) => {
     const amount =  documentsDetailsList?.responseData?.filter((item: { amount: any; })=>item?.amount)[0]?.amount
     console.log('datapayload===>12345',JSON.stringify({
@@ -756,7 +1032,7 @@ const CameraScreen = (props: any) => {
   const getArrayOfBase64 =()=>{
     let datas: any[] =[]
       documentsDetailsList?.responseData.map((item: { base64: string; isVc: any; selectedForCheckBox: any; isVerifyNeeded: any; },_index: any)=>{
-        console.log('itemselected',item)
+       // console.log('itemselected',item)
         if(item?.base64 && !item.isVc && item.selectedForCheckBox){
           if(item?.isVerifyNeeded){
             const baseImage =item?.base64?.split('data:image/png;base64,')[1]
@@ -774,7 +1050,7 @@ const CameraScreen = (props: any) => {
   const getTypesOfDoc =()=>{
     let datas: any[] =[]
     documentsDetailsList?.responseData.map((item: { selectedForCheckBox: any; base64: any; isVc: any; docType: any; },_index: any)=>{
-      console.log('itemselected',item.selectedForCheckBox)
+     // console.log('itemselected',item.selectedForCheckBox)
       if(item?.base64 && !item.isVc && item.selectedForCheckBox){
         datas.push(item.docType)
       }
@@ -838,7 +1114,8 @@ const CameraScreen = (props: any) => {
     setisLoading(true)
      auditFlowApi()
     generateUserSignature();
-     getData();
+ getData()
+     
     setloadingforGentSchemaAPI(true);
 
     if (barCodeDataDetails?.requestType === "document") {
@@ -954,7 +1231,7 @@ const CameraScreen = (props: any) => {
   };
 
   const checkDisable = () => {
-    console.log('selectedCheckBox',selectedCheckBox)
+    //console.log('selectedCheckBox',selectedCheckBox)
     let trap = false;
     if (
       documentsDetailsList?.responseData?.length === 0 ||
@@ -1039,49 +1316,60 @@ const CameraScreen = (props: any) => {
             userEmail: userDetails?.responseData?.email,
             userMobileNo: userDetails?.responseData?.phone,
             OrganizationID: userDetails?.responseData?.orgId,
-            // countryCode: userDetails?.responseData?.countryCode,
+             //countryCode: userDetails?.responseData?.countryCode,
             // emailVerified: userDetails?.responseData?.emailVerified,
             // mobileVerified: userDetails?.responseData?.mobileVerified,
-            //documents: documentsDetailsList?.responseData,
+            documents: documentsDetailsList?.responseData,
             requestType: barCodeDataDetails?.requestType,
             reqNo: barCodeDataDetails?.reqNo,
             signature: createSignatureKey,
             base64: getArrayOfBase64(),
             docName:getArrayOfDocName(),
             type:getTypesOfDoc(),
-            kycToken:
-              "6hrFDATxrG9w14QY9wwnmVhLE0Wg6LIvwOwUaxz761m1JfRp4rs8Mzozk5xhSkw0_MQz6bpcJnrFUDwp5lPPFC157dHxbkKlDiQ9XY3ZIP8zAGCsS8ruN2uKjIaIargX",
+            kycToken: "6hrFDATxrG9w14QY9wwnmVhLE0Wg6LIvwOwUaxz761m1JfRp4rs8Mzozk5xhSkw0_MQz6bpcJnrFUDwp5lPPFC157dHxbkKlDiQ9XY3ZIP8zAGCsS8ruN2uKjIaIargX",
           },
         };
       }
       else if (barCodeDataDetails.requestType === "selectiveData") {
-        console.log("type===>", "shareCredentials");
-        data = {
-          sessionKey: barCodeDataDetails?.sessionKey,
-          encrypted_object: {
-            earthId: userDetails?.responseData?.earthId,
-            pressed: false,
-            userName: userDetails?.responseData?.username,
-            userEmail: userDetails?.responseData?.email,
-            userMobileNo: userDetails?.responseData?.phone,
-            OrganizationID: userDetails?.responseData?.orgId,
-            // countryCode: userDetails?.responseData?.countryCode,
-            // emailVerified: userDetails?.responseData?.emailVerified,
-            // mobileVerified: userDetails?.responseData?.mobileVerified,
-            //documents: documentsDetailsList?.responseData,
-            requestType: barCodeDataDetails?.requestType,
-            reqNo: barCodeDataDetails?.reqNo,
-            signature: createSignatureKey,
-            base64: getArrayOfBase64(),
-            docName:getArrayOfDocName(),
-            type:getTypesOfDoc(),
-            kycToken:
-              "6hrFDATxrG9w14QY9wwnmVhLE0Wg6LIvwOwUaxz761m1JfRp4rs8Mzozk5xhSkw0_MQz6bpcJnrFUDwp5lPPFC157dHxbkKlDiQ9XY3ZIP8zAGCsS8ruN2uKjIaIargX",
-          },
-        };
+
+        getSDDData()
+        return
+      //   console.log("type===>", "shareCredentials");
+
+      //  if(documentVc && selectedFields){
+      //   data = {
+      //     sessionKey: barCodeDataDetails?.sessionKey,
+      //     encrypted_object: {
+      //       earthId: userDetails?.responseData?.earthId,
+      //       pressed: false,
+      //       userName: userDetails?.responseData?.username,
+      //       userEmail: userDetails?.responseData?.email,
+      //       userMobileNo: userDetails?.responseData?.phone,
+      //       OrganizationID: userDetails?.responseData?.orgId,
+      //       selectedFields: selectedFields,
+      // documentVc: documentVc, 
+      
+      //       // countryCode: userDetails?.responseData?.countryCode,
+      //       // emailVerified: userDetails?.responseData?.emailVerified,
+      //       // mobileVerified: userDetails?.responseData?.mobileVerified,
+      //       //documents: documentsDetailsList?.responseData,
+      //       requestType: barCodeDataDetails?.requestType,
+      //       reqNo: barCodeDataDetails?.reqNo,
+      //       //signature: createSignatureKey,
+      //       //base64: getArrayOfBase64(),
+      //       //docName:getArrayOfDocName(),
+      //       //type:getTypesOfDoc(),
+      //       //kycToken: "6hrFDATxrG9w14QY9wwnmVhLE0Wg6LIvwOwUaxz761m1JfRp4rs8Mzozk5xhSkw0_MQz6bpcJnrFUDwp5lPPFC157dHxbkKlDiQ9XY3ZIP8zAGCsS8ruN2uKjIaIargX",
+      //     },
+      //   };
+      //  }else{
+      //   console.log('Null data recieved............................')
+      //  }
+            
+
       }
       else if (barCodeDataDetails?.requestType.request === "minAge") {
-        getZKBAge(barCodeDataDetails?.requestType)
+        generateAgeVC(barCodeDataDetails?.requestType)
         return
       }
       else if (barCodeDataDetails?.requestType.request === "balance") {
@@ -1090,6 +1378,17 @@ const CameraScreen = (props: any) => {
      
       }
       sendDatatoServiceProvider(QrcodeApis, data, "POST");
+    }
+  };
+
+  const onDataShare = (selectedFields: any, documentVc: any) => {
+    if(selectedFields && documentVc){
+      console.log("Selected Fields:", selectedFields);
+      console.log("Document VC:", documentVc);
+    //  setSelectedFields(selectedFields);
+    //  setDocumentVc(documentVc)
+    }else{
+      throw(console.error())
     }
   };
 
@@ -1244,9 +1543,15 @@ const CameraScreen = (props: any) => {
         setselectedCheckBox={setselectedCheckBox}
         setValue={setValue}
         checkDisable={checkDisable}
+        
+        barCodeDataDetails={barCodeDataDetails} 
+        onDataShare={onDataShare}
         createVerifiableCredentials={createVerifiableCredentials}
-        barCodeDataDetails={barCodeDataDetails} navigation={props.navigation}></SelctiveDisclosure>:
-       
+        navigation={props.navigation}
+        >
+        
+        </SelctiveDisclosure>:
+
        <ModalView
         left={deviceWidth / 9}
         width={deviceWidth / 1.2}

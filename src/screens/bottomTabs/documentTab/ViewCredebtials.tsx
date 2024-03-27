@@ -61,7 +61,7 @@ const DocumentPreviewScreen = (props: any) => {
     url: documentDetails?.base64,
     base64: documentDetails?.base64,
   };
-  console.log("selectedItem?.base64===>123",`data:image/jpeg;base64,${documentDetails?.base64}`);
+  //console.log("selectedItem?.base64===>123",`data:image/jpeg;base64,${documentDetails?.base64}`);
   const resourceType = "base64";
   const shareItem = async () => {
 
@@ -215,12 +215,12 @@ const DocumentPreviewScreen = (props: any) => {
     // await AsyncStorage.setItem("userDetails", data);
     // await AsyncStorage.setItem("editDoc", "editDoc");
 
-    console.log("iteName==>", selectedItem);
+   // console.log("iteName==>", selectedItem);
   }
   const handleUploadImage = async () => {
     setisBottomSheetForSideOptionVisible(false);
     props.navigation.navigate("ShareQr", { selectedItem: selectedItem });
-    console.log("selectedItem", selectedItem);
+    //console.log("selectedItem", selectedItem);
   };
   const RowOption = ({ icon, title, rowAction }: any) => (
     <TouchableOpacity onPress={rowAction}>

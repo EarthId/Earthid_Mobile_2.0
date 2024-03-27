@@ -390,7 +390,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   };
 
   const deleteItem = () => {
-    console.log("selectedItem?.id", selectedItem);
+   // console.log("selectedItem?.id", selectedItem);
     Alert.alert(
       "Confirmation! ",
       "Are you sure you want to delete this document ?",
@@ -479,7 +479,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
     if (searchedData.length === 0 && searchText != "") {
       return []; // earlier []
     }
-    console.log('data',data)
+   // console.log('data',data)
   return getItemsForSection(data)
   };
 

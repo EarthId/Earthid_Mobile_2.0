@@ -64,7 +64,8 @@ const DocumentPreviewScreen = (props: any) => {
   function alertUploadDoc() {
     console.log("fileUri?.type===", fileUri?.type);
     if (type == "regDoc") {
-      uploadDocumentImage();
+     uploadDocumentImage();
+
     } else {
       if (fileUri?.type === "application/pdf") {
         uploadDoc("no");
@@ -175,8 +176,8 @@ const DocumentPreviewScreen = (props: any) => {
         console.log("image req=====", image);
         setLoginLoading(true);
 
-        uploadRegDoc(uploadRegisterDocument, image, "FORM-DATA");
-
+        //uploadRegDoc(uploadRegisterDocument, image, "FORM-DATA");
+        props.navigation.navigate("categoryScreen", { fileUri });
         // props.navigation.navigate("DrawerNavigator", { response });
       } catch (e) {
         setLoginLoading(false);
@@ -189,14 +190,14 @@ const DocumentPreviewScreen = (props: any) => {
     getSuperAdminApiCall(superAdminApi, {}, "GET");
   }, []);
 
-  useEffect(() => {
-    if (data) {
-      if (data?.data) {
-        setDocumentResponse(data?.data);
-        createPayLoadFromDocumentData(data?.data);
-      }
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     if (data?.data) {
+  //       setDocumentResponse(data?.data);
+  //       createPayLoadFromDocumentData(data?.data);
+  //     }
+  //   }
+  // }, [data]);
   const handlePressb64 = (type: string) => {
     Alert.alert('Unsupported file')
     // if (Platform.OS === "ios") {

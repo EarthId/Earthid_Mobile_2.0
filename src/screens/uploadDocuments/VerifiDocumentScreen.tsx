@@ -32,6 +32,9 @@ import {
 } from "../../utils/earthid_account";
 import { dateTime } from "../../utils/encryption";
 import GenericText from "../../components/Text";
+import { uploadRegisterDocument } from "../../utils/earthid_account";
+import { Buffer } from 'buffer';
+import axios from "axios";
 
 export interface IDocumentProps {
   id: string;
@@ -62,8 +65,9 @@ const VerifiDocumentScreen = (props: any) => {
   const { pic } = props.route.params;
   const { editDoc, selectedItem, docname } = props?.route?.params;
   const { faceImageData, selectedDocument } = props.route.params;
-  const { loading, data, error, fetch } = useFetch();
+  const { loading, data, error, fetch: uploadRegDoc } = useFetch();
   const userDetails = useAppSelector((state) => state.account);
+  const keys = useAppSelector((state) => state.user);
   const getHistoryReducer = useAppSelector((state) => state.getHistoryReducer);
   console.log("getHistoryReducer===>", getHistoryReducer);
   const {
@@ -72,8 +76,8 @@ const VerifiDocumentScreen = (props: any) => {
     error: documentAddedError,
     fetch: AddDocumehtfetch,
   } = useFetch();
-  console.log("picLOG", editDoc);
-  console.log("picLOG", docname);
+  // console.log("picLOG", editDoc);
+  // console.log("picLOG", docname);
 
   const [load, setLoad] = useState(false);
   const dispatch = useAppDispatch();
@@ -85,6 +89,10 @@ const VerifiDocumentScreen = (props: any) => {
   const [verifyVcCred, setverifyVcCred] = useState<any>();
   const [dis, SetDis] = useState(false);
 
+  // if(uploadedDocumentsBase64 && base64Icon){
+  //   console.log('UploadedDoc64', uploadedDocumentsBase64, 'selfie64', base64Icon)
+  // }
+  
   useEffect(() => {
     getVcdata();
   }, []);
@@ -95,6 +103,141 @@ const VerifiDocumentScreen = (props: any) => {
     console.log("parseData", parseData);
     setverifyVcCred(parseData);
   };
+
+
+
+// Function to convert image file to base64 format
+const getBase64FromImageURI = async (uri: any) => {
+  if (!uri) {
+    throw new Error('URI is undefined or null');
+  }
+
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(blob);
+  });
+};
+
+
+// Function to send base64 images to API
+const sendImagesToAPIGBG = async () => {
+  let docImage64
+  if(pic && pic.uri){
+    docImage64 = await getBase64FromImageURI(pic.uri)
+    
+  }else if(selectedItem.base64){
+    docImage64 = selectedItem.base64
+  }else(
+    docImage64 = uploadedDocuments.base64
+  )
+  
+  const faceImage64 = faceImageData?.base64
+
+  const images = [docImage64, faceImage64];
+//console.log('Uploaded Doc base64', docImage64)
+  try {
+    const data = JSON.stringify({ images });
+    const config = {
+      method: 'post',
+      url: 'https://apitest.myearth.id/user/upload',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      data: data
+    };
+    
+    const response = await axios.request(config);
+    console.log('DocumentGBGResponse', response.data.data); 
+    console.log('Extracted fields',response.data.data.ProcessedDocuments[0].ExtractedFields)// Access response data here
+   return response.data.data
+    // Handle response from the API as needed
+  } catch (error) {
+    console.error("Error sending images to API:", error);
+    // Handle error
+  }
+};
+
+const createPayLoadFromDocumentData = async (documentResponseData: any, uploadDocVcResponse: any) => {
+  console.log(
+    "Username",
+    documentResponseData?.ProcessedDocuments[0].ExtractedFields?.filter(
+      (item: any) => item.Name === "FullName"
+    )[0]
+  );
+  const username =
+    documentResponseData?.ProcessedDocuments[0].ExtractedFields?.filter(
+      (item: any) => item.Name === "FullName"
+    )[0]?.Value;
+    
+ 
+  
+  const  userDOB =
+    documentResponseData?.ProcessedDocuments[0].ExtractedFields?.filter(
+      (item: any) => item.Name === "BirthDate"
+    )[0]?.Value;
+ 
+    const userDOBValue = userDOB !== undefined ? userDOB : null;
+console.log(userDOBValue)
+  // await AsyncStorage.setItem("userDetails", username.toString());
+  // await AsyncStorage.setItem("userDetails", userDOB.toString());
+  await AsyncStorage.setItem("userDOB", userDOBValue);
+  if(uploadDocVcResponse!==null){
+    await AsyncStorage.setItem("uploadedDocVc", JSON.stringify({ uploadDocVcResponse }));
+  }
+
+  if(userDetails.responseData){
+console.log('Uploading doc after registeration')
+  }else{
+    await AsyncStorage.setItem("flow", "documentflow");
+  }
+  
+  
+};
+
+const ssiBaseUrl = "https://ssi-test.myearth.id/api"
+const authorizationKey = "01a41742-aa8e-4dd6-8c71-d577ac7d463c"
+
+//createDOc VC
+const createUploadDocVc = async (fieldsObject: any) => {
+  try {
+      //const signature = await createUserIdSignature(profileData);
+      const data = {
+          schemaName: 'UploadedDocVC:1',
+          isEncrypted: false,
+          dependantVerifiableCredential: [],
+          credentialSubject: {
+            documentExtractedData: fieldsObject
+          }
+      };
+
+      const config = {
+          method: 'post',
+          url: `${ssiBaseUrl}/issuer/verifiableCredential?isCryptograph=false&downloadCryptograph=false`,
+          headers: {
+              'X-API-KEY': authorizationKey,
+              did: keys.responseData.newUserDid,
+              publicKey: keys.responseData.generateKeyPair.publicKey,
+              'Content-Type': 'application/json',
+          },
+          data: JSON.stringify(data),
+      };
+console.log('DocVcApi', config)
+      const response = await axios.request(config);
+      console.log('VC response', response.data.data.verifiableCredential)
+      //const verifiableCredential = response.data.data.verifiableCredential;
+    
+      return response.data.data.verifiableCredential;
+
+  } catch (error) {
+      console.log(error);
+      throw error;
+  }
+};
+
 
   const verifiAPICall =()=>{
     const apiUrl = 'https://stage-apiv2.myearth.id/user/liveness';
@@ -127,7 +270,7 @@ fetch(apiUrl, {
 
   }
 
-  const validateImages = () => {
+  const validateImages = async () => {
     SetDis(true);
     setLoad(true);
     const payLoad = {
@@ -136,7 +279,61 @@ fetch(apiUrl, {
       userId: userDetails?.responseData?.Id,
       publicKey: userDetails?.responseData?.publicKey,
     };
+
+    //console.log('userDetails', userDetails.responseData, 'UserDID', keys.responseData)
+
+    type ExtractedField = {
+      LocalValue: string;
+      Name: string;
+      OCRLocalValue: string;
+      OCRValue: string;
+      Value: string;
+    };
+    
+    // Define the type of the ProcessedDocument object
+    type ProcessedDocument = {
+      ExtractedFields: ExtractedField[];
+      // Add other properties if needed
+    };
+    
+    // Define the type of the uploadDocResponseData object
+    type UploadDocResponseData = {
+      ProcessedDocuments: ProcessedDocument[];
+      // Add other properties if needed
+    };
+
+
+    console.log('Sending details to the api1')
+  const uploadDocResponseData =  await sendImagesToAPIGBG()
+
+
+  
+  const fieldsObject: Record<string, string> = {};
+
+  // Iterate through the extractedFields array
+  uploadDocResponseData.ProcessedDocuments[0].ExtractedFields.forEach((field: ExtractedField) => {
+    // Check if the field has both "Name" and "OCRValue" properties
+    if (field.Name && field.OCRValue) {
+      // Add the "Name" and "OCRValue" fields to the fieldsObject
+      fieldsObject[field.Name] = field.OCRValue;
+    }
+  });
+  
+  console.log('NewExtracted Fields',fieldsObject);
+
+  
+  if(keys.responseData){
+    console.log('Sending details to the api2')
+    const uploadDocVcResponse = await createUploadDocVc(fieldsObject)
+    await createPayLoadFromDocumentData(uploadDocResponseData, uploadDocVcResponse)
+  }else{
+    await createPayLoadFromDocumentData(uploadDocResponseData, null )
+  }
+ 
+  
+   
    // verifiAPICall()
+
     setTimeout(() => {
       const index = documentsDetailsList?.responseData?.findIndex(
         (obj: { id: any; }) => obj?.id === selectedItem?.id
@@ -156,10 +353,12 @@ fetch(apiUrl, {
         setTimeout(async () => {
           setsuccessResponse(false);
           const item = await AsyncStorage.getItem("flow");
-          if (item === "documentflow") {
-            props.navigation.navigate("RegisterScreen");
+          if (userDetails.responseData) {
+            //props.navigation.navigate("Documents");
           } else {
-            //   props.navigation.navigate("Documents");
+            // generateVc()
+            props.navigation.navigate("RegisterScreen");
+            
           }
         }, 2000);
       } else {
@@ -238,11 +437,12 @@ fetch(apiUrl, {
         setTimeout(async () => {
           setsuccessResponse(false);
           const item = await AsyncStorage.getItem("flow");
-          if (item === "documentflow") {
-            props.navigation.navigate("RegisterScreen");
+          if (userDetails.responseData) {
+            props.navigation.navigate("Documents");
           } else {
             // generateVc()
-            props.navigation.navigate("Documents");
+            props.navigation.navigate("RegisterScreen");
+            
           }
         }, 2000);
       }
@@ -321,7 +521,7 @@ fetch(apiUrl, {
 
   //     }
   //   }
-  console.log("selectedItem?.base64 ", selectedItem);
+  //console.log("selectedItem?.base64 ", selectedItem);
   return (
     <View style={styles.sectionContainer}>
       <Header

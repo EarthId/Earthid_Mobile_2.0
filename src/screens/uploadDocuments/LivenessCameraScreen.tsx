@@ -26,8 +26,8 @@ const LivenessCameraScreen = (props: any) => {
   const [data, setData] = useState();
   const itemData = props?.route.params?.itemData;
 
-  console.log("picLOG",fileUri)
-  console.log("picLOG",selectedItem)
+  // console.log("picLOG",fileUri)
+  // console.log("picLOG",selectedItem)
   console.log("picLOG", docname)
 
   useEffect(() => {

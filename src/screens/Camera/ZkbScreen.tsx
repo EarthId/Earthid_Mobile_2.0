@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  AsyncStorage
 } from "react-native";
 import { Screens } from "../../themes";
 import QrCodeMask from "react-native-qrcode-mask";
@@ -28,170 +29,165 @@ export const QrScannerMaskedWidget = ({
   barCodeDataDetails,
   setisDocumentModalkyc,
   isLoading,
+  onDataShare,
 }: any) => {
   const documentsDetailsList = useAppSelector((state) => state?.Documents);
-  console.log("documentsDetailsList==>", documentsDetailsList);
   const [showVisibleDOB, setshowVisibleDOB] = useState(false);
   const [expandedItem, setExpandedItem] = useState(null);
   const [parentCheckbox, setParentCheckbox] = useState(false);
-  const [childCheckboxes, setChildCheckboxes] = useState([]);
+  const [childCheckboxes, setChildCheckboxes] = useState({});
+
+  const [documentVc, setDocumentVc] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const storedDocumentVc = await retrieveDocumentVcFromStorage();
+      console.log('Stored Document VC', storedDocumentVc)
+      setDocumentVc(storedDocumentVc);
+    };
+
+    fetchData();
+  }, []);
+
+  const retrieveDocumentVcFromStorage = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('uploadedDocVc');
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (error) {
+      console.error('Error retrieving data from AsyncStorage:', error);
+      return null;
+    }
+  };
+
+  const sendDataToParent = async () => {
+    const selectedFields: { name: string; value: any; }[] = []; // Initialize selectedFields as an array
+  
+    // Iterate over the child checkboxes and populate selectedFields
+    Object.keys(childCheckboxes).forEach((fieldName) => {
+      if (childCheckboxes[fieldName]) {
+        selectedFields.push({
+          name: fieldName,
+          value: documentVc.uploadDocVcResponse.credentialSubject[0].documentExtractedData[fieldName]
+        });
+      }
+    });
+  console.log('These are the selected fields', selectedFields)
+    // Call the onDataShare function passed from the parent component
+    if(selectedFields && documentVc){
+      await AsyncStorage.setItem("selectedFields", JSON.stringify({ selectedFields }));
+      await AsyncStorage.setItem("selectedVc", JSON.stringify({ documentVc }));
+      onDataShare(selectedFields, documentVc);
+    }
+    
+  };
 
   const handleParentCheckboxChange = () => {
     setParentCheckbox(!parentCheckbox);
-    setChildCheckboxes(childCheckboxes.map(() => !parentCheckbox));
+    const updatedChildCheckboxes = {};
+    Object.keys(childCheckboxes).forEach(key => {
+      updatedChildCheckboxes[key] = !parentCheckbox;
+    });
+    setChildCheckboxes(updatedChildCheckboxes);
   };
 
-  const handleChildCheckboxChange = (childIndex: number) => {
-    const updatedChildCheckboxes = [...childCheckboxes];
-    updatedChildCheckboxes[childIndex] = !updatedChildCheckboxes[childIndex];
+  const handleChildCheckboxChange = (fieldName: string) => {
+    const updatedChildCheckboxes = { ...childCheckboxes };
+    updatedChildCheckboxes[fieldName] = !updatedChildCheckboxes[fieldName];
     setChildCheckboxes(updatedChildCheckboxes);
 
-    if (updatedChildCheckboxes.every((checkbox) => checkbox)) {
+    if (Object.values(updatedChildCheckboxes).every((checkbox) => checkbox)) {
       setParentCheckbox(true);
-    } else if (updatedChildCheckboxes.every((checkbox) => !checkbox)) {
+    } else if (Object.values(updatedChildCheckboxes).every((checkbox) => !checkbox)) {
       setParentCheckbox(false);
     }
   };
-  const data = [
-    {
-      id: "1",
-      title: "Adhaar card",
-      name: "John Doe",
-      age: 25,
-      address: "123 Main St",
-    },
-    {
-      id: "2",
-      title: "National ID",
-      name: "Jane Smith",
-      age: 30,
-      address: "456 Oak Ave",
-    },
-    // Add more data as needed
-  ];
-  const renderItem = ({ item, index }) => (
-    <TouchableOpacity
-      onPress={() => (setExpandedItem(item.id), handleParentCheckboxChange())}
-    >
-      <View
-        style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: "#ccc" }}
+
+  const renderItem = ({ item, index }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => (setExpandedItem(item.id), handleParentCheckboxChange())}
       >
         <View
-          style={{
-            height: 100,
-            backgroundColor: "#fff",
-            borderRadius: 20,
-            padding: 15,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.8,
-            shadowRadius: 2,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            elevation: 5,
-          }}
+          style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: "#ccc" }}
         >
-          <View style={{ flexDirection: "row" }}>
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <View
+            style={{
+              height: 100,
+              backgroundColor: "#fff",
+              borderRadius: 20,
+              padding: 15,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.8,
+              shadowRadius: 2,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              elevation: 5,
+            }}
+          >
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    backgroundColor: "rgba(246, 189, 233, 1)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Image
+                    source={LocalImages.CATEGORIES.educationImage}
+                    style={{ width: 13, height: 13, resizeMode: "contain" }}
+                  ></Image>
+                </View>
+              </View>
               <View
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 10,
-                  backgroundColor: "rgba(246, 189, 233, 1)",
                   justifyContent: "center",
                   alignItems: "center",
+                  marginLeft: 10,
                 }}
               >
-                <Image
-                  source={LocalImages.CATEGORIES.educationImage}
-                  style={{ width: 13, height: 13, resizeMode: "contain" }}
-                ></Image>
+                <Text style={{ fontSize: 14 }}>{documentVc?.uploadDocVcResponse.credentialSubject[0].documentExtractedData.DocumentType}</Text>
               </View>
             </View>
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginLeft: 10,
-              }}
-            >
-              <Text style={{ fontSize: 14 }}>{item?.documentName}</Text>
-            </View>
+  
+            <CheckBox
+              disabled={false}
+              value={parentCheckbox}
+              onValueChange={handleParentCheckboxChange}
+            />
           </View>
-
-          <CheckBox
-            disabled={false}
-            value={parentCheckbox}
-            onValueChange={handleParentCheckboxChange}
-          />
-        </View>
-
-        {expandedItem === item.id && (
-          <View style={{ marginTop: 8, marginLeft: 20 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                padding: 10,
-                borderWidth: 0.6,
-                borderColor: "#0163f7",
-              }}
-            >
-              <Text>Name: vicky</Text>
-              <CheckBox
-                disabled={false}
-                value={childCheckboxes[0]}
-                onValueChange={() => (
-                  setParentCheckbox(true), handleChildCheckboxChange(0)
-                )}
-              />
-            </View>
-            <View style={{ marginTop: 8 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  padding: 10,
-                  borderWidth: 0.6,
-                  borderColor: "#0163f7",
-                }}
-              >
-                <Text>Age: 25</Text>
-                <CheckBox
-                  disabled={false}
-                  value={childCheckboxes[1]}
-                  onValueChange={() => (
-                    setParentCheckbox(true), handleChildCheckboxChange(1)
-                  )}
-                />
-              </View>
-            </View>
-            <View style={{ marginTop: 8 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  padding: 10,
-                  borderWidth: 0.6,
-                  borderColor: "#0163f7",
-                }}
-              >
-                <Text>Address: chennai</Text>
-                <CheckBox
-                  disabled={false}
-                  value={childCheckboxes[2]}
-                  onValueChange={() => (
-                    setParentCheckbox(true), handleChildCheckboxChange(2)
-                  )}
-                />
-              </View>
-            </View>
-          </View>
-        )}
+  
+          {expandedItem === item.id && (
+  <View style={{ marginTop: 8, marginLeft: 20 }}>
+    {documentVc && documentVc.uploadDocVcResponse && documentVc.uploadDocVcResponse.credentialSubject[0] && Object.keys(documentVc.uploadDocVcResponse.credentialSubject[0].documentExtractedData).map((fieldName, fieldIndex) => (
+      <View
+        key={fieldIndex}
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: 10,
+          borderWidth: 0.6,
+          borderColor: "#0163f7",
+        }}
+      >
+        <Text>{fieldName}: {documentVc.uploadDocVcResponse.credentialSubject[0].documentExtractedData[fieldName]}</Text>
+        <CheckBox
+          disabled={false}
+          value={childCheckboxes[fieldName]}
+          onValueChange={() => handleChildCheckboxChange(fieldName)}
+        />
       </View>
-    </TouchableOpacity>
-  );
+    ))}
+  </View>
+)}
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const getDropDownList = () => {
     let datas = [];
@@ -238,87 +234,72 @@ export const QrScannerMaskedWidget = ({
             style={{
               padding: 5,
               color: "#000",
-              fontSize: 16,
-              fontWeight: "900",
-              marginTop: 20,
-            }}
-          >
-            {"Select which details to share?"}
-          </GenericText>
-          <GenericText
-            style={{
-              padding: 5,
-              color: "#000",
-              fontSize: 16,
-              marginTop: 1,
-            }}
-          >
-            {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
-          </GenericText>
-          {isLoading ? (
-            <View
+              fontSize: 16            }}>
+              {"Select which details to share?"}
+            </GenericText>
+            <GenericText
               style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
+                padding: 5,
+                color: "#000",
+                fontSize: 16,
+                marginTop: 1,
               }}
             >
-              <ActivityIndicator color={"red"} size="large" />
-            </View>
-          ) : (
-            <View style={{ flex: 1, paddingHorizontal: 5 }}></View>
-          )}
-
-          <View style={{ marginTop: 10 }}>
-            <FlatList
-              data={documentsDetailsList?.responseData?.filter(
-                (item) => item.isVc
-              )}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-            />
-          </View>
-
-          <View style={{ flex: 1 }}>
-            {!isLoading && (
-              <TouchableOpacity
+              {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
+            </GenericText>
+            {isLoading ? (
+              <View
                 style={{
-                  opacity: !checkDisable() ? 0.5 : 1,
-                  backgroundColor: "#0163f7",
-                  marginHorizontal: 10,
-                  padding: 15,
-                  borderRadius: 20,
+                  flex: 1,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                disabled={!checkDisable()}
-                onPress={createVerifiableCredentials}
               >
-                <GenericText
-                  style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}
-                >
-                  {"SHARE"}
-                </GenericText>
-              </TouchableOpacity>
+                <ActivityIndicator color={"red"} size="large" />
+              </View>
+            ) : (
+              <View style={{ flex: 1, paddingHorizontal: 5 }}></View>
             )}
-            {/* <TouchableOpacity
-              onPress={() => {
-                setisDocumentModalkyc(false);
-                setIsCamerVisible(true);
-              }}
-            >
-              <GenericText
-                style={{ color: "red", fontSize: 16, fontWeight: "700" }}
-              >
-                Cancel
-              </GenericText>
-            </TouchableOpacity>
-          */}
+  
+            <View style={{ marginTop: 10 }}>
+              <FlatList
+                data={documentVc ? [documentVc.uploadDocVcResponse] : []}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+              />
+            </View>
+  
+            <View style={{ flex: 1, marginBottom: 100 }}>
+              {!isLoading && (
+                <TouchableOpacity
+                  style={{
+                    opacity: !checkDisable() ? 0.5 : 1,
+                    backgroundColor: "#0163f7",
+                    marginHorizontal: 10,
+                    padding: 15,
+                    borderRadius: 20,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  disabled={!checkDisable()}
+                  onPress={() => {
+                    sendDataToParent(); // Call sendDataToParent when share button is clicked
+                    createVerifiableCredentials(); // Optionally, call createVerifiableCredentials
+                  }}
+                >
+                  <GenericText
+                    style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}
+                  >
+                    {"SHARE"}
+                  </GenericText>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </View>
-  );
-};
-
-export default QrScannerMaskedWidget;
+        </ScrollView>
+      </View>
+    );
+  };
+  
+  export default QrScannerMaskedWidget;
+  
