@@ -291,7 +291,9 @@ implementation 'com.facebook.soloader:soloader:0.10.3+'
 
     if (enableHermes) {
         //noinspection GradleDynamicVersion
-         implementation("com.facebook.react:hermes-android")
+         implementation("com.facebook.react:hermes-engine:+") {
+          exclude group:'com.facebook.fbjni'
+       }
         
     } else {
         implementation jscFlavor
@@ -308,7 +310,7 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
-apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
+
 def isNewArchitectureEnabled() {
     // To opt-in for the New Architecture, you can either:
     // - Set `newArchEnabled` to true inside the `gradle.properties` file

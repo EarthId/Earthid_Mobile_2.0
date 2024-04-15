@@ -8204,10 +8204,10 @@ react-native-crypto@^2.1.2:
     public-encrypt "^4.0.0"
     randomfill "^1.0.3"
 
-react-native-date-picker@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-date-picker/-/react-native-date-picker-5.0.0.tgz#0677eed02f59785e172aca6c07e4997817d2e95e"
-  integrity sha512-ApTKpZocalFCDMfczY34ugo85oQJfYO4VKqAxrtSFolzJdUqIJXa8ot0PIINokVI1O2X2L5hLboeqrM84GNfpQ==
+react-native-date-picker@^4.2.5:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/react-native-date-picker/-/react-native-date-picker-4.4.2.tgz#f7bb9daa8559237e08bd30f907ee8487a6e2a6ec"
+  integrity sha512-wYKN8nYWhETVHJV/+Im30JOdzkFRwYRrDlEOyyYesOjt+1JTFJh9M7K5CqePLOIB4Nxlf2f2lRSI0VoUyFIovA==
 
 react-native-device-info@^10.0.0:
   version "10.13.1"
