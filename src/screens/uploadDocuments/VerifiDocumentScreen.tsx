@@ -5,8 +5,8 @@ import {
   Image,
   TouchableOpacity,
   Text,
-  AsyncStorage,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import RNFetchBlob from "rn-fetch-blob";
 

@@ -6,7 +6,6 @@ import {
   FlatList,
   ScrollView,
   Image,
-  AsyncStorage,
   TouchableOpacity,
   Alert,
   Platform,
@@ -15,6 +14,8 @@ import {
   InteractionManager,
   SectionList,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { EventRegister } from "react-native-event-listeners";
 import il8n, { getUserLanguagePreference } from "../.././../utils/i18n";
 import RNFS from "react-native-fs";

@@ -3,11 +3,12 @@ import React, { useEffect } from "react";
 import {
   ActivityIndicator,
   Alert,
-  AsyncStorage,
   Platform,
   StyleSheet,
   View,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import TouchID from "react-native-touch-id";
 import { useAppSelector } from "../../hooks/hooks";
 import SplashScreen from "react-native-splash-screen";

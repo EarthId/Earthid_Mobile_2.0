@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Image,TouchableOpacity,Alert, AsyncStorage } from "react-native";
+import { View, StyleSheet, ScrollView, Image,TouchableOpacity,Alert } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import Header from "../../../../components/Header";
 import { SCREENS } from "../../../../constants/Labels";
 import { Screens } from "../../../../themes";

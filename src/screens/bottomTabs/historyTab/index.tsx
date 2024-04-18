@@ -9,11 +9,12 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  AsyncStorage,
   Alert,
   Button,
   ActivityIndicator,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import Share from "react-native-share";
 import Avatar from "../../../components/Avatar";

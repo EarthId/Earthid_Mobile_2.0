@@ -7,9 +7,10 @@ import {
   Dimensions,
   ScrollView,
   Alert,
-  AsyncStorage,
   ActivityIndicator,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { RNCamera } from "react-native-camera";
 import Button from "../../components/Button";
 

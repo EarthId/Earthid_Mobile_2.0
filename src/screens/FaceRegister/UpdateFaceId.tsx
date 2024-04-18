@@ -6,9 +6,9 @@ import {
   Image,
   TouchableOpacity,
   Text,
-  AsyncStorage,
 } from "react-native";
 import { RNCamera } from "react-native-camera";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { SnackBar } from "../../components/SnackBar";
 import GenericText from "../../components/Text";

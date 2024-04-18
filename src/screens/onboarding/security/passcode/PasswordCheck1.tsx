@@ -5,9 +5,10 @@ import {
   Text,
   ScrollView,
   Image,
-  AsyncStorage,
   Alert,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import Header from "../../../../components/Header";
 import { Screens } from "../../../../themes";
 import Button from "../../../../components/Button";

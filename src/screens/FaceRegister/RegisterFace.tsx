@@ -8,9 +8,9 @@ import {
   Text,
   Alert,
   Platform,
-  AsyncStorage,
 } from "react-native";
 import { RNCamera } from "react-native-camera";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Button from "../../components/Button";
 import { SnackBar } from "../../components/SnackBar";

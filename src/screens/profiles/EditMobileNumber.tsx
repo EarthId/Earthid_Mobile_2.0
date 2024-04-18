@@ -1,12 +1,13 @@
 import {
   Alert,
-  AsyncStorage,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import React, { useEffect, useRef, useState } from "react";
 import { Screens } from "../../themes";
 import { LocalImages } from "../../constants/imageUrlConstants";

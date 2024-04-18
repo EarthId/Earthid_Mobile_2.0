@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   PermissionsAndroid,
   Platform,
-  AsyncStorage,
   Alert,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { RNCamera } from "react-native-camera";
 import DocumentPicker from "react-native-document-picker";
 import Button from "../../components/Button";

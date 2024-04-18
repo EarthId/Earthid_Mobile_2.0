@@ -8,7 +8,7 @@ import translationPT from "../../resources/locals/portuguese/string.json";
 import { LANGUAGE } from "../constants";
 import { AppLanguage } from "../typings/enums/AppLanguage";
 import { platformLanguage } from "../utils/PlatFormUtils";
-import { AsyncStorage } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * @description The default internationalization (i18n) util for the complete application. We are currently using

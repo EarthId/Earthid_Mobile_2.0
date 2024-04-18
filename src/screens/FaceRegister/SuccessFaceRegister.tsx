@@ -5,8 +5,8 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  AsyncStorage,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Button from "../../components/Button";
 import GenericText from "../../components/Text";

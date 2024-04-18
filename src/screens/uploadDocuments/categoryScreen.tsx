@@ -10,9 +10,10 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  AsyncStorage,
   TouchableWithoutFeedback,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { TextInput } from "react-native-gesture-handler";
 import RNFetchBlob from "rn-fetch-blob";
 

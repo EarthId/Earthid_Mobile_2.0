@@ -7,9 +7,10 @@ import {
   Platform,
   ScrollView,
   Alert,
-  AsyncStorage,
   Dimensions,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // import OpenFile from "react-native-doc-viewer";
 import NetInfo from "@react-native-community/netinfo";
 import Button from "../../components/Button";

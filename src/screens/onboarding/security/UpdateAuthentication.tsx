@@ -5,10 +5,11 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  AsyncStorage,
   Linking,
   Alert
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { Screens } from "../../../themes/index";
 import { LocalImages } from "../../../constants/imageUrlConstants";
 import { SETTING_LIST } from "../../../constants/Routes";

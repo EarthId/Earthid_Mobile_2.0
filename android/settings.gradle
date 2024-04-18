@@ -1,4 +1,11 @@
 rootProject.name = 'EarthId'
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')
+
+include ':@react-native-camera-roll_camera-roll'
+project(':@react-native-camera-roll_camera-roll').projectDir = new File(rootProject.projectDir, 	'../node_modules/@react-native-camera-roll/camera-roll/android')
+
 include ':react-native-view-pdf'
 project(':react-native-view-pdf').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-view-pdf/android')
 include ':react-native-view-pdf'
@@ -15,8 +22,8 @@ include ':react-native-touch-id'
 project(':react-native-touch-id').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-touch-id/android')
 include ':react-native-image-base64'
 project(':react-native-image-base64').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-image-base64/android')
-include ':@react-native-community_cameraroll'
-project(':@react-native-community_cameraroll').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/cameraroll/android')
+// include ':@react-native-community_cameraroll'
+// project(':@react-native-community_cameraroll').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/cameraroll/android')
 
 include ':react-native-html-to-pdf'
 project(':react-native-html-to-pdf').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-html-to-pdf/android')
@@ -39,13 +46,18 @@ project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../n
 
 include ':react-native-linear-gradient'
 project(':react-native-linear-gradient').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-linear-gradient/android')
-apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
-include ':app'
-include ':app', ':react-native-code-push'
-project(':react-native-code-push').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-code-push/android/app')
-includeBuild('../node_modules/@react-native/gradle-plugin')
+
+include ':appcenter-crashes'
+project(':appcenter-crashes').projectDir = new File(rootProject.projectDir, '../node_modules/appcenter-crashes/android')
+include ':appcenter-analytics'
+project(':appcenter-analytics').projectDir = new File(rootProject.projectDir, '../node_modules/appcenter-analytics/android')
+include ':appcenter'
+project(':appcenter').projectDir = new File(rootProject.projectDir, '../node_modules/appcenter/android')
+
+
 
 if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true") {
     include(":ReactAndroid")
     project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
+  
 }

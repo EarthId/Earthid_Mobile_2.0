@@ -10,8 +10,9 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  AsyncStorage,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import Avatar from "../../components/Avatar";
 import BottomSheet from "../../components/Bottomsheet";
 import Header from "../../components/Header";

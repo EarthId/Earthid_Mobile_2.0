@@ -7,9 +7,10 @@ import {
   FlatList,
   Alert,
   Linking,
-  AsyncStorage,
   Platform,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { Screens } from "../themes/index";
 import { values } from "lodash";
 import { LocalImages } from "../constants/imageUrlConstants";
