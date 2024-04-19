@@ -15,7 +15,7 @@ import { SCREENS } from "../../../constants/Labels";
 import { Screens } from "../../../themes";
 import Loader from "../../../components/Loader";
 import CameraRoll from "@react-native-community/cameraroll";
-import QRCode from "react-native-qrcode-image";
+// import QRCode from "react-native-qrcode-image";
 import CryptoJS from "react-native-crypto-js";
 import ImgToBase64 from "react-native-image-base64";
 import ViewShot from "react-native-view-shot";
@@ -41,6 +41,10 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 import RNFetchBlob from "rn-fetch-blob";
 import { _s3responseHandler } from "../../../redux/actions/authenticationAction";
 import { useIsFocused } from "@react-navigation/native";
+import GLOBALS from "../../../utils/globals";
+import { AWS_API_BASE } from "../../../constants/URLContstants";
+import { set } from "lodash";
+import QRCode from 'react-native-qrcode-svg';
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -58,251 +62,275 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
   const bucketName: any = userDetails?.responseUserSpecificBucket;
   const viewShot: any = useRef();
 
-  let qrData = {
-    accountId: userDetails?.responseData?.earthId,
-  };
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    async function getQRCode() {
+      setActivityLoad(true);
+      const selectedItem = route.params.selectedItem;
+      const response = await fetch("http://" + AWS_API_BASE + "documents/geturl", {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        credentials: GLOBALS.credentials,
+        path: selectedItem?.fullPath,
+      }),
+    });
+    let myJson = await response.json();
+    console.log(myJson.url);
+    setPreSignedUrl(myJson.url);
+    setActivityLoad(false);
+    }
+    getQRCode();
+  }, [isFocused]);
+
+  // let qrData = {
+  //   accountId: userDetails?.responseData?.earthId,
+  // };
   // var encryptedString: any = CryptoJS.AES.encrypt(
   //   JSON.stringify(qrData),
   //   AES_ENCRYPTION_SALT
   // );
   // encryptedString = encryptedString.toString();
 
-  const dwFile = async (file_url: any) => {
-    await Share.open({ url: `data:image/png;base64,${file_url}` });
-  };
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    getQRCode();
-  }, [isFocused]);
+  // const dwFile = async (file_url: any) => {
+  //   await Share.open({ url: `data:image/png;base64,${file_url}` });
+  // };
+  // const isFocused = useIsFocused();
+  // useEffect(() => {
+  //   getQRCode();
+  // }, [isFocused]);
 
-  const getQRCode = async () => {
-    //SW3
-    setActivityLoad(true);
-    let bucketName = `idv-sessions-${userDetails?.responseData.username.toLowerCase()}`;
-    if (await checkBucketExists(bucketName)) {
-      console.log("bucket already existed");
-    } else {
-      const userSW3 = await createUserSpecificBucket(
-        userDetails?.responseData.firstname+userDetails?.responseData.lastname
-      );
-      const responseUserSpecificBucket = await _s3responseHandler(userSW3);
-      bucketName = responseUserSpecificBucket;
-    }
+  // const getQRCode = async () => {
+  //   //SW3
+  //   setActivityLoad(true);
+  //   let bucketName = `idv-sessions-${userDetails?.responseData.username.toLowerCase()}`;
+  //   if (await checkBucketExists(bucketName)) {
+  //     console.log("bucket already existed");
+  //   } else {
+  //     const userSW3 = await createUserSpecificBucket(
+  //       userDetails?.responseData.firstname+userDetails?.responseData.lastname
+  //     );
+  //     const responseUserSpecificBucket = await _s3responseHandler(userSW3);
+  //     bucketName = responseUserSpecificBucket;
+  //   }
 
-    const selectedItem = route.params.selectedItem;
+  //   const selectedItem = route.params.selectedItem;
 
-    let type = selectedItem?.docType;
+  //   let type = selectedItem?.docType;
 
-    if (selectedItem?.isVc) {
-      console.log("neww", "This is Vc");
-      const imageName: any =
-        selectedItem?.docName + "." + selectedItem?.docType;
-      const objectKey = imageName;
+  //   if (selectedItem?.isVc) {
+  //     console.log("neww", "This is Vc");
+  //     const imageName: any =
+  //       selectedItem?.docName + "." + selectedItem?.docType;
+  //     const objectKey = imageName;
 
-      let credData = selectedItem?.verifiableCredential;
-      try {
-        const uploadedKey: any = await uploadJSONToS3(
-          responseUserSpecificBucket,
-          `images/${objectKey}`,
-          credData,
-          ""
-        );
+  //     let credData = selectedItem?.verifiableCredential;
+  //     try {
+  //       const uploadedKey: any = await uploadJSONToS3(
+  //         responseUserSpecificBucket,
+  //         `images/${objectKey}`,
+  //         credData,
+  //         ""
+  //       );
 
-        if (uploadedKey) {
-          const objectKeys = `images/${imageName}`;
-          const preSignedURL = await generatePreSignedURL(
-            responseUserSpecificBucket,
-            objectKeys
-          );
+  //       if (uploadedKey) {
+  //         const objectKeys = `images/${imageName}`;
+  //         const preSignedURL = await generatePreSignedURL(
+  //           responseUserSpecificBucket,
+  //           objectKeys
+  //         );
 
-          if (preSignedURL) {
-            setPreSignedUrl(preSignedURL);
-            setActivityLoad(false);
-          } else {
-            setActivityLoad(false);
-            Alert.alert(
-              "Error",
-              "There is a technical issue, please try again later."
-            );
-          }
-        } else {
-          setActivityLoad(false);
-          Alert.alert(
-            "Error",
-            "There is a technical issue, please try again later."
-          );
-        }
-      } catch (error) {
-        console.log("erro----->", error);
-        setActivityLoad(false);
-        // Code to handle the exception
-      }
-    } else if (type === "pdf") {
-      console.log("neww", "this is pdf type");
-      console.log("newPdf", selectedItem?.typePDF);
-      const imageName: any =
-        selectedItem?.docName + "." + selectedItem?.docType;
-      try {
-        const objectKey = imageName; // Replace with your desired object key
-       let base =selectedItem?.base64
-       if(selectedItem?.type === 'deeplink'){
-        base = await RNFS.readFile(selectedItem.base64, "base64");
-       }
-        const uploadedKey: any = await uploadPDFToS3(
-          bucketName,
-          `images/${objectKey}`,
-          base
-        );
+  //         if (preSignedURL) {
+  //           setPreSignedUrl(preSignedURL);
+  //           setActivityLoad(false);
+  //         } else {
+  //           setActivityLoad(false);
+  //           Alert.alert(
+  //             "Error",
+  //             "There is a technical issue, please try again later."
+  //           );
+  //         }
+  //       } else {
+  //         setActivityLoad(false);
+  //         Alert.alert(
+  //           "Error",
+  //           "There is a technical issue, please try again later."
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.log("erro----->", error);
+  //       setActivityLoad(false);
+  //       // Code to handle the exception
+  //     }
+  //   } else if (type === "pdf") {
+  //     console.log("neww", "this is pdf type");
+  //     console.log("newPdf", selectedItem?.typePDF);
+  //     const imageName: any =
+  //       selectedItem?.docName + "." + selectedItem?.docType;
+  //     try {
+  //       const objectKey = imageName; // Replace with your desired object key
+  //      let base =selectedItem?.base64
+  //      if(selectedItem?.type === 'deeplink'){
+  //       base = await RNFS.readFile(selectedItem.base64, "base64");
+  //      }
+  //       const uploadedKey: any = await uploadPDFToS3(
+  //         bucketName,
+  //         `images/${objectKey}`,
+  //         base
+  //       );
 
-        if (uploadedKey) {
-          const objectKeys = `images/${imageName}`;
-          const preSignedURL = await generatePreSignedURL(
-            bucketName,
-            objectKeys
-          );
+  //       if (uploadedKey) {
+  //         const objectKeys = `images/${imageName}`;
+  //         const preSignedURL = await generatePreSignedURL(
+  //           bucketName,
+  //           objectKeys
+  //         );
 
-          if (preSignedURL) {
-            setPreSignedUrl(preSignedURL);
-          } else {
-            setActivityLoad(false);
-            Alert.alert(
-              "Error",
-              "There is a technical issue, please try again later."
-            );
-          }
-        } else {
-          setActivityLoad(false);
-          Alert.alert(
-            "Error",
-            "There is a technical issue, please try again later."
-          );
-        }
-      } catch (error) {
-        console.log("erro----->++++", error);
-        setActivityLoad(false);
-        // Code to handle the exception
-      }
-    }
-    else if(selectedItem?.fileType ==='application/msword' || selectedItem?.fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
-      const imageName: any =
-        selectedItem?.docName + "." + selectedItem?.fileType==='application/msword'?'doc':'docx';
-      try {
-        const objectKey = imageName; // Replace with your desired object key
+  //         if (preSignedURL) {
+  //           setPreSignedUrl(preSignedURL);
+  //         } else {
+  //           setActivityLoad(false);
+  //           Alert.alert(
+  //             "Error",
+  //             "There is a technical issue, please try again later."
+  //           );
+  //         }
+  //       } else {
+  //         setActivityLoad(false);
+  //         Alert.alert(
+  //           "Error",
+  //           "There is a technical issue, please try again later."
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.log("erro----->++++", error);
+  //       setActivityLoad(false);
+  //       // Code to handle the exception
+  //     }
+  //   }
+  //   else if(selectedItem?.fileType ==='application/msword' || selectedItem?.fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
+  //     const imageName: any =
+  //       selectedItem?.docName + "." + selectedItem?.fileType==='application/msword'?'doc':'docx';
+  //     try {
+  //       const objectKey = imageName; // Replace with your desired object key
       
-        const uploadedKey: any = await uploadDocToS3(
-          bucketName,
-          `images/${objectKey}`,
-          selectedItem.base64,
-          selectedItem?.fileType
-        );
+  //       const uploadedKey: any = await uploadDocToS3(
+  //         bucketName,
+  //         `images/${objectKey}`,
+  //         selectedItem.base64,
+  //         selectedItem?.fileType
+  //       );
 
-        if (uploadedKey) {
-          const objectKeys = `images/${imageName}`;
-          const preSignedURL = await generatePreSignedURL(
-            bucketName,
-            objectKeys
-          );
+  //       if (uploadedKey) {
+  //         const objectKeys = `images/${imageName}`;
+  //         const preSignedURL = await generatePreSignedURL(
+  //           bucketName,
+  //           objectKeys
+  //         );
 
-          if (preSignedURL) {
-            setPreSignedUrl(preSignedURL);
-          } else {
-            setActivityLoad(false);
-            Alert.alert(
-              "Error",
-              "There is a technical issue, please try again later."
-            );
-          }
-        } else {
-          setActivityLoad(false);
-          Alert.alert(
-            "Error",
-            "There is a technical issue, please try again later."
-          );
-        }
-      } catch (error) {
-        console.log("erro----->++++", error);
-        setActivityLoad(false);
-        // Code to handle the exception
-      }
-    }
+  //         if (preSignedURL) {
+  //           setPreSignedUrl(preSignedURL);
+  //         } else {
+  //           setActivityLoad(false);
+  //           Alert.alert(
+  //             "Error",
+  //             "There is a technical issue, please try again later."
+  //           );
+  //         }
+  //       } else {
+  //         setActivityLoad(false);
+  //         Alert.alert(
+  //           "Error",
+  //           "There is a technical issue, please try again later."
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.log("erro----->++++", error);
+  //       setActivityLoad(false);
+  //       // Code to handle the exception
+  //     }
+  //   }
     
-    else if (selectedItem?.isLivenessImage) {
-      console.log("neww", "this is Liveness image type");
-      const imageName: any =
-        selectedItem?.docName + "." + selectedItem?.docType;
-      const base64Images = await ImageResizer.createResizedImage(
-        `${selectedItem?.base64}`,
-        800, // target width
-        800, // target height
-        "JPEG", // format (you can adjust this)
-        80 // quality (adjust this)
-      );
+  //   else if (selectedItem?.isLivenessImage) {
+  //     console.log("neww", "this is Liveness image type");
+  //     const imageName: any =
+  //       selectedItem?.docName + "." + selectedItem?.docType;
+  //     const base64Images = await ImageResizer.createResizedImage(
+  //       `${selectedItem?.base64}`,
+  //       800, // target width
+  //       800, // target height
+  //       "JPEG", // format (you can adjust this)
+  //       80 // quality (adjust this)
+  //     );
 
-      const base64Image = await RNFS.readFile(base64Images.uri, "base64");
+  //     const base64Image = await RNFS.readFile(base64Images.uri, "base64");
 
-      // console.log("base64Images",base64Images);
+  //     // console.log("base64Images",base64Images);
 
-      const objectKey = imageName; // Replace with your desired object key
-      const uploadedKey: any = await uploadImageToS3(
-        bucketName,
-        `images/${objectKey}`,
-        base64Image,
-        ""
-      );
+  //     const objectKey = imageName; // Replace with your desired object key
+  //     const uploadedKey: any = await uploadImageToS3(
+  //       bucketName,
+  //       `images/${objectKey}`,
+  //       base64Image,
+  //       ""
+  //     );
 
-      if (uploadedKey) {
-        const objectKeys = `images/${imageName}`;
-        const preSignedURL = await generatePreSignedURL(bucketName, objectKeys);
+  //     if (uploadedKey) {
+  //       const objectKeys = `images/${imageName}`;
+  //       const preSignedURL = await generatePreSignedURL(bucketName, objectKeys);
 
-        if (preSignedURL) {
-          setPreSignedUrl(preSignedURL);
-        } else {
-          Alert.alert(
-            "Error",
-            "There is a technical issue, please try again later."
-          );
-        }
-      } else {
-        Alert.alert(
-          "Error",
-          "There is a technical issue, please try again later."
-        );
-      }
-    } else {
-      console.log("neww", "this is image type");
-      const imageName: any =
-        selectedItem?.docName + "." + selectedItem?.docType;
+  //       if (preSignedURL) {
+  //         setPreSignedUrl(preSignedURL);
+  //       } else {
+  //         Alert.alert(
+  //           "Error",
+  //           "There is a technical issue, please try again later."
+  //         );
+  //       }
+  //     } else {
+  //       Alert.alert(
+  //         "Error",
+  //         "There is a technical issue, please try again later."
+  //       );
+  //     }
+  //   } else {
+  //     console.log("neww", "this is image type");
+  //     const imageName: any =
+  //       selectedItem?.docName + "." + selectedItem?.docType;
       
-      const objectKey = imageName; // Replace with your desired object key
-      const uploadedKey: any = await uploadImageToS3(
-        bucketName,
-        `images/${objectKey}`,
-        selectedItem?.base64,
-        ""
-      );
+  //     const objectKey = imageName; // Replace with your desired object key
+  //     const uploadedKey: any = await uploadImageToS3(
+  //       bucketName,
+  //       `images/${objectKey}`,
+  //       selectedItem?.base64,
+  //       ""
+  //     );
 
-      if (uploadedKey) {
-        const objectKeys = `images/${imageName}`;
-        const preSignedURL = await generatePreSignedURL(bucketName, objectKeys);
+  //     if (uploadedKey) {
+  //       const objectKeys = `images/${imageName}`;
+  //       const preSignedURL = await generatePreSignedURL(bucketName, objectKeys);
 
-        if (preSignedURL) {
-          setPreSignedUrl(preSignedURL);
-        } else {
-          Alert.alert(
-            "Error",
-            "There is a technical issue, please try again later."
-          );
-        }
-      } else {
-        Alert.alert(
-          "Error",
-          "There is a technical issue, please try again later."
-        );
-      }
-    }
+  //       if (preSignedURL) {
+  //         setPreSignedUrl(preSignedURL);
+  //       } else {
+  //         Alert.alert(
+  //           "Error",
+  //           "There is a technical issue, please try again later."
+  //         );
+  //       }
+  //     } else {
+  //       Alert.alert(
+  //         "Error",
+  //         "There is a technical issue, please try again later."
+  //       );
+  //     }
+  //   }
 
-    setActivityLoad(false);
-  };
+  //   setActivityLoad(false);
+  // };
 
   const capturePicture = () => {
     viewShot.current.capture().then(async (imageData: any) => {
@@ -418,12 +446,8 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
                 options={{ format: "jpg", quality: 0.8 }}
               >
                 <QRCode
-                  getBase64={(base64: string) => {
-                    qrBase64 = base64;
-                    setBase64(base64);
-                  }}
                   value={signedUrl}
-                  size={250}
+                  size={300}
                 />
               </ViewShot>
             </View>

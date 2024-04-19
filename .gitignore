@@ -61,3 +61,5 @@ buck-out/
 /.vscode/.react/index.map
 Views/LoginModule/Start.js
 .vscode/.react/index.bundle
+
+.env

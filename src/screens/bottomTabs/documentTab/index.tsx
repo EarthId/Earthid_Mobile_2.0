@@ -35,6 +35,8 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 import ImageResizer from "react-native-image-resizer";
 import RNFS from "react-native-fs";
 import AWS from "aws-sdk";
+import GLOBALS from "../../../utils/globals";
+import { AWS_API_BASE } from "../../../constants/URLContstants";
 
 interface IDocumentScreenProps {
   navigation?: any;
@@ -42,6 +44,10 @@ interface IDocumentScreenProps {
 }
 
 const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
+  //wait two seconds then print hello
+  // setTimeout(() => {
+  //   console.log(userDetails?.responseData);
+  // }, 2000);
   const _toggleDrawer = () => {
     navigation.openDrawer();
   };
@@ -112,6 +118,69 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   // useEffect(() => {
   //   deleteAllBuckets();
   // }, []);
+  useEffect(() => {
+    console.log(GLOBALS.credentials);
+    async function getAllDocs() {
+      const response = await fetch("http://" + AWS_API_BASE + "documents/getall", {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          credentials: GLOBALS.credentials,
+          awsID: GLOBALS.awsID,
+        }),
+      })
+      const myJson = await response.json();
+      let result = [];
+      let content = myJson.Contents;
+      for (let i = 0; i < content.length; i++) {
+        let myObject = content[i];
+
+        if (myObject.Key.substr(-1) == "/") {
+          continue;
+        }
+
+        let myKey = myObject.Key.split("/");
+        let date = new Date(Date.parse(myObject.LastModified));
+        let myDate = date.getDate();
+        myDate = myDate < 10 ? "0" + myDate : myDate;
+        let myMonth = date.getMonth() + 1;
+        myMonth = myMonth < 10 ? "0" + myMonth : myMonth;
+        let myHours = date.getHours();
+        myHours = myHours < 10 ? "0" + myHours : myHours;
+        let myMinutes = date.getMinutes();
+        myMinutes = myMinutes < 10 ? "0" + myMinutes : myMinutes;
+
+        result.push({
+          title: myKey[myKey.length - 1],
+          name: myKey[myKey.length - 1],
+          displayName: myKey[myKey.length - 1].split(".")[0],
+          fullPath: myObject.Key,
+          upload:
+            myDate +
+            "/" +
+            myMonth +
+            "/" +
+            date.getFullYear() +
+            " " +
+            myHours +
+            ":" +
+            myMinutes,
+          uploadTime: date,
+          category: myKey[myKey.length - 2],
+        });
+      }
+      documentsDetailsListData = result;
+      console.log(result);
+      setdocumentsDetailsList(result);
+      setData(result);
+      // console.log(getFilteredData());
+    }
+    getAllDocs();
+  }, []);
+
   const getCategoryImages = (item: { categoryType: any; name: any }) => {
     const getItems = SCREENS.HOMESCREEN.categoryList.filter(
       (itemFiltered, index) => {
@@ -149,6 +218,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   function convertTimeToAmPmFormat(timeString: {
     split: (arg0: string) => [any, any];
   }) {
+    return "00:00";
     const [hours, minutes] = timeString.split(":");
     let formattedTime = "";
 
@@ -189,10 +259,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
           marginBottom: 20,
         }}
         onPress={
-          isCheckBoxEnable
-            ? () => _selectTigger(item)
-            : () =>
-                navigation.navigate("ViewCredential", { documentDetails: item })
+          isCheckBoxEnable ? () => _selectTigger(item) : () => openDoc(item)
         }
       >
       
@@ -205,18 +272,19 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
             rightIconSrc={  item?.isVc?null: LocalImages.menuImage}
             rightIconOnPress={() => _rightIconOnPress(item)}
             title={
-              item?.isVc
-                ? item.name
-                : item?.docName?.split("(")[1]?.split(")")[0] == "undefined"
-                ? item?.docName?.replaceAll("%20", "")
-                : item?.docName?.replaceAll("%20", "")
+              item.name
+              // item?.isVc
+              //   ? item.name
+              //   : item?.docName?.split("(")[1]?.split(")")[0] == "undefined"
+              //   ? item?.docName?.replaceAll("%20", "")
+              //   : item?.docName?.replaceAll("%20", "")
             }
             subtitle={
               item.isVc
-                ? `      Received  : ${item.date}`
-                : `      Uploaded  : ${item.date}`
+                ? `      Received  : ${item.upload}`
+                : `      Uploaded  : ${item.upload}`
             }
-            timeTitle={"   " + `${getTime(item)}`}
+            // timeTitle={"   " + `${getTime(item)}`}
             isCheckBoxEnable={isCheckBoxEnable}
             onCheckBoxValueChange={(value: any) => {
               // item.isSelected = value;
@@ -295,6 +363,34 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
       </View>
     </TouchableOpacity>
   );
+
+  let openDoc = async (item: any) => {
+    const response = await fetch("http://" + AWS_API_BASE + "documents/get", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        credentials: GLOBALS.credentials,
+        path: item.fullPath,
+      }),
+    });
+    let myJson = await response.json();
+
+    let obj = myJson.file;
+
+    let myarray = Object.keys(obj).map((key) => [obj[key]]);
+    let mylength = myarray.length;
+    let bytes = new Uint8Array(mylength);
+    for (let i = 0; i < mylength; i++) {
+      bytes[i] = myarray[i];
+    }
+
+    let base64 = Buffer.from(bytes).toString("base64");
+    item.base64 = base64;
+    navigation.navigate("ViewCredential", { documentDetails: item });
+    
+  };
 
   const onChangeHandler = (text: any) => {
     // docName to documentName
@@ -406,25 +502,40 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
         },
         {
           text: "OK",
-          onPress: () => {
-            setisBottomSheetForSideOptionVisible(false);
-            const imageName: any =
-              selectedItem?.docName + "." + selectedItem?.docType;
-            const key = `images/${imageName}`;
-            var s3 = new AWS.S3();
-            var params = { Bucket: bucketName, Key: key };
+          onPress: async () => {
+            let data = new FormData();
+            data.append("path", selectedItem.fullPath);
 
-            s3.deleteObject(params, function (err, data) {
-              if (err) console.log(err, err.stack); // error
-              else console.log(); // deleted
+            const response = await fetch("http://" + AWS_API_BASE + "documents/delete", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                credentials: GLOBALS.credentials,
+                path: selectedItem.fullPath,
+              }),
             });
-            const helpArra = [...documentsDetailsList?.responseData];
-            const findIndex = helpArra?.findIndex(
-              (item) => item.id === selectedItem?.id
-            );
-            findIndex >= -1 && helpArra?.splice(findIndex, 1);
-            // console.log('helpArra',helpArra)
-            dispatch(saveDocuments(helpArra));
+            let json = await response.json();
+            console.log(json);
+            // setisBottomSheetForSideOptionVisible(false);
+            // const imageName: any =
+            //   selectedItem?.docName + "." + selectedItem?.docType;
+            // const key = `images/${imageName}`;
+            // var s3 = new AWS.S3();
+            // var params = { Bucket: bucketName, Key: key };
+
+            // s3.deleteObject(params, function (err, data) {
+            //   if (err) console.log(err, err.stack); // error
+            //   else console.log(); // deleted
+            // });
+            // const helpArra = [...documentsDetailsList?.responseData];
+            // const findIndex = helpArra?.findIndex(
+            //   (item) => item.id === selectedItem?.id
+            // );
+            // findIndex >= -1 && helpArra?.splice(findIndex, 1);
+            // // console.log('helpArra',helpArra)
+            // dispatch(saveDocuments(helpArra));
           },
         },
       ],
@@ -452,9 +563,11 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
 
   const getFilteredData = () => {
     console.log("getFilteredData");
-    let data = documentsDetailsList?.responseData.sort(
-      (a: { date: any }, b: { date: any }) => a.date - b.date
-    );
+    console.log(documentsDetailsList);
+    let data = documentsDetailsList;
+    // let data = documentsDetailsList?.responseData.sort(
+    //   (a: { date: any }, b: { date: any }) => a.date - b.date
+    // );
     //  let data = documentsDetailsList?.responseData?.sort(compareTime);
 
     //
@@ -469,63 +582,91 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
         return splittedValue?.trim() === categoryTypes?.trim()?.toLowerCase(); //use the argument here.
       };
       var filter = documentsDetailsList?.responseData?.filter(alter);
-      return getItemsForSection(filter)
+      return getItemsForSection(filter);
     }
 
     if (searchedData.length > 0) {
       getFilteredData;
       data = searchedData;
-      return getItemsForSection(data)
+      return getItemsForSection(data);
     }
 
     if (searchedData.length === 0 && searchText != "") {
       return []; // earlier []
     }
-    console.log('data',data)
-  return getItemsForSection(data)
+    // console.log("data", data);
+    return getItemsForSection(data);
   };
 
-  const getItemsForSection =(data: any[])=>{
-    const idDocuments = data?.filter((item: { categoryType: string; })=>item?.categoryType === "ID" ||item?.categoryType === "id")
-    const idHealthCare = data?.filter((item: { categoryType: string; })=>item?.categoryType === "HEALTHCARE" ||item?.categoryType === "Healthcare")
-    const idTravels = data?.filter((item: { categoryType: string; })=>item?.categoryType === "TRAVEL" ||item?.categoryType === "Travel")
-    const idInsurance = data?.filter((item: { categoryType: string; })=>item?.categoryType === "INSURANCE" ||item?.categoryType === "Insurance")
-    const idEducation = data?.filter((item: { categoryType: string; })=>item?.categoryType === "EDUCATION" ||item?.categoryType === "Education")
-    const idEmployement = data?.filter((item: { categoryType: string; })=>item?.categoryType === "EMPLOYMENT" ||item?.categoryType === "Employment")
-    const idFinanace = data?.filter((item: { categoryType: string; })=>item?.categoryType === "FINANCE" ||item?.categoryType === "Finance")
-    const localArray=[{
-      title:idDocuments?.length>0 ? "ID":'',
-      data:idDocuments
-    },
-    {
-      title:idHealthCare?.length>0 ? "HEALTHCARE":'',
-      data:idHealthCare
-    },
-    {
-      title:idTravels?.length>0 ? "TRAVEL":'',
-      data:idTravels
-    },
-    {
-      title:idInsurance?.length>0 ? "INSURANCE":'',
-      data:idInsurance
-    },
-    {
-      title:idEducation?.length>0 ? "EDUCATION":'',
-      data:idEducation
-    },
-    {
-      title:idEmployement?.length>0 ? "EMPLOYMENT":'',
-      data:idEmployement
-    },
-    {
-      title:idFinanace?.length>0 ? "FINANCE":'',
-      data:idFinanace
-    },
-   
-  ]
-  const filteredLocalArray = localArray?.filter(item => item?.data?.length > 0);
-    return filteredLocalArray ;
-  }
+  const getItemsForSection = (data: any[]) => {
+    const idDocuments = data?.filter(
+      (item: { category: string }) =>
+        item?.category === "ID" ||
+        item?.category === "id" ||
+        item?.category === "Identification" ||
+        item?.category === "Id"
+    );
+    const idHealthCare = data?.filter(
+      (item: { category: string }) =>
+        item?.category === "HEALTHCARE" || item?.category === "Healthcare"
+    );
+    const idTravels = data?.filter(
+      (item: { category: string }) =>
+        item?.category === "TRAVEL" || item?.category === "Travel"
+    );
+    const idInsurance = data?.filter(
+      (item: { category: string }) =>
+        item?.category === "INSURANCE" || item?.category === "Insurance"
+    );
+    const idEducation = data?.filter(
+      (item: { category: string }) =>
+        item?.category === "EDUCATION" || item?.category === "Education"
+    );
+    const idEmployement = data?.filter(
+      (item: { category: string }) =>
+        item?.category === "EMPLOYMENT" || item?.category === "Employment"
+    );
+    const idFinanace = data?.filter(
+      (item: { category: string }) =>
+        item?.category === "FINANCE" || item?.category === "Finance"
+    );
+
+    const localArray = [
+      {
+        title: idDocuments?.length > 0 ? "ID" : "",
+        data: idDocuments,
+      },
+      {
+        title: idHealthCare?.length > 0 ? "HEALTHCARE" : "",
+        data: idHealthCare,
+      },
+      {
+        title: idTravels?.length > 0 ? "TRAVEL" : "",
+        data: idTravels,
+      },
+      {
+        title: idInsurance?.length > 0 ? "INSURANCE" : "",
+        data: idInsurance,
+      },
+      {
+        title: idEducation?.length > 0 ? "EDUCATION" : "",
+        data: idEducation,
+      },
+      {
+        title: idEmployement?.length > 0 ? "EMPLOYMENT" : "",
+        data: idEmployement,
+      },
+      {
+        title: idFinanace?.length > 0 ? "FINANCE" : "",
+        data: idFinanace,
+      },
+    ];
+    console.log("filter", localArray);
+    const filteredLocalArray = localArray?.filter(
+      (item) => item?.data?.length > 0
+    );
+    return filteredLocalArray;
+  };
 
   const listEmpty = () => {
     return (
@@ -556,8 +697,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
             linearStyle={styles.linearStyle}
           ></Header>
 
-          {documentsDetailsList?.responseData &&
-          documentsDetailsList?.responseData?.length > 0 ? (
+          {documentsDetailsList && documentsDetailsList?.length > 0 ? (
             <TextInput
               leftIcon={LocalImages.searchImage}
               style={{
@@ -571,55 +711,69 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
             />
           ) : null}
 
-          {documentsDetailsList?.responseData &&
-          documentsDetailsList?.responseData?.length > 0 ? (
+          {documentsDetailsList && documentsDetailsList?.length > 0 ? (
             <SectionList<any>
               sections={getFilteredData()}
               renderItem={_renderItem}
-              renderSectionHeader={({section})=>(
-                section?.title!='' &&
-                <View style={{ flexDirection: "row", marginTop: 10,marginLeft:20 }}>
-                <View style={{ justifyContent: "center", alignItems: "center" }}>
-                  <Avatar
-                    isCategory={true}
-                    isUploaded={false}
-                    iconSource={getCategoryImages({
-                      categoryType: section?.title,
-                      name: undefined
-                    })?.URI}
+              renderSectionHeader={({ section }) =>
+                section?.title != "" && (
+                  <View
                     style={{
-                      container: [
-                        styles.avatarContainer,
-                        {
-                          backgroundColor: getCategoryImages({
-                            categoryType: section?.title,
-                            name: undefined
-                          })?.COLOR,
-                          flexDirection: "row",
-                        },
-                      ],
-                      imgContainer: styles.avatarImageContainer,
-                      text: styles.avatarTextContainer,
+                      flexDirection: "row",
+                      marginTop: 10,
+                      marginLeft: 20,
                     }}
-                  />
-                </View>
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: -20,
-                  }}
-                >
-                  <GenericText
-                    style={[
-                      { fontSize: 15, fontWeight: "bold", marginHorizontal: 9 },
-                    ]}
                   >
-                    {section?.title}
-                  </GenericText>
-                </View>
-              </View>
-              )}
+                    <View
+                      style={{ justifyContent: "center", alignItems: "center" }}
+                    >
+                      <Avatar
+                        isCategory={true}
+                        isUploaded={false}
+                        iconSource={
+                          getCategoryImages({
+                            categoryType: section?.title,
+                            name: undefined,
+                          })?.URI
+                        }
+                        style={{
+                          container: [
+                            styles.avatarContainer,
+                            {
+                              backgroundColor: getCategoryImages({
+                                categoryType: section?.title,
+                                name: undefined,
+                              })?.COLOR,
+                              flexDirection: "row",
+                            },
+                          ],
+                          imgContainer: styles.avatarImageContainer,
+                          text: styles.avatarTextContainer,
+                        }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginTop: -20,
+                      }}
+                    >
+                      <GenericText
+                        style={[
+                          {
+                            fontSize: 15,
+                            fontWeight: "bold",
+                            marginHorizontal: 9,
+                          },
+                        ]}
+                      >
+                        {section?.title}
+                      </GenericText>
+                    </View>
+                  </View>
+                )
+              }
               ListEmptyComponent={listEmpty}
               
             />

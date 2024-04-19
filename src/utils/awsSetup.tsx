@@ -1,12 +1,13 @@
 
 import AWS from 'aws-sdk';
 import RNFetchBlob from 'rn-fetch-blob';
+import { AWS_ACCESS_KEY, AWS_SECRET_KEY } from "@env";
 
 //AWS S3 bucket
 const bucketName = 'idv-sessions'
 // AWS credentials
-const accessKey = 'AKIAU4JK3LMEAKCXLXWE';
-const secretKey = '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';
+const accessKey = AWS_ACCESS_KEY;
+const secretKey = AWS_SECRET_KEY;
 
 AWS.config.update({
   accessKeyId: accessKey,
