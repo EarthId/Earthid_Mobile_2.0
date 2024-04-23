@@ -5,8 +5,9 @@ import {
   Text,
   ScrollView,
   Image,
-  AsyncStorage,
+  
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from "../../../../components/Header";
 import { SCREENS } from "../../../../constants/Labels";
 import { Screens } from "../../../../themes";
@@ -66,8 +67,10 @@ const Register = ({ navigation, route }: IHomeScreenProps) => {
     setCode(format);
   };
   const _navigateAction = async () => {
+    await AsyncStorage.setItem("passcode", code?.toString());
+    console.log('savedCode === code?.toString()',savedCode === code?.toString())
     if (savedCode === code?.toString()) {
-      await AsyncStorage.setItem("passcode", code?.toString());
+      actionToNavigate();
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);

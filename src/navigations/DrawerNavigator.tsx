@@ -102,7 +102,7 @@ function appStack() {
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      useLegacyImplementation
+ 
       drawerContent={(props: any) => <CustomDrawer {...props} />}
       screenOptions={{
         headerShown: false,

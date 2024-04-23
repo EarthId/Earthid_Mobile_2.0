@@ -15,10 +15,10 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		3F4A51B69ADABD8A6F7EBF9D /* Pods_EarthId_EarthIdTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2989B2574CD4085FA40CC115 /* Pods_EarthId_EarthIdTests.framework */; };
+		5452C1A87BBB9A1FE7FE4943 /* Pods_ShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE4044828C649984CBD7A5CA /* Pods_ShareExtension.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		A1EFCBEE759DCAF68EBDF599 /* libPods-EarthId-EarthIdTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5629949757C7E412120CB83 /* libPods-EarthId-EarthIdTests.a */; };
-		BA4993DB5C0B445D1DBF5EF9 /* libPods-EarthId.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A62B14311EE1AA1B4E5F5A3 /* libPods-EarthId.a */; };
-		DAFE71A21AC011BE40A6F166 /* libPods-ShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 45655F66BF9BBA63D5CE2DF6 /* libPods-ShareExtension.a */; };
+		C2855C2FC8CD7EAE4DCF1E23 /* Pods_EarthId.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 319918DE0A654A71EF07366B /* Pods_EarthId.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,7 +70,6 @@
 		00E356EE1AD99517003FC87E /* EarthIdTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarthIdTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* EarthIdTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EarthIdTests.m; sourceTree = "<group>"; };
-		0A62B14311EE1AA1B4E5F5A3 /* libPods-EarthId.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EarthId.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C14E1BA2992CAF5003ABF7D /* EarthId.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = EarthId.entitlements; path = EarthId/EarthId.entitlements; sourceTree = "<group>"; };
 		0C14E1BF2992DBD4003ABF7D /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C14E1C42992DBD4003ABF7D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -80,23 +79,26 @@
 		0CCC7FB6299D745900CD7CCA /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
 		0CCC7FB8299E68FF00CD7CCA /* ReactShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReactShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ReactShareViewController.swift"; sourceTree = "<group>"; };
 		0CCC7FBB299E6D8F00CD7CCA /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
-		0F7EBD976B42D8C8BBD214DC /* Pods-EarthId.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId.release.xcconfig"; path = "Target Support Files/Pods-EarthId/Pods-EarthId.release.xcconfig"; sourceTree = "<group>"; };
+		0EB8DE8351547CC69A218E7D /* Pods-EarthId-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-EarthId-ShareExtension/Pods-EarthId-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		124C2B4DB74416950E2D7CA7 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* EarthId.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EarthId.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = EarthId/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = EarthId/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = EarthId/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = EarthId/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = EarthId/main.m; sourceTree = "<group>"; };
-		2B0B7DD7B577D7AD9DF855A3 /* Pods-EarthId-EarthIdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-EarthIdTests.release.xcconfig"; path = "Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests.release.xcconfig"; sourceTree = "<group>"; };
-		45655F66BF9BBA63D5CE2DF6 /* libPods-ShareExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ShareExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B45B0CCE6E2AB8A330C128A /* Pods-EarthId-EarthIdTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-EarthIdTests.debug.xcconfig"; path = "Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5E74B417F4361FF48CAC45E2 /* Pods-EarthId.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId.debug.xcconfig"; path = "Target Support Files/Pods-EarthId/Pods-EarthId.debug.xcconfig"; sourceTree = "<group>"; };
+		1EBF1673F9CD63D1F881200C /* Pods-EarthId.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId.debug.xcconfig"; path = "Target Support Files/Pods-EarthId/Pods-EarthId.debug.xcconfig"; sourceTree = "<group>"; };
+		2989B2574CD4085FA40CC115 /* Pods_EarthId_EarthIdTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EarthId_EarthIdTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		319918DE0A654A71EF07366B /* Pods_EarthId.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EarthId.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7867C59CD05346F57775ECB1 /* Pods-EarthId-EarthIdTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-EarthIdTests.debug.xcconfig"; path = "Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests.debug.xcconfig"; sourceTree = "<group>"; };
+		79FDDF8DDE542A5D7B21F554 /* Pods-EarthId.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId.release.xcconfig"; path = "Target Support Files/Pods-EarthId/Pods-EarthId.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = EarthId/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9FA8C80D86B40E10B0FE4FD3 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
-		B5629949757C7E412120CB83 /* libPods-EarthId-EarthIdTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EarthId-EarthIdTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF7E544DFA40B0602C4D7D3F /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		BD02C38329D44925005B4A0E /* RNCNetInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCNetInfo.xcodeproj; path = "../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.xcodeproj"; sourceTree = "<group>"; };
-		E4CEA76F0FE895F89AEE602F /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		C626F3FDF6A09DFE8F630258 /* Pods-EarthId-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-EarthId-ShareExtension/Pods-EarthId-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
+		D9C9C2333F1B187323C27149 /* Pods-EarthId-EarthIdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-EarthIdTests.release.xcconfig"; path = "Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		FE4044828C649984CBD7A5CA /* Pods_ShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,7 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1EFCBEE759DCAF68EBDF599 /* libPods-EarthId-EarthIdTests.a in Frameworks */,
+				3F4A51B69ADABD8A6F7EBF9D /* Pods_EarthId_EarthIdTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,7 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DAFE71A21AC011BE40A6F166 /* libPods-ShareExtension.a in Frameworks */,
+				5452C1A87BBB9A1FE7FE4943 /* Pods_ShareExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,7 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA4993DB5C0B445D1DBF5EF9 /* libPods-EarthId.a in Frameworks */,
+				C2855C2FC8CD7EAE4DCF1E23 /* Pods_EarthId.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,9 +178,9 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				0A62B14311EE1AA1B4E5F5A3 /* libPods-EarthId.a */,
-				B5629949757C7E412120CB83 /* libPods-EarthId-EarthIdTests.a */,
-				45655F66BF9BBA63D5CE2DF6 /* libPods-ShareExtension.a */,
+				319918DE0A654A71EF07366B /* Pods_EarthId.framework */,
+				2989B2574CD4085FA40CC115 /* Pods_EarthId_EarthIdTests.framework */,
+				FE4044828C649984CBD7A5CA /* Pods_ShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -220,12 +222,14 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				5E74B417F4361FF48CAC45E2 /* Pods-EarthId.debug.xcconfig */,
-				0F7EBD976B42D8C8BBD214DC /* Pods-EarthId.release.xcconfig */,
-				4B45B0CCE6E2AB8A330C128A /* Pods-EarthId-EarthIdTests.debug.xcconfig */,
-				2B0B7DD7B577D7AD9DF855A3 /* Pods-EarthId-EarthIdTests.release.xcconfig */,
-				E4CEA76F0FE895F89AEE602F /* Pods-ShareExtension.debug.xcconfig */,
-				9FA8C80D86B40E10B0FE4FD3 /* Pods-ShareExtension.release.xcconfig */,
+				1EBF1673F9CD63D1F881200C /* Pods-EarthId.debug.xcconfig */,
+				79FDDF8DDE542A5D7B21F554 /* Pods-EarthId.release.xcconfig */,
+				7867C59CD05346F57775ECB1 /* Pods-EarthId-EarthIdTests.debug.xcconfig */,
+				D9C9C2333F1B187323C27149 /* Pods-EarthId-EarthIdTests.release.xcconfig */,
+				AF7E544DFA40B0602C4D7D3F /* Pods-ShareExtension.debug.xcconfig */,
+				124C2B4DB74416950E2D7CA7 /* Pods-ShareExtension.release.xcconfig */,
+				0EB8DE8351547CC69A218E7D /* Pods-EarthId-ShareExtension.debug.xcconfig */,
+				C626F3FDF6A09DFE8F630258 /* Pods-EarthId-ShareExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -246,12 +250,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "EarthIdTests" */;
 			buildPhases = (
-				58CC9FE1FB60689BEB5E403B /* [CP] Check Pods Manifest.lock */,
+				DE80C3B562CC65C923616637 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				D1C06B75DAA4CFCCB2537F40 /* [CP] Embed Pods Frameworks */,
-				A8B240EA94CC34AD99C7DBCB /* [CP] Copy Pods Resources */,
+				AB7944C36B0F6B526620FF65 /* [CP] Embed Pods Frameworks */,
+				D215B4B079E828DE2D41BFBA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -267,12 +271,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0C14E1CA2992DBD4003ABF7D /* Build configuration list for PBXNativeTarget "ShareExtension" */;
 			buildPhases = (
-				AC64E6DBABF36BEDBB368557 /* [CP] Check Pods Manifest.lock */,
+				DFBEC7F0B8A3D92679818DC3 /* [CP] Check Pods Manifest.lock */,
 				0C14E1BB2992DBD4003ABF7D /* Sources */,
 				0C14E1BC2992DBD4003ABF7D /* Frameworks */,
 				0C14E1BD2992DBD4003ABF7D /* Resources */,
 				0CCC7FBA299E698600CD7CCA /* Bundle React Native code and images */,
-				8720F8660C1B12BAF7D5D241 /* [CP] Copy Pods Resources */,
+				8221E963C26FDDE18A0C2609 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -287,15 +291,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "EarthId" */;
 			buildPhases = (
-				7228326CBEBEE3D94E46424D /* [CP] Check Pods Manifest.lock */,
+				2065F623B0C278CA8AB2B8E4 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				6AA7D09ECC183B5CC5C51E8D /* [CP] Embed Pods Frameworks */,
-				6A58A4B47C44A7862921A882 /* [CP] Copy Pods Resources */,
 				0C14E1CD2992DBD4003ABF7D /* Embed Foundation Extensions */,
+				DDDC1F14B16AF5D04431A74E /* [CP] Embed Pods Frameworks */,
+				CCD543FC96252E5F08F183B6 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -432,63 +436,7 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag aexport NODE_BINARY=node\nset -e\n\nexport NODE_BINARY=/opt/homebrew/bin/node\nexport ENTRY_FILE=index.share.js\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		58CC9FE1FB60689BEB5E403B /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-EarthId-EarthIdTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6A58A4B47C44A7862921A882 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6AA7D09ECC183B5CC5C51E8D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7228326CBEBEE3D94E46424D /* [CP] Check Pods Manifest.lock */ = {
+		2065F623B0C278CA8AB2B8E4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -510,9 +458,9 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8720F8660C1B12BAF7D5D241 /* [CP] Copy Pods Resources */ = {
+		8221E963C26FDDE18A0C2609 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
@@ -522,12 +470,46 @@
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ShareExtension/Pods-ShareExtension-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ShareExtension/Pods-ShareExtension-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A8B240EA94CC34AD99C7DBCB /* [CP] Copy Pods Resources */ = {
+		AB7944C36B0F6B526620FF65 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CCD543FC96252E5F08F183B6 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D215B4B079E828DE2D41BFBA /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -544,7 +526,46 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		AC64E6DBABF36BEDBB368557 /* [CP] Check Pods Manifest.lock */ = {
+		DDDC1F14B16AF5D04431A74E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DE80C3B562CC65C923616637 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-EarthId-EarthIdTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DFBEC7F0B8A3D92679818DC3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -564,23 +585,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D1C06B75DAA4CFCCB2537F40 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -660,7 +664,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B45B0CCE6E2AB8A330C128A /* Pods-EarthId-EarthIdTests.debug.xcconfig */;
+			baseConfigurationReference = 7867C59CD05346F57775ECB1 /* Pods-EarthId-EarthIdTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 3D5QUAXZH3;
@@ -688,7 +692,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2B0B7DD7B577D7AD9DF855A3 /* Pods-EarthId-EarthIdTests.release.xcconfig */;
+			baseConfigurationReference = D9C9C2333F1B187323C27149 /* Pods-EarthId-EarthIdTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -713,7 +717,7 @@
 		};
 		0C14E1CB2992DBD4003ABF7D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4CEA76F0FE895F89AEE602F /* Pods-ShareExtension.debug.xcconfig */;
+			baseConfigurationReference = AF7E544DFA40B0602C4D7D3F /* Pods-ShareExtension.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -759,7 +763,7 @@
 		};
 		0C14E1CC2992DBD4003ABF7D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9FA8C80D86B40E10B0FE4FD3 /* Pods-ShareExtension.release.xcconfig */;
+			baseConfigurationReference = 124C2B4DB74416950E2D7CA7 /* Pods-ShareExtension.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -805,7 +809,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E74B417F4361FF48CAC45E2 /* Pods-EarthId.debug.xcconfig */;
+			baseConfigurationReference = 1EBF1673F9CD63D1F881200C /* Pods-EarthId.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
@@ -842,7 +846,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0F7EBD976B42D8C8BBD214DC /* Pods-EarthId.release.xcconfig */;
+			baseConfigurationReference = 79FDDF8DDE542A5D7B21F554 /* Pods-EarthId.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
@@ -880,7 +884,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -924,6 +928,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
@@ -936,14 +951,21 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -952,7 +974,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -989,6 +1011,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
@@ -1000,14 +1033,21 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
