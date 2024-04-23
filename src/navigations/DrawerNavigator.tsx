@@ -11,6 +11,12 @@ import ShowQrScreen from "../screens/Camera/ShowQrCodeScreen";
 import { SlidAnimation } from "./SlidAnimation";
 import uploadDocumentsScreen from "../screens/uploadDocuments";
 import DocumentPreviewScreen from "../screens/uploadDocuments/DocumentPreviewScreen";
+import UploadScreenBackk from "../screens/uploadDocuments/indexDocBack";
+import DocumentPreviewScreen2 from "../screens/uploadDocuments/DocumentPreviewScreen2";
+import DocumentPreviewScreenReg from "../screens/uploadDocuments/DocumentPreviewScreenReg";
+import UploadDocumentBack from "../screens/uploadDocuments/UploadDocumentBackkk";
+
+import DocumentPreviewScreenBack from "../screens/uploadDocuments/DocumentPreviewScreenBack";
 import categoryScreen from "../screens/uploadDocuments/categoryScreen";
 import LivenessCameraScreen from "../screens/uploadDocuments/LivenessCameraScreen";
 import VerifiDocumentScreen from "../screens/uploadDocuments/VerifiDocumentScreen";
@@ -50,6 +56,11 @@ const dashBoardStack = {
   AuthBackupIdentity: AuthBackupIdentity,
   uploadDocumentsScreen: uploadDocumentsScreen,
   DocumentPreviewScreen: DocumentPreviewScreen,
+  UploadScreenBackk: UploadScreenBackk,
+  DocumentPreviewScreen2: DocumentPreviewScreen2,
+  DocumentPreviewScreenReg: DocumentPreviewScreenReg,
+  UploadDocumentBack: UploadDocumentBack,
+  DocumentPreviewScreenBack: DocumentPreviewScreenBack,
   categoryScreen: categoryScreen,
   LivenessCameraScreen: LivenessCameraScreen,
   VerifiDocumentScreen: VerifiDocumentScreen,

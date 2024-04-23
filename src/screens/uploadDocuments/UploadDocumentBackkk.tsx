@@ -17,7 +17,7 @@ import ImageResizer from "react-native-image-resizer";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { LocalImages } from "../../constants/imageUrlConstants";
 import { Screens } from "../../themes/index";
-import DocumentMask from "../uploadDocuments/DocumentMask";
+import DocumentMask from "./DocumentMask";
 import RNFS from "react-native-fs";
 import GenericText from "../../components/Text";
 import { useFormData } from "../../hooks/use-form-fetch";
@@ -25,12 +25,12 @@ import * as ImagePicker from "react-native-image-picker";
 import { useFetch } from "../../hooks/use-fetch";
 import { uploadRegisterDocument } from "../../utils/earthid_account";
 
-const UploadDocument = (props: any) => {
+const UploadDocumentBack = (props: any) => {
+  const {fileUri} = props.route.params
   const _handleBarCodeRead = (barCodeData: any) => {};
   const { colors } = useTheme();
   const { type } = props.route.params;
-  console.log('typeee', type)
-  console.log('Using first screen for uploading documents')
+  console.log('typee', type)
   const camRef: any = useRef();
   const {
     loading: imageLoading,
@@ -55,18 +55,20 @@ const UploadDocument = (props: any) => {
     };
     const data = await camRef.current.takePictureAsync(options);
     if (data) {
-      const fileUri = { uri: data?.uri, filename: "image", type: "image/jpeg" };
+      const fileUriBack = { uri: data?.uri, filename: "image", type: "image/jpeg" };
+      console.log('FileUri', fileUri)
       if (Platform.OS === "ios") {
-        uploadDocumentImage(fileUri);
+        uploadDocumentImage(fileUriBack);
       } else {
-        props.navigation.navigate("DocumentPreviewScreenReg", {
-          fileUri: {
+        props.navigation.navigate("DocumentPreviewScreenBack", {
+          fileUriBack: {
             //  uri: `data:image/png;base64,${res}`,
             uri: data?.uri,
             filename: "image",
             type: "image/jpeg",
           },
           type: "regDoc",
+          fileUri: fileUri
         });
       }
     }
@@ -78,24 +80,24 @@ const UploadDocument = (props: any) => {
     }
   }, [imageError]);
 
-  function uploadDocumentImage(fileUri: {
+  function uploadDocumentImage(fileUriBack: {
     uri: any;
     filename: any;
     type: any;
   }) {
     if (Platform.OS === "ios") {
-      ImageResizer.createResizedImage(fileUri.uri, 500, 500, "JPEG", 100, 0, "")
+      ImageResizer.createResizedImage(fileUriBack.uri, 500, 500, "JPEG", 100, 0, "")
         .then((response) => {
           let image = {
             uri: response.uri,
             name: response.name,
-            type: fileUri.type,
+            type: fileUriBack.type,
           };
           try {
             console.log("image req=====", image);
             // setLoginLoading(true)
-            props.navigation.navigate("DocumentPreviewScreenReg", {
-              fileUri: {
+            props.navigation.navigate("DocumentPreviewScreen", {
+              fileUriBack: {
                 uri: response.uri,
                 filename: response.name,
                 type: "image/jpeg",
@@ -145,7 +147,7 @@ const UploadDocument = (props: any) => {
       "@gmail.com";
     await AsyncStorage.setItem("userDetails", username.toString());
     await AsyncStorage.setItem("flow", "documentflow");
-    props.navigation.navigate("categoryScreen", { fileUri });
+    props.navigation.navigate("categoryScreen", { fileUriBack });
   };
   const requestPermission = async () => {
     try {
@@ -186,12 +188,12 @@ const UploadDocument = (props: any) => {
     if (imageResponse != "" && !imageResponse?.didCancel) {
   
       console.log("==>result", imageResponse?.assets[0]?.uri);
-      let fileUri = imageResponse?.assets[0]?.uri;
-      // disPatch(savingProfilePictures(fileUri));
-      RNFS.readFile(fileUri, "base64").then((res) => {
+      let fileUriBack = imageResponse?.assets[0]?.uri;
+      // disPatch(savingProfilePictures(fileUriBack));
+      RNFS.readFile(fileUriBack, "base64").then((res) => {
         console.log("res", res);
-        props.navigation.navigate("DocumentPreviewScreenReg", {
-          fileUri: {
+        props.navigation.navigate("DocumentPreviewScreen", {
+          fileUriBack: {
             //  uri: `data:image/png;base64,${res}`,
             uri: imageResponse?.assets[0]?.uri,
             base64: res,
@@ -202,7 +204,7 @@ const UploadDocument = (props: any) => {
           },
           type: "regDoc",
         });
-        console.log("respic", fileUri);
+        console.log("respic", fileUriBack);
       });
     }
   }, [imageResponse]);
@@ -328,4 +330,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UploadDocument;
+export default UploadDocumentBack;

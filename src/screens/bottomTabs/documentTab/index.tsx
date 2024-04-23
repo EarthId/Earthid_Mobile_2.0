@@ -112,6 +112,28 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   // useEffect(() => {
   //   deleteAllBuckets();
   // }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const storedDocumentVc = await retrieveDocumentVcFromStorage();
+      console.log('Stored Document VC', storedDocumentVc.credentialSubject[0].documentExtractedData)
+      //setDocumentVc(storedDocumentVc);
+    };
+
+    fetchData();
+  }, []);
+
+
+  const retrieveDocumentVcFromStorage = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('uploadedDocVc');
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (error) {
+      console.error('Error retrieving data from AsyncStorage:', error);
+      return null;
+    }
+  };
+
   const getCategoryImages = (item: { categoryType: any; name: any }) => {
     const getItems = SCREENS.HOMESCREEN.categoryList.filter(
       (itemFiltered, index) => {

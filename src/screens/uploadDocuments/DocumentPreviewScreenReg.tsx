@@ -27,10 +27,11 @@ import { isEarthId } from "../../utils/PlatFormUtils";
 import GenericText from "../../components/Text";
 import { useIsFocused } from "@react-navigation/native";
 
-const DocumentPreviewScreen = (props: any) => {
+const DocumentPreviewScreenReg = (props: any) => {
   const { fileUri } = props?.route?.params;
   const itemData = props?.route?.params;
   const { type } = props?.route?.params;
+  console.log('Typee', type)
   const { editDoc } = props?.route?.params;
   const { newdata } = props.route.params;
   const { loading, data, error, fetch: uploadRegDoc } = useFetch();
@@ -62,6 +63,7 @@ const DocumentPreviewScreen = (props: any) => {
   }, [error]);
 
   function alertUploadDoc() {
+    console.log('fileUri', fileUri)
     console.log("fileUri?.type===", fileUri?.type);
     if (type == "regDoc") {
      uploadDocumentImage();
@@ -143,17 +145,18 @@ const DocumentPreviewScreen = (props: any) => {
       setFilePath(fileUri?.file?.uri);
 
       if (filePath) {
-        props.navigation.navigate("DrawerNavigator", { fileUri });
+        props.navigation.navigate("DrawerNavigator", { fileUri, type });
       }
     } else {
       console.log("fileUri==>123vicky", fileUri?.type);
       const imageName = props?.route?.params?.imageName;
-      props.navigation.navigate("UploadScreenBackk", {
+      props.navigation.navigate("UploadDocumentback", {
         fileUri,
         editDoc,
         fileType: fileUri?.type,
         selfAttested,
         imageName: imageName,
+
       });
       console.log("success==>", "Success");
     }
@@ -177,7 +180,7 @@ const DocumentPreviewScreen = (props: any) => {
         setLoginLoading(true);
 
         //uploadRegDoc(uploadRegisterDocument, image, "FORM-DATA");
-        props.navigation.navigate("categoryScreen", { fileUri });
+        props.navigation.navigate("UploadDocumentBack", { fileUri, type });
         // props.navigation.navigate("DrawerNavigator", { response });
       } catch (e) {
         setLoginLoading(false);
@@ -258,7 +261,7 @@ const DocumentPreviewScreen = (props: any) => {
       "@gmail.com";
     await AsyncStorage.setItem("userDetails", username.toString());
     await AsyncStorage.setItem("flow", "documentflow");
-    props.navigation.navigate("categoryScreen", { fileUri });
+    props.navigation.navigate("UploadDocumentBack", { fileUri, type });
   };
 
   useEffect(() => {
@@ -438,4 +441,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DocumentPreviewScreen;
+export default DocumentPreviewScreenReg;

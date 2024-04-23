@@ -51,6 +51,10 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const { editDoc, selectedItem } = route?.params;
   const itemVerify = route?.params?.itemVerify;
   const imageName = fileUri?.imageName;
+
+  const fileUriBack = route?.params?.fileUriBack;
+console.log("FileUri", fileUri)
+console.log('FileUriBack', fileUriBack)
   // const splitName = imageName.split('.')[0]
 
   // const typeItem=selectedItem?.name?.split('(')[1].split(')')[0];
@@ -725,6 +729,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
                     editDoc,
                     selectedItem,
                     docname,
+                    fileUriBack
                   });
                 }, 100);
               }}

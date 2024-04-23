@@ -27,7 +27,8 @@ import { isEarthId } from "../../utils/PlatFormUtils";
 import GenericText from "../../components/Text";
 import { useIsFocused } from "@react-navigation/native";
 
-const DocumentPreviewScreen = (props: any) => {
+const DocumentPreviewScreenBack = (props: any) => {
+  const { fileUriBack } = props?.route?.params;
   const { fileUri } = props?.route?.params;
   const itemData = props?.route?.params;
   const { type } = props?.route?.params;
@@ -48,12 +49,12 @@ const DocumentPreviewScreen = (props: any) => {
       Platform.OS === "ios"
         ? "documentDetails?.base64"
         : "/sdcard/Download/test-pdf.pdf",
-    url: fileUri?.base64,
-    base64: fileUri?.base64,
+    url: fileUriBack?.base64,
+    base64: fileUriBack?.base64,
   };
   const resourceType = "base64";
-
-  console.log("error===>", fileUri.imageName);
+  console.log('FileUri', fileUri)
+  console.log("error===>", fileUriBack.imageName);
   useEffect(() => {
     if (error) {
       setLoginLoading(false);
@@ -62,12 +63,12 @@ const DocumentPreviewScreen = (props: any) => {
   }, [error]);
 
   function alertUploadDoc() {
-    console.log("fileUri?.type===", fileUri?.type);
+    console.log("fileUriBack?.type===", fileUriBack?.type);
     if (type == "regDoc") {
      uploadDocumentImage();
 
     } else {
-      if (fileUri?.type === "application/pdf") {
+      if (fileUriBack?.type === "application/pdf") {
         uploadDoc("no");
       } else {
         Alert.alert(
@@ -139,21 +140,22 @@ const DocumentPreviewScreen = (props: any) => {
   const uploadDoc = async (selfAttested: string) => {
     let type = "qrRreader";
 
-    if (!type == fileUri.type) {
-      setFilePath(fileUri?.file?.uri);
+    if (!type == fileUriBack.type) {
+      setFilePath(fileUriBack?.file?.uri);
 
       if (filePath) {
-        props.navigation.navigate("DrawerNavigator", { fileUri });
+        props.navigation.navigate("DrawerNavigator", { fileUriBack });
       }
     } else {
-      console.log("fileUri==>123vicky", fileUri?.type);
+      console.log("fileUriBack==>123vicky", fileUriBack?.type);
       const imageName = props?.route?.params?.imageName;
-      props.navigation.navigate("UploadScreenBackk", {
-        fileUri,
+      props.navigation.navigate("categoryScreen", {
+        fileUriBack,
         editDoc,
-        fileType: fileUri?.type,
+        fileType: fileUriBack?.type,
         selfAttested,
         imageName: imageName,
+        fileUri
       });
       console.log("success==>", "Success");
     }
@@ -164,20 +166,20 @@ const DocumentPreviewScreen = (props: any) => {
   };
 
   function uploadDocumentImage() {
-    console.log("DocumentImage:::::", fileUri);
+    console.log("DocumentImage:::::", fileUriBack);
 
     if (type == "regDoc") {
       let image = {
-        uri: fileUri.uri,
-        name: fileUri.filename,
-        type: fileUri.type,
+        uri: fileUriBack.uri,
+        name: fileUriBack.filename,
+        type: fileUriBack.type,
       };
       try {
         console.log("image req=====", image);
         setLoginLoading(true);
 
         //uploadRegDoc(uploadRegisterDocument, image, "FORM-DATA");
-        props.navigation.navigate("categoryScreen", { fileUri });
+        props.navigation.navigate("categoryScreen", { fileUriBack, fileUri });
         // props.navigation.navigate("DrawerNavigator", { response });
       } catch (e) {
         setLoginLoading(false);
@@ -204,8 +206,8 @@ const DocumentPreviewScreen = (props: any) => {
     //   OpenFile.openDocb64(
     //     [
     //       {
-    //         base64: fileUri?.base64,
-    //         fileName: fileUri?.imageName,
+    //         base64: fileUriBack?.base64,
+    //         fileName: fileUriBack?.imageName,
     //         fileType: type === "application/msword" ? "doc" : "docx",
     //       },
     //     ],
@@ -222,8 +224,8 @@ const DocumentPreviewScreen = (props: any) => {
     //   OpenFile.openDocb64(
     //     [
     //       {
-    //         base64: fileUri?.base64,
-    //         fileName: fileUri?.imageName,
+    //         base64: fileUriBack?.base64,
+    //         fileName: fileUriBack?.imageName,
     //         fileType: type === "application/msword" ? "doc" : "docx",
     //         cache: true /*Use Cache Folder Android*/,
     //       },
@@ -258,7 +260,7 @@ const DocumentPreviewScreen = (props: any) => {
       "@gmail.com";
     await AsyncStorage.setItem("userDetails", username.toString());
     await AsyncStorage.setItem("flow", "documentflow");
-    props.navigation.navigate("categoryScreen", { fileUri });
+    props.navigation.navigate("categoryScreen", { fileUriBack, fileUri });
   };
 
   useEffect(() => {
@@ -277,7 +279,7 @@ const DocumentPreviewScreen = (props: any) => {
         </TouchableOpacity>
       </View>
 
-      {fileUri?.type === "application/pdf" ? (
+      {fileUriBack?.type === "application/pdf" ? (
         <View style={{ flex: 1, marginTop: 70 }}>
           <PDFView
             fadeInDuration={100.0}
@@ -290,8 +292,8 @@ const DocumentPreviewScreen = (props: any) => {
             onError={() => console.log("Cannot render PDF", error)}
           />
         </View>
-      ) : fileUri?.type === "application/msword" ||
-        fileUri?.type ===
+      ) : fileUriBack?.type === "application/msword" ||
+        fileUriBack?.type ===
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ? (
         <View style={{ flex: 0.8 }}>
           <View style={{ alignSelf: "center", justifyContent: "center" }}>
@@ -319,7 +321,7 @@ const DocumentPreviewScreen = (props: any) => {
           </GenericText>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Button
-              onPress={() => handlePressb64(fileUri?.type)}
+              onPress={() => handlePressb64(fileUriBack?.type)}
               style={{
                 buttonContainer: {
                   elevation: 5,
@@ -345,7 +347,7 @@ const DocumentPreviewScreen = (props: any) => {
               height: "100%",
             }}
             source={{
-              uri: editDoc == "editDoc" ? fileUri.base64 : fileUri.uri,
+              uri: editDoc == "editDoc" ? fileUriBack.base64 : fileUriBack.uri,
             }}
           ></Image>
         </View>
@@ -438,4 +440,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DocumentPreviewScreen;
+export default DocumentPreviewScreenBack;

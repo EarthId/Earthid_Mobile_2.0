@@ -67,7 +67,7 @@ export const QrScannerMaskedWidget = ({
       if (childCheckboxes[fieldName]) {
         selectedFields.push({
           name: fieldName,
-          value: documentVc.uploadDocVcResponse.credentialSubject[0].documentExtractedData[fieldName]
+          value: documentVc.credentialSubject[0][fieldName]
         });
       }
     });
@@ -150,7 +150,7 @@ export const QrScannerMaskedWidget = ({
                   marginLeft: 10,
                 }}
               >
-                <Text style={{ fontSize: 14 }}>{documentVc?.uploadDocVcResponse.credentialSubject[0].documentExtractedData.DocumentType}</Text>
+                <Text style={{ fontSize: 14 }}>{documentVc?.credentialSubject[0].type}</Text>
               </View>
             </View>
   
@@ -163,26 +163,34 @@ export const QrScannerMaskedWidget = ({
   
           {expandedItem === item.id && (
   <View style={{ marginTop: 8, marginLeft: 20 }}>
-    {documentVc && documentVc.uploadDocVcResponse && documentVc.uploadDocVcResponse.credentialSubject[0] && Object.keys(documentVc.uploadDocVcResponse.credentialSubject[0].documentExtractedData).map((fieldName, fieldIndex) => (
-      <View
-        key={fieldIndex}
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          padding: 10,
-          borderWidth: 0.6,
-          borderColor: "#0163f7",
-        }}
-      >
-        <Text>{fieldName}: {documentVc.uploadDocVcResponse.credentialSubject[0].documentExtractedData[fieldName]}</Text>
-        <CheckBox
-          disabled={false}
-          value={childCheckboxes[fieldName]}
-          onValueChange={() => handleChildCheckboxChange(fieldName)}
-        />
-      </View>
-    ))}
-  </View>
+  {documentVc && documentVc.credentialSubject[0] && Object.keys(documentVc.credentialSubject[0]).map((fieldName, fieldIndex) => {
+    // Check if the field value is not null
+    if (documentVc.credentialSubject[0][fieldName] !== null) {
+      return (
+        <View
+          key={fieldIndex}
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            padding: 10,
+            borderWidth: 0.6,
+            borderColor: "#0163f7",
+          }}
+        >
+          <Text>{fieldName}: {documentVc.credentialSubject[0][fieldName]}</Text>
+          <CheckBox
+            disabled={false}
+            value={childCheckboxes[fieldName]}
+            onValueChange={() => handleChildCheckboxChange(fieldName)}
+          />
+        </View>
+      );
+    } else {
+      // Return null if field value is null
+      return null;
+    }
+  })}
+</View>
 )}
         </View>
       </TouchableOpacity>
@@ -263,7 +271,7 @@ export const QrScannerMaskedWidget = ({
   
             <View style={{ marginTop: 10 }}>
               <FlatList
-                data={documentVc ? [documentVc.uploadDocVcResponse] : []}
+                data={documentVc ? [documentVc] : []}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
               />

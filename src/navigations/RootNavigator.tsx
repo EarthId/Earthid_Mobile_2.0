@@ -13,6 +13,7 @@ import Security from "../screens/onboarding/security";
 import SetPin from "../screens/onboarding/security/passcode/SetPincode";
 import ConfirmPincode from "../screens/onboarding/security/passcode/ConfirmPincode";
 import uploadDocumentsScreen from "../screens/uploadDocuments";
+import UploadDocumentBack from "../screens/uploadDocuments/UploadDocumentBackkk";
 import LoadingScreen from "../screens/onboarding/LoadingScreen";
 import PasswordCheck from "../screens/onboarding/security/passcode/PasswordCheck";
 import facePlaceHolderWidget from "../screens/FaceRegister/facePlaceHolderWidget";
@@ -21,6 +22,10 @@ import SuccessFaceRegister from "../screens/FaceRegister/SuccessFaceRegister";
 import FingerPrintInstructionScreen from "../screens/FingerPrintRegister/FingerPrintInstructionScreen";
 import UploadDocument from "../screens/uploadDocuments/UploadDocument";
 import DocumentPreviewScreen from "../screens/uploadDocuments/DocumentPreviewScreen";
+import DocumentPreviewScreenReg from "../screens/uploadDocuments/DocumentPreviewScreenReg";
+import DocumentPreviewScreenBack from "../screens/uploadDocuments/DocumentPreviewScreenBack";
+import UploadScreenBackk from "../screens/uploadDocuments/indexDocBack";
+import DocumentPreviewScreen2 from "../screens/uploadDocuments/DocumentPreviewScreen2";
 import categoryScreen from "../screens/uploadDocuments/categoryScreen";
 import UploadQr from "../screens/UploadQr";
 import UploadDocumentPreviewScreen from "../screens/UploadQr/UploadDocumentPreviewScreen";
@@ -47,9 +52,14 @@ export default function RootNavigator() {
     SetPin: SetPin,
     ConfirmPincode: ConfirmPincode,
     uploadDocumentsScreen: uploadDocumentsScreen,
+    UploadDocumentBack: UploadDocumentBack,
     SuccessFaceRegister: SuccessFaceRegister,
     UploadDocument: UploadDocument,
     DocumentPreviewScreen: DocumentPreviewScreen,
+    DocumentPreviewScreenReg: DocumentPreviewScreenReg,
+    DocumentPreviewScreenBack: DocumentPreviewScreenBack,
+    UploadScreenBackk: UploadScreenBackk,
+    DocumentPreviewScreen2: DocumentPreviewScreen2,
     categoryScreen: categoryScreen,
     UploadQr: UploadQr,
     UploadDocumentPreviewScreen: UploadDocumentPreviewScreen,

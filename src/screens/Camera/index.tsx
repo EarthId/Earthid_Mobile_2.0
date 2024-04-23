@@ -170,8 +170,8 @@ const CameraScreen = (props: any) => {
         userMobileNo: userDetails?.responseData?.phone,
         OrganizationID: userDetails?.responseData?.orgId,
         selectedFields: selectedFieldsjson.selectedFields,
-  documentVc: selectedVcjson.documentVc.uploadDocVcResponse, 
-  
+  documentVc: selectedVcjson.documentVc, 
+  publicKey: keys?.responseData?.result?.publicKey,
         // countryCode: userDetails?.responseData?.countryCode,
         // emailVerified: userDetails?.responseData?.emailVerified,
         // mobileVerified: userDetails?.responseData?.mobileVerified,
