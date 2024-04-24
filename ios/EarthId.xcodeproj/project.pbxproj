@@ -18,6 +18,8 @@
 		4A3999E282E5520A1FB37516 /* libPods-EarthId-EarthIdTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A65FCF171384A83A4FCF0932 /* libPods-EarthId-EarthIdTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		BDC906C82BD90867009E7EF3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */; };
+		BDC906D22BD916AD009E7EF3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */; };
+		BDC906D32BD916BB009E7EF3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */; };
 		C12577C13A4FCDAF508623E5 /* libPods-ShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13412299CB66D03336AED2C4 /* libPods-ShareExtension.a */; };
 		D8B6F6A148E2365247F491E2 /* libPods-EarthId.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B1022279AD446FB4C7182939 /* libPods-EarthId.a */; };
 /* End PBXBuildFile section */
@@ -384,6 +386,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDC906D32BD916BB009E7EF3 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,6 +394,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDC906D22BD916AD009E7EF3 /* PrivacyInfo.xcprivacy in Resources */,
 				0C14E1C52992DBD4003ABF7D /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
