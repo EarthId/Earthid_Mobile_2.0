@@ -17,6 +17,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		4A3999E282E5520A1FB37516 /* libPods-EarthId-EarthIdTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A65FCF171384A83A4FCF0932 /* libPods-EarthId-EarthIdTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		BDC906C82BD90867009E7EF3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */; };
 		C12577C13A4FCDAF508623E5 /* libPods-ShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13412299CB66D03336AED2C4 /* libPods-ShareExtension.a */; };
 		D8B6F6A148E2365247F491E2 /* libPods-EarthId.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B1022279AD446FB4C7182939 /* libPods-EarthId.a */; };
 /* End PBXBuildFile section */
@@ -96,6 +97,7 @@
 		AF7E544DFA40B0602C4D7D3F /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		B1022279AD446FB4C7182939 /* libPods-EarthId.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EarthId.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD02C38329D44925005B4A0E /* RNCNetInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCNetInfo.xcodeproj; path = "../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.xcodeproj"; sourceTree = "<group>"; };
+		BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C626F3FDF6A09DFE8F630258 /* Pods-EarthId-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-EarthId-ShareExtension/Pods-EarthId-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		D9C9C2333F1B187323C27149 /* Pods-EarthId-EarthIdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-EarthIdTests.release.xcconfig"; path = "Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -170,6 +172,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */,
 			);
 			name = EarthId;
 			sourceTree = "<group>";
@@ -396,6 +399,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDC906C82BD90867009E7EF3 /* PrivacyInfo.xcprivacy in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
@@ -829,7 +833,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.5.9;
+				MARKETING_VERSION = 4.6.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -865,7 +869,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.5.9;
+				MARKETING_VERSION = 4.6.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

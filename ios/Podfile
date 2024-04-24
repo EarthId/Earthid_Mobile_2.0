@@ -30,7 +30,9 @@ target 'EarthId' do
   pod 'ZXingObjC', '~> 3.1'
 
   pod 'RNShareMenu', :path => '../node_modules/react-native-share-menu'
-  
+  pod 'react-native-camera', path: '../node_modules/react-native-camera', subspecs: [
+  'FaceDetectorMLKit'
+]
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods

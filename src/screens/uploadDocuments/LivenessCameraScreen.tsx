@@ -185,12 +185,12 @@ const LivenessCameraScreen = (props: any) => {
         androidCameraPermissionOptions={null}
         type={RNCamera.Constants.Type.front}
         focusDepth={1.0}
-        trackingEnabled={true}
+
         faceDetectionClassifications={
-          RNCamera.Constants.FaceDetection.Classifications.all
+          RNCamera?.Constants?.FaceDetection?.Classifications?.all
         }
-        faceDetectionLandmarks={RNCamera.Constants.FaceDetection.Landmarks.all}
-        faceDetectionMode={RNCamera.Constants.FaceDetection.Mode.accurate}
+        faceDetectionLandmarks={RNCamera?.Constants?.FaceDetection?.Landmarks?.all}
+        faceDetectionMode={RNCamera?.Constants?.FaceDetection?.Mode?.accurate}
         onFacesDetected={!data && _handleBarCodeRead}
         captureAudio={false}
       >
