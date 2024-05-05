@@ -2,10 +2,6 @@ rootProject.name = 'EarthId'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
-
-include ':@react-native-camera-roll_camera-roll'
-project(':@react-native-camera-roll_camera-roll').projectDir = new File(rootProject.projectDir, 	'../node_modules/@react-native-camera-roll/camera-roll/android')
-
 include ':react-native-view-pdf'
 project(':react-native-view-pdf').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-view-pdf/android')
 include ':react-native-view-pdf'
@@ -22,15 +18,11 @@ include ':react-native-touch-id'
 project(':react-native-touch-id').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-touch-id/android')
 include ':react-native-image-base64'
 project(':react-native-image-base64').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-image-base64/android')
-// include ':@react-native-community_cameraroll'
-// project(':@react-native-community_cameraroll').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/cameraroll/android')
-
 include ':react-native-html-to-pdf'
 project(':react-native-html-to-pdf').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-html-to-pdf/android')
 include ':react-native-view-shot'
 project(':react-native-view-shot').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-view-shot/android')
-include ':@react-native-community_checkbox'
-project(':@react-native-community_checkbox').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/checkbox/android')
+
 include ':react-native-fs'
 project(':react-native-fs').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fs/android')
 include ':rn-fetch-blob'
