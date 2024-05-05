@@ -647,6 +647,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
               subtitle: {
                 fontSize: 14,
                 marginTop: 5,
+                marginLeft: -23
               },
             }}
           />

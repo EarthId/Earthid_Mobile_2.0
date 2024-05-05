@@ -19,7 +19,7 @@ const LinearGradients = ({
     <LinearGradient
       start={horizontalGradient ? letfToRightX : topToBottomX}
       end={horizontalGradient ? letfToRightY : topToBottomY}
-      colors={[startColor, middleColor, endColor]}
+      colors={[startColor, endColor]}
       style={style}
     >
       {children}

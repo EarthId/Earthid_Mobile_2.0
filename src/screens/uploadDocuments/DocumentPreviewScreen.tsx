@@ -377,7 +377,7 @@ const DocumentPreviewScreen = (props: any) => {
           title={"retakes"}
         ></Button>
         <Button
-          onPress={alertUploadDoc}
+          onPress={NetworkConnect}
           style={{
             buttonContainer: {
               elevation: 5,

@@ -250,6 +250,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
               subtitle: {
                 fontSize: 14,
                 marginTop: 5,
+                marginLeft: -23
               },
             }}
           />

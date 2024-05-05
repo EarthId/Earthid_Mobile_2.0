@@ -28,10 +28,45 @@ import RNFS from "react-native-fs";
 import { isEarthId } from "../../../utils/PlatFormUtils";
 import ToggleSwitch from "toggle-switch-react-native";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { saveFeature } from "../../../redux/actions/authenticationAction";
+import { saveDocuments, saveFeature, updateDocuments } from "../../../redux/actions/authenticationAction";
+import VeriffSdk from '@veriff/react-native-sdk';
+import { createVerification, getMediaData, getMediaImage, getSessionDecision } from "../../../utils/veriffApis";
+import { dateTime } from "../../../utils/encryption";
+import RNFetchBlob from "rn-fetch-blob";
+import AnimatedLoader from "../../../components/Loader/AnimatedLoader";
+import SuccessPopUp from "../../../components/Loader";
+import ErrorPopUp from "../../../components/Loader/errorPopup";
+
+const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
+const earthIDLogo = require('../../../../resources/images/earthidLogoBlack.png');
 
 interface IHomeScreenProps {
   navigation?: any;
+}
+
+export interface IDocumentProps {
+  id: string;
+  name: string;
+  path: string;
+  date: string;
+  time: string;
+  txId: string;
+  documentName: string;
+  docName: string;
+  isLivenessImage: string;
+  docType: string;
+  docExt: string;
+  processedDoc: string;
+  vc: any;
+  isVc: boolean;
+  base64: any;
+  pdf?: boolean;
+  categoryType?: any;
+  color?: string;
+  isVerifyNeeded?: boolean;
+  signature: any;
+  typePDF: any;
+  verifiableCredential: any;
 }
 
 const landingPage = ({ navigation }: IHomeScreenProps) => {
@@ -46,6 +81,15 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
   const [flag, setflag] = useState(61);
   const [loading, setLoading] = useState(true);
   console.log("flag==>", flag);
+  const [load, setLoad] = useState(false);
+  const [successResponse, setsuccessResponse] = useState(false);
+  const [errorResponse, seterrorResponse] = useState(false);
+  const userDetails = useAppSelector((state) => state.account);
+  const keys = useAppSelector((state) => state.user);
+  const getHistoryReducer = useAppSelector((state) => state.getHistoryReducer);
+  let documentsDetailsList = useAppSelector((state) => state.Documents);
+  const [verifyVcCred, setverifyVcCred] = useState<any>();
+
 
   useEffect(()=>{
     defaultVcFeature()
@@ -175,6 +219,283 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
   const onToggelchange = (data: boolean) => {
     dispatch(saveFeature(data));
   };
+
+
+  const veriffSdkLaunch = async () => {
+
+    const sessionRes = await createVerification()
+    const sessionUrl = sessionRes.verification.url
+    const sessionId = sessionRes.verification.id
+
+    
+
+    var result = await VeriffSdk.launchVeriff({
+      sessionUrl: sessionUrl,
+      branding: {
+        logo: resolveAssetSource(earthIDLogo), // see alternative options for logo below
+        //background: '#fffff',
+        //onBackground: '#ffffff',
+       // onBackgroundSecondary: '#000',
+       // onBackgroundTertiary: '#000000',
+        primary: '#293fee',
+        onPrimary: '#ffffff',
+        secondary: '#00bbf9',
+        onSecondary: '#ffffff',
+        outline: '#444444',
+        cameraOverlay: '#863ded',
+        onCameraOverlay: '#ffffff',
+        error: '#d90429',
+        success: '#00bbf9',
+        buttonRadius: 28,
+        iOSFont: {
+          regular: 'Font-Regular',
+          medium: 'Font-Medium',
+          bold: 'Font-Bold',
+        },
+        androidFont: {
+          regular: 'font_regular',
+          medium: 'font-medium',
+          bold: 'font_bold',
+        }
+      },
+    });
+  
+setLoad(true);
+console.log('Response of sdk:', result )
+
+let uploadDocResponseData
+let getDocImages
+let getImage
+
+if(result.status=="STATUS_DONE"){
+
+  await new Promise(resolve => setTimeout(resolve, 8000));
+
+    uploadDocResponseData = await getSessionDecision(sessionId);
+    getDocImages = await getMediaData(sessionId);
+
+    const documentFront = getDocImages.images.find(image => image.name === 'document-front-pre');
+    console.log(documentFront);
+    getImage = await getMediaImage(documentFront.id)
+
+    console.log("Document Data", uploadDocResponseData)
+ console.log("Document Images", getDocImages)
+ console.log("Media Image", getImage)
+
+ await createPayLoadFromDocumentData(uploadDocResponseData )
+
+//  navigation.navigate("RegisterScreen", {
+//   uploadDocResponseData, getDocImages
+// });
+
+}else{
+  console.log("Didn't recieve uploaded doc data")
+ seterrorResponse(true)
+  throw new Error('An error occurred during image validation');
+}
+
+// await new Promise(resolve => setTimeout(resolve, 5000));
+// const sessionId = "90c1146a-5f81-4c9a-8993-ad0675341a04";
+// const mediaId = "7b752371-0bba-48c1-b283-f50b5c8c4628";
+// const uploadDocResponseData = await getSessionDecision(sessionId);
+// const getDocImages = await getMediaData(sessionId);
+
+// await createPayLoadFromDocumentData(uploadDocResponseData )
+
+//    console.log("Document Data", uploadDocResponseData)
+//  console.log("Document Images", getDocImages)
+//  console.log("Media Image", getImage)
+
+
+
+ console.log("UploadDocData:", uploadDocResponseData)
+    
+ // Extracting data from the person object
+ const personData: { [key: string]: string } = {};
+ for (const key in uploadDocResponseData.person) {
+   if (typeof uploadDocResponseData.person[key]?.value === "string") {
+     personData[key] = uploadDocResponseData.person[key].value;
+   }
+ }
+ 
+ // Extracting data from the document object
+ const documentData: { [key: string]: string } = {};
+ for (const key in uploadDocResponseData.document) {
+   if (typeof uploadDocResponseData.document[key]?.value === "string") {
+     documentData[key] = uploadDocResponseData.document[key].value;
+   }
+ }
+ 
+ // Combining the extracted data into one object
+ const combinedData = {
+   ...personData,
+   ...documentData
+ };
+ 
+ // Logging the combined data
+ console.log("Combined Data:", combinedData);
+
+
+
+ const username = uploadDocResponseData.person?.firstName?.value ?? null;
+
+//  const docFrontBase64 = await urlToBase64(documentFront.url)
+//  console.log(docFrontBase64);
+
+const selectedDocument = "ID"
+     // verifiAPICall()
+  
+     setTimeout(() => {
+      // const index = documentsDetailsList?.responseData?.findIndex(
+      //   (obj: { id: any; }) => obj?.id === selectedItem?.id
+      // );
+      // console.log("index", index);
+      // if (selectedItem) {
+      //   console.log("indexData", "index1");
+      //   setsuccessResponse(true);
+
+      //   const obj = documentsDetailsList?.responseData[index];
+      //   obj.documentName = selectedDocument;
+      //   obj.categoryType =
+      //     selectedDocument && selectedDocument?.split("(")[0]?.trim();
+      //   dispatch(
+      //     updateDocuments(documentsDetailsList?.responseData, index, obj)
+      //   );
+      //   setTimeout(async () => {
+      //     setsuccessResponse(false);
+      //     const item = await AsyncStorage.getItem("flow");
+      //     //const userDetails = await AsyncStorage.getItem("userDetails");
+      //     if (userDetails.responseData) {
+      //       //props.navigation.navigate("Documents");
+      //     } else {
+      //       // generateVc()
+      //       navigation.navigate("RegisterScreen");
+            
+      //     }
+      //   }, 2000);
+      // } else {
+        console.log("indexData", "index2");
+
+        var date = dateTime();
+        const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
+        var documentDetails: IDocumentProps = {
+          id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
+          // name: selectedDocument,
+          documentName: selectedDocument,
+          path: filePath,
+          date: date?.date,
+          time: date?.time,
+          //txId: data?.result,
+          txId: sessionId,
+          docType: "jpg",
+          docExt: ".jpg",
+          processedDoc: "",
+          base64: getImage,
+          categoryType: selectedDocument && selectedDocument?.split("(")[0]?.trim(),
+          docName: "Id Document",
+          isVerifyNeeded: true,
+          isLivenessImage: null,
+          name: "",
+          vc: undefined,
+          isVc: false,
+          signature: undefined,
+          typePDF: undefined,
+          verifiableCredential: undefined
+        };
+
+        var DocumentList = documentsDetailsList?.responseData
+          ? documentsDetailsList?.responseData
+          : [];
+        var documentDetails1: IDocumentProps = {
+          id: `ID_VERIFICATION${Math.random()}${"selectedDocument"}${Math.random()}`,
+          name: "Proof of age",
+          path: "filePath",
+          documentName: "Proof of age",
+          categoryType: "ID",
+          date: date?.date,
+          time: date?.time,
+          txId: "data?.result",
+          docType: verifyVcCred?.type[1],
+          docExt: ".jpg",
+          processedDoc: "",
+          isVc: true,
+          vc: JSON.stringify({
+            name: "Proof of age",
+            documentName: "Acknowledgement Token",
+            path: "filePath",
+            date: date?.date,
+            time: date?.time,
+            txId: "data?.result",
+            docType: "pdf",
+            docExt: ".jpg",
+            processedDoc: "",
+            isVc: true,
+          }),
+          verifiableCredential: verifyVcCred,
+          docName: "",
+          base64: undefined,
+          isLivenessImage: "",
+          signature: undefined,
+          typePDF: undefined
+        };
+
+        var DocumentList = documentsDetailsList?.responseData
+          ? documentsDetailsList?.responseData
+          : [];
+        DocumentList.push(documentDetails);
+       DocumentList.push(documentDetails1);
+        dispatch(saveDocuments(DocumentList));
+        setsuccessResponse(true);
+        getHistoryReducer.isSuccess = false;
+        setTimeout(async () => {
+          setsuccessResponse(false);
+          const item = await AsyncStorage.getItem("flow");
+           const registrationOption = "RegisterWithDoc"
+            // generateVc()
+            navigation.navigate("RegisterScreen", {combinedData, registrationOption});
+            
+          
+        }, 2000);
+      //}
+    }, 200);
+    setLoad(false);
+
+  }
+
+
+
+  const urlToBase64 = async (url: any) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error converting URL to Base64:', error);
+      throw error;
+    }
+  }
+
+  const createPayLoadFromDocumentData = async (documentResponseData: any) => {
+    console.log("Username:", documentResponseData?.person?.firstName?.value);
+    console.log("Date of Birth:", documentResponseData?.person?.dateOfBirth?.value);
+  
+    const username = documentResponseData?.person?.firstName?.value ?? null;
+    const userDOB = documentResponseData?.person?.dateOfBirth?.value ?? null;
+  
+    await AsyncStorage.setItem("userDOB", userDOB);
+    await AsyncStorage.setItem("userName", username);
+    await AsyncStorage.setItem("uploadedDocReg", JSON.stringify(documentResponseData));
+    await AsyncStorage.setItem("flow", "documentflow");
+  };
+  
+  
+
+
   return (
     <View style={styles.sectionContainer}>
       <ScrollView contentContainerStyle={styles.sectionContainer}>
@@ -220,11 +541,12 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
                 {SCREENS.LANDINGSCREEN.instruction}
               </GenericText>
               <Button
-                onPress={() =>
-                  navigation.navigate("UploadDocument", {
-                    type: { data: "reg" },
-                  })
-                }
+                // onPress={() =>
+                //   navigation.navigate("UploadDocument", {
+                //     type: { data: "reg" },
+                //   })
+                // }
+                onPress={veriffSdkLaunch}
                 style={{
                   buttonContainer: {
                     backgroundColor: Screens.pureWhite,
@@ -478,6 +800,20 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
           <ActivityIndicator color={Screens.colors.primary} size="large" />
         </View>
       )}
+
+<AnimatedLoader
+        isLoaderVisible={load || getHistoryReducer?.isLoading}
+        loadingText={"verifying"}
+      />
+      <SuccessPopUp
+        isLoaderVisible={successResponse}
+        loadingText={"verificationsuccess"}
+      />
+
+<ErrorPopUp // Error popup component
+  isLoaderVisible={errorResponse}
+  loadingText={"An error occurred. Please try again."}
+/>
     </View>
   );
 };

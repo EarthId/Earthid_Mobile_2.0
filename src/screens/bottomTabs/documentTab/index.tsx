@@ -26,7 +26,7 @@ import TextInput from "../../../components/TextInput";
 import { LocalImages } from "../../../constants/imageUrlConstants";
 import { SCREENS } from "../../../constants/Labels";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { saveDocuments } from "../../../redux/actions/authenticationAction";
+import { saveDocuments, updateDocuments } from "../../../redux/actions/authenticationAction";
 import { Screens } from "../../../themes";
 import Modal from "react-native-modal";
 import QRCode from "react-native-qrcode-image";
@@ -36,6 +36,19 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 import ImageResizer from "react-native-image-resizer";
 import RNFS from "react-native-fs";
 import AWS from "aws-sdk";
+import axios from "axios";
+
+import VeriffSdk from '@veriff/react-native-sdk';
+import { createVerification, getMediaData, getMediaImage, getSessionDecision } from "../../../utils/veriffApis";
+import { dateTime } from "../../../utils/encryption";
+import { IDocumentProps } from "../../uploadDocuments/VerifiDocumentScreen";
+import RNFetchBlob from "rn-fetch-blob";
+import AnimatedLoader from "../../../components/Loader/AnimatedLoader";
+import SuccessPopUp from "../../../components/Loader";
+import ErrorPopUp from "../../../components/Loader/errorPopup";
+
+const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
+const earthIDLogo = require('../../../../resources/images/earthidLogoBlack.png');
 
 interface IDocumentScreenProps {
   navigation?: any;
@@ -57,6 +70,8 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   let [qrBase64, setBase64] = useState("");
 
   const [activityLoader, setActivityLoad] = useState(false);
+  const getHistoryReducer = useAppSelector((state) => state.getHistoryReducer);
+  console.log("getHistoryReducer===>", getHistoryReducer);
 
   let categoryTypes = "";
 
@@ -84,8 +99,12 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const [isCheckBoxEnable, setCheckBoxEnable] = useState(false);
   const [isClear, setIsClear] = useState(false);
   const [loading, setloading] = useState(false);
+  const [load, setLoad] = useState(false);
+  const [successResponse, setsuccessResponse] = useState(false);
+  const [errorResponse, seterrorResponse] = useState(false);
 
   const userDetails = useAppSelector((state) => state.account);
+  const keys = useAppSelector((state) => state.user);
 
   const bucketName: any = userDetails?.responseUserSpecificBucket;
   // const base64Image: any = selectedItem?.base64;
@@ -179,6 +198,8 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
     return timeA - timeB;
   }
 
+
+
   const _renderItem = ({ item, index }: any) => {
    
     return (
@@ -252,6 +273,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
               subtitle: {
                 fontSize: 14,
                 marginTop: 5,
+                marginLeft: -23
               },
             }}
           />
@@ -446,9 +468,401 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
     // await AsyncStorage.setItem("editDoc", "editDoc");
   }
 
-  const onPressNavigateTo = () => {
-    navigation.navigate("uploadDocumentsScreen");
-  };
+  const onPressNavigateTo = async () => {
+
+    await alertUploadDoc()
+
+      }
+
+
+      const alertUploadDoc = async () => {
+      
+     
+        Alert.alert(
+          "Confirmation!",
+          "Please confirm that this is a self-attested document",
+          [
+            {
+              text: "Yes",
+              onPress: () => {
+                navigation.navigate("uploadDocumentsScreen");
+              },
+              style: "cancel",
+            },
+            {
+              text: "No",
+              onPress: () => {
+     
+
+   console.log("Document Data-----------------------------------")
+  veriffSdkLaunch()
+                
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+
+
+      const veriffSdkLaunch = async () => {
+
+            const sessionRes = await createVerification()
+            const sessionUrl = sessionRes.verification.url
+            const sessionId = sessionRes.verification.id
+        
+            
+        
+            var result = await VeriffSdk.launchVeriff({
+              sessionUrl: sessionUrl,
+              branding: {
+                logo: resolveAssetSource(earthIDLogo), // see alternative options for logo below
+                //background: '#fffff',
+                //onBackground: '#ffffff',
+               // onBackgroundSecondary: '#000',
+               // onBackgroundTertiary: '#000000',
+                primary: '#293fee',
+                onPrimary: '#ffffff',
+                secondary: '#00bbf9',
+                onSecondary: '#ffffff',
+                outline: '#444444',
+                cameraOverlay: '#863ded',
+                onCameraOverlay: '#ffffff',
+                error: '#d90429',
+                success: '#00bbf9',
+                buttonRadius: 28,
+                iOSFont: {
+                  regular: 'Font-Regular',
+                  medium: 'Font-Medium',
+                  bold: 'Font-Bold',
+                },
+                androidFont: {
+                  regular: 'font_regular',
+                  medium: 'font-medium',
+                  bold: 'font_bold',
+                }
+              },
+            });
+          
+            setLoad(true);
+        console.log('Response of sdk:', result )
+        
+        let uploadDocResponseData
+        let getDocImages
+        let getImage
+        let uploadDocVcResponse
+        
+        if(result.status=="STATUS_DONE"){
+        
+          await new Promise(resolve => setTimeout(resolve, 8000));
+        
+            uploadDocResponseData = await getSessionDecision(sessionId);
+            getDocImages = await getMediaData(sessionId);
+
+            const documentFront = getDocImages.images.find(image => image.name === 'document-front-pre');
+            console.log(documentFront);
+            getImage = await getMediaImage(documentFront.id)
+       
+        
+            console.log("Document Data", uploadDocResponseData)
+          console.log("Document Images", getDocImages)
+          console.log("Media Image", getImage)
+
+
+
+       
+        
+         // Extracting data from the person object
+         const personData: { [key: string]: string } = {};
+         for (const key in uploadDocResponseData.person) {
+           if (typeof uploadDocResponseData.person[key]?.value === "string") {
+             personData[key] = uploadDocResponseData.person[key].value;
+           }
+         }
+         
+         // Extracting data from the document object
+         const documentData: { [key: string]: string } = {};
+         for (const key in uploadDocResponseData.document) {
+           if (typeof uploadDocResponseData.document[key]?.value === "string") {
+             documentData[key] = uploadDocResponseData.document[key].value;
+           }
+         }
+         
+         // Combining the extracted data into one object
+         const combinedData = {
+           ...personData,
+           ...documentData
+         };
+         
+         // Logging the combined data
+         console.log("Combined Data:", combinedData);
+         
+        
+             console.log('Sending details to the api2')
+             uploadDocVcResponse = await createUploadDocVc(combinedData)
+             console.log('UploadedDocVc is:::::::::::', uploadDocVcResponse)
+             await createPayLoadFromDocumentData(uploadDocResponseData, uploadDocVcResponse)
+        
+      
+        
+      
+
+
+        // const sessionId = "90c1146a-5f81-4c9a-8993-ad0675341a04";
+        // const mediaId = "7b752371-0bba-48c1-b283-f50b5c8c4628";
+        // const uploadDocResponseData = await getSessionDecision(sessionId);
+        // const getDocImages = await getMediaData(sessionId);
+        // const getImage = await getMediaImage(mediaId)
+       
+        
+        //    console.log("Document Data", uploadDocResponseData)
+        //  console.log("Document Images", getDocImages)
+        //  console.log("Media Image", getImage)
+
+
+        //  console.log("UploadDocData:", uploadDocResponseData)
+    
+        
+            
+           
+        
+         const username = uploadDocResponseData.person?.firstName?.value ?? null;
+   
+        //  const docFrontBase64 = await urlToBase64(documentFront.url)
+        //  console.log(docFrontBase64);
+        
+        const selectedDocument = "ID"
+             // verifiAPICall()
+          
+             setTimeout(() => {
+              // const index = documentsDetailsList?.responseData?.findIndex(
+              //   (obj: { id: any; }) => obj?.id === selectedItem?.id
+              // );
+              // console.log("index", index);
+              // if (selectedItem) {
+              //   console.log("indexData", "index1");
+              //   setsuccessResponse(true);
+        
+              //   const obj = documentsDetailsList?.responseData[index];
+              //   obj.documentName = selectedDocument;
+              //   obj.categoryType =
+              //     selectedDocument && selectedDocument?.split("(")[0]?.trim();
+              //   dispatch(
+              //     updateDocuments(documentsDetailsList?.responseData, index, obj)
+              //   );
+              //   setTimeout(async () => {
+              //     setsuccessResponse(false);
+              //     const item = await AsyncStorage.getItem("flow");
+              //     //const userDetails = await AsyncStorage.getItem("userDetails");
+              //     if (userDetails.responseData) {
+              //       //props.navigation.navigate("Documents");
+              //     } else {
+              //       // generateVc()
+              //       navigation.navigate("RegisterScreen");
+                    
+              //     }
+              //   }, 2000);
+              // } else {
+                console.log("indexData", "index2");
+        
+                var date = dateTime();
+                const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
+                var documentDetails: IDocumentProps = {
+                  id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
+                  // name: selectedDocument,
+                  documentName: selectedDocument,
+                  path: filePath,
+                  date: date?.date,
+                  time: date?.time,
+                  //txId: data?.result,
+                  txId: sessionId,
+                  docType: "jpg",
+                  docExt: ".jpg",
+                  processedDoc: "",
+                  base64: getImage,
+                  categoryType: selectedDocument && selectedDocument?.split("(")[0]?.trim(),
+                  docName: "Id Document",
+                  isVerifyNeeded: true,
+                  isLivenessImage: null,
+                  name: "",
+                  vc: uploadDocVcResponse,
+                  isVc: false,
+                  signature: undefined,
+                  typePDF: undefined,
+                  verifiableCredential: uploadDocVcResponse
+                };
+        
+                var DocumentList = documentsDetailsList?.responseData
+                  ? documentsDetailsList?.responseData
+                  : [];
+                var documentDetails1: IDocumentProps = {
+                  id: `ID_VERIFICATION${Math.random()}${"selectedDocument"}${Math.random()}`,
+                  name: "Proof of age",
+                  path: "filePath",
+                  documentName: "Proof of age",
+                  categoryType: "ID",
+                  date: date?.date,
+                  time: date?.time,
+                  txId: "data?.result",
+                  docType: uploadDocVcResponse?.type[1],
+                  docExt: ".jpg",
+                  processedDoc: "",
+                  isVc: true,
+                  vc: JSON.stringify({
+                    name: "Proof of age",
+                    documentName: "Acknowledgement Token",
+                    path: "filePath",
+                    date: date?.date,
+                    time: date?.time,
+                    txId: "data?.result",
+                    docType: "pdf",
+                    docExt: ".jpg",
+                    processedDoc: "",
+                    isVc: true,
+                  }),
+                  verifiableCredential: uploadDocVcResponse,
+                  docName: "",
+                  base64: undefined,
+                  isLivenessImage: "",
+                  signature: undefined,
+                  typePDF: undefined
+                };
+        
+                var DocumentList = documentsDetailsList?.responseData
+                  ? documentsDetailsList?.responseData
+                  : [];
+                DocumentList.push(documentDetails);
+               DocumentList.push(documentDetails1);
+                dispatch(saveDocuments(DocumentList));
+                setsuccessResponse(true);
+                getHistoryReducer.isSuccess = false;
+                setTimeout(async () => {
+                  setsuccessResponse(false);
+                  const item = await AsyncStorage.getItem("flow");
+                  
+                    // generateVc()
+                   // navigation.navigate("RegisterScreen");
+                    
+                  
+                }, 2000);
+              //}
+            }, 200);
+            setLoad(false);
+          }else{
+            console.log("Didn't recieve uploaded doc data")
+            seterrorResponse(true)
+            throw new Error('An error occurred during image validation');
+          }
+        
+          }
+        
+        
+        
+          const urlToBase64 = async (url: any) => {
+            try {
+              const response = await fetch(url);
+              const blob = await response.blob();
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+              });
+            } catch (error) {
+              console.error('Error converting URL to Base64:', error);
+              throw error;
+            }
+          }
+        
+          const createPayLoadFromDocumentData = async (documentResponseData: any, uploadDocVcResponse: any) => {
+            console.log("Username:", documentResponseData?.person?.firstName?.value);
+            console.log("Date of Birth:", documentResponseData?.person?.dateOfBirth?.value);
+          
+            const username = documentResponseData?.person?.firstName?.value ?? null;
+            const userDOB = documentResponseData?.person?.dateOfBirth?.value ?? null;
+          
+            await AsyncStorage.setItem("userDOB", userDOB);
+            await AsyncStorage.setItem("userName", username);
+            await AsyncStorage.setItem("uploadedDocReg", JSON.stringify(documentResponseData));
+            //await AsyncStorage.setItem("flow", "documentflow");
+          
+      
+              await AsyncStorage.setItem("uploadedDocVc", JSON.stringify(uploadDocVcResponse));
+     
+          
+            if (userDetails.responseData) {
+              console.log('Uploading doc after registration');
+            } else {
+              await AsyncStorage.setItem("flow", "documentflow");
+            }
+          };
+          
+          const ssiBaseUrl = "https://ssi-test.myearth.id/api"
+          const authorizationKey = "01a41742-aa8e-4dd6-8c71-d577ac7d463c"
+          
+          //createDOc VC
+          const createUploadDocVc = async (fieldsObject: any) => {
+            try {
+                //const signature = await createUserIdSignature(profileData);
+                const data = {
+                    schemaName: 'UploadedDocVCNeww:1',
+                    isEncrypted: false,
+                    dependantVerifiableCredential: [],
+                    credentialSubject: {
+                      "gender": fieldsObject.gender !== undefined ? fieldsObject.gender : null,
+                      "idNumber": fieldsObject.idNumber !== undefined ? fieldsObject.idNumber : null,
+                      "lastName": fieldsObject.lastName !== undefined ? fieldsObject.lastName : null,
+                      "firstName": fieldsObject.firstName !== undefined ? fieldsObject.firstName : null,
+                      "citizenship": fieldsObject.citizenship !== undefined ? fieldsObject.citizenship : null,
+                      "dateOfBirth": fieldsObject.dateOfBirth !== undefined ? fieldsObject.dateOfBirth : null,
+                     // "nationality": fieldsObject.nationality !== undefined ? fieldsObject.nationality : null,
+                     // "yearOfBirth": fieldsObject.yearOfBirth !== undefined ? fieldsObject.yearOfBirth : null,
+                      "placeOfBirth": fieldsObject.placeOfBirth !== undefined ? fieldsObject.placeOfBirth : null,
+                     // "pepSanctionMatch": fieldsObject.pepSanctionMatch !== undefined ? fieldsObject.pepSanctionMatch : null,
+                      "occupation": fieldsObject.occupation !== undefined ? fieldsObject.occupation : null,
+                      "employer": fieldsObject.employer !== undefined ? fieldsObject.employer : null,
+                     // "foreginerStatus": fieldsObject.foreginerStatus !== undefined ? fieldsObject.foreginerStatus : null,
+                     // "extraNames": fieldsObject.extraNames !== undefined ? fieldsObject.extraNames : null,
+                      "address": fieldsObject.addresses !== undefined ? fieldsObject.addresses : null,
+                      "type": fieldsObject.type !== undefined ? fieldsObject.type : null,
+                      "number": fieldsObject.number !== undefined ? fieldsObject.number : null,
+                      "country": fieldsObject.country !== undefined ? fieldsObject.country : null,
+                      "validFrom": fieldsObject.validFrom !== undefined ? fieldsObject.validFrom : null,
+                      "validUntil": fieldsObject.validUntil !== undefined ? fieldsObject.validUntil : null,
+                    //  "placeOfIssue": fieldsObject.placeOfIssue !== undefined ? fieldsObject.placeOfIssue : null,
+                    //  "firstIssue": fieldsObject.firstIssue !== undefined ? fieldsObject.firstIssue : null,
+                     // "issueNumber": fieldsObject.issueNumber !== undefined ? fieldsObject.issueNumber : null,
+                      "issuedBy": fieldsObject.issuedBy !== undefined ? fieldsObject.issuedBy : null,
+                     // "nfcValidated": fieldsObject.nfcValidated !== undefined ? fieldsObject.nfcValidated : null,
+                     // "residencePermitType": fieldsObject.residencePermitType !== undefined ? fieldsObject.residencePermitType : null
+                    }
+                };
+          
+                const config = {
+                    method: 'post',
+                    url: `${ssiBaseUrl}/issuer/verifiableCredential?isCryptograph=false&downloadCryptograph=false`,
+                    headers: {
+                        'X-API-KEY': authorizationKey,
+                        did: keys.responseData.newUserDid,
+                        publicKey: keys.responseData.generateKeyPair.publicKey,
+                        'Content-Type': 'application/json',
+                    },
+                    data: JSON.stringify(data),
+                };
+          console.log('DocVcApi', config)
+                const response = await axios.request(config);
+                console.log('VC response', response.data.data.verifiableCredential)
+                //const verifiableCredential = response.data.data.verifiableCredential;
+              
+                return response.data.data.verifiableCredential;
+          
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+          };
+      
+
   const _keyExtractor = ({ path }: any) => path.toString();
 
   const getFilteredData = () => {
@@ -744,6 +1158,19 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
           </View>
         </TouchableOpacity>
       </Modal>
+      <AnimatedLoader
+        isLoaderVisible={load || getHistoryReducer?.isLoading}
+        loadingText={"verifying"}
+      />
+      <SuccessPopUp
+        isLoaderVisible={successResponse}
+        loadingText={"verificationsuccess"}
+      />
+
+<ErrorPopUp // Error popup component
+  isLoaderVisible={errorResponse}
+  loadingText={"An error occurred. Please try again."}
+/>
     </View>
   );
 };

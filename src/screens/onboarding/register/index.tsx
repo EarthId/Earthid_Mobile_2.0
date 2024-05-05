@@ -49,11 +49,15 @@ import {
 import { createVerifiableCred } from "../../../utils/createVerifiableCred";
 import { SavedCredVerify } from "../../../redux/reducer/saveDataReducer";
 import { SaveVerifyCred } from "../../../redux/actions/LocalSavingActions";
+import { RouteProp } from "@react-navigation/native";
+import axios from "axios";
+
 interface IRegister {
   navigation: any;
+  route: RouteProp<{ params: { combinedData: any, registrationOption: any } }, "params">;
 }
 
-const Register = ({ navigation }: IRegister) => {
+const Register = ({ navigation, route }: IRegister) => {
   const phoneInput: any = useRef();
   const dispatch = useAppDispatch();
   const {
@@ -84,8 +88,17 @@ const Register = ({ navigation }: IRegister) => {
   const issurDid = keys?.responseData?.issuerDid;
   const UserDid = keys?.responseData?.newUserDid;
   const privateKey = keys?.responseData?.generateKeyPair?.privateKey;
+  const { combinedData, registrationOption } = route.params;
   let url: any = `https://ssi-test.myearth.id/api/user/sign?issuerDID=${issurDid}`;
   let requesturl: any = `https://ssi-test.myearth.id/api/issuer/verifiableCredential?isCryptograph=${false}&downloadCryptograph=${false}`;
+ 
+
+  const ssiBaseUrl = "https://ssi-test.myearth.id/api"
+  const authorizationKey = "01a41742-aa8e-4dd6-8c71-d577ac7d463c"
+
+  useEffect(() => {
+    getItem();
+  }, []);
 
   console.log(signature, "sign");
   console.log(createVerify, "createVerify");
@@ -137,14 +150,13 @@ const Register = ({ navigation }: IRegister) => {
     getSuperAdminApiCall(superAdminApi, {}, "GET");
   }, []);
 
-  useEffect(() => {
-    getItem();
-  }, []);
+
 
   const getItem = async () => {
     const item = await AsyncStorage.getItem("flow");
     if (item == "documentflow") {
-      const name = await AsyncStorage.getItem("userDetails");
+      const name = await AsyncStorage.getItem("userName");
+      console.log('Name is:==============================================================', name)
       firstNameChangeHandler(name);
     }
   };
@@ -212,6 +224,70 @@ const Register = ({ navigation }: IRegister) => {
     return false;
   };
 
+
+        //createDOc VC
+        const createUploadDocVc = async (fieldsObject: any) => {
+          try {
+              //const signature = await createUserIdSignature(profileData);
+              const data = {
+                  schemaName: 'UploadedDocVCNeww:1',
+                  isEncrypted: false,
+                  dependantVerifiableCredential: [],
+                  credentialSubject: {
+                    "gender": fieldsObject.gender !== undefined ? fieldsObject.gender : null,
+                    "idNumber": fieldsObject.idNumber !== undefined ? fieldsObject.idNumber : null,
+                    "lastName": fieldsObject.lastName !== undefined ? fieldsObject.lastName : null,
+                    "firstName": fieldsObject.firstName !== undefined ? fieldsObject.firstName : null,
+                    "citizenship": fieldsObject.citizenship !== undefined ? fieldsObject.citizenship : null,
+                    "dateOfBirth": fieldsObject.dateOfBirth !== undefined ? fieldsObject.dateOfBirth : null,
+                   // "nationality": fieldsObject.nationality !== undefined ? fieldsObject.nationality : null,
+                   // "yearOfBirth": fieldsObject.yearOfBirth !== undefined ? fieldsObject.yearOfBirth : null,
+                    "placeOfBirth": fieldsObject.placeOfBirth !== undefined ? fieldsObject.placeOfBirth : null,
+                   // "pepSanctionMatch": fieldsObject.pepSanctionMatch !== undefined ? fieldsObject.pepSanctionMatch : null,
+                    "occupation": fieldsObject.occupation !== undefined ? fieldsObject.occupation : null,
+                    "employer": fieldsObject.employer !== undefined ? fieldsObject.employer : null,
+                   // "foreginerStatus": fieldsObject.foreginerStatus !== undefined ? fieldsObject.foreginerStatus : null,
+                   // "extraNames": fieldsObject.extraNames !== undefined ? fieldsObject.extraNames : null,
+                    "address": fieldsObject.addresses !== undefined ? fieldsObject.addresses : null,
+                    "type": fieldsObject.type !== undefined ? fieldsObject.type : null,
+                    "number": fieldsObject.number !== undefined ? fieldsObject.number : null,
+                    "country": fieldsObject.country !== undefined ? fieldsObject.country : null,
+                    "validFrom": fieldsObject.validFrom !== undefined ? fieldsObject.validFrom : null,
+                    "validUntil": fieldsObject.validUntil !== undefined ? fieldsObject.validUntil : null,
+                  //  "placeOfIssue": fieldsObject.placeOfIssue !== undefined ? fieldsObject.placeOfIssue : null,
+                  //  "firstIssue": fieldsObject.firstIssue !== undefined ? fieldsObject.firstIssue : null,
+                   // "issueNumber": fieldsObject.issueNumber !== undefined ? fieldsObject.issueNumber : null,
+                    "issuedBy": fieldsObject.issuedBy !== undefined ? fieldsObject.issuedBy : null,
+                   // "nfcValidated": fieldsObject.nfcValidated !== undefined ? fieldsObject.nfcValidated : null,
+                   // "residencePermitType": fieldsObject.residencePermitType !== undefined ? fieldsObject.residencePermitType : null
+                  }
+              };
+        
+              const config = {
+                  method: 'post',
+                  url: `${ssiBaseUrl}/issuer/verifiableCredential?isCryptograph=false&downloadCryptograph=false`,
+                  headers: {
+                      'X-API-KEY': authorizationKey,
+                      did: keys.responseData.newUserDid,
+                      publicKey: keys.responseData.generateKeyPair.publicKey,
+                      'Content-Type': 'application/json',
+                  },
+                  data: JSON.stringify(data),
+              };
+        console.log('DocVcApi', config)
+              const response = await axios.request(config);
+              console.log('VC response', response.data.data.verifiableCredential)
+              //const verifiableCredential = response.data.data.verifiableCredential;
+            
+              return response.data.data.verifiableCredential;
+        
+          } catch (error) {
+              console.log(error);
+              throw error;
+          }
+        };
+
+
   const _registerAction = async ({ publicKey }: any) => {
     const token = await getDeviceId();
     const deviceName = await getDeviceName();
@@ -250,6 +326,16 @@ const Register = ({ navigation }: IRegister) => {
   }
 
   if (userDetails && userDetails?.isAccountCreatedSuccess) {
+    if(registrationOption=="RegisterWithDoc"){
+      (async () => {
+      console.log('Sending details to the api2')
+      const uploadDocVcResponse = await createUploadDocVc(combinedData)
+      console.log('UploadedDocVc is:::::::::::', uploadDocVcResponse)
+      if(uploadDocVcResponse){
+        await AsyncStorage.setItem("uploadedDocVc", JSON.stringify(uploadDocVcResponse));
+      }
+    })();
+    }
     setsuccessResponse(true);
     userDetails.isAccountCreatedSuccess = false;
     console.log(
@@ -286,6 +372,10 @@ const Register = ({ navigation }: IRegister) => {
       );
     }
   }
+
+
+
+
   const Footer = () => (
     <View style={{ marginHorizontal: 20, backgroundColor: "#fff" }}>
       <Button

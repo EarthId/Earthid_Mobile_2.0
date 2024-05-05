@@ -49,7 +49,7 @@ const Header = ({
     <View style={containerStyle}>
       <LinearGradients
         endColor={Screens.colors.header.endColor}
-        middleColor={Screens.colors.header.middleColor}
+       // middleColor={Screens.colors.header.middleColor}
         startColor={Screens.colors.header.startColor}
         style={linearStyle}
         horizontalGradient={false}

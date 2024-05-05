@@ -439,6 +439,7 @@ const DocumentPreviewScreen = (props: any) => {
                     ? `data:image/jpeg;base64,${documentDetails?.base64}`
                     : `data:image/png;base64,${documentDetails?.base64}`,
               }}
+              onError={(error) => console.log("Image loading error:", error)}
             ></Image>
           )
         ) : (

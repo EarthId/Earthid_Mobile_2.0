@@ -33,6 +33,7 @@
     "aws-sdk": "^2.1429.0",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
+    "crypto-js": "^4.2.0",
     "google-libphonenumber": "^3.2.33",
     "lodash": "^4.17.21",
     "lottie-react-native": "^5.1.6",
