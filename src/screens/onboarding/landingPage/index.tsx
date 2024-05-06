@@ -72,7 +72,10 @@ export interface IDocumentProps {
 const landingPage = ({ navigation }: IHomeScreenProps) => {
   const { t } = useTranslation();
   const navigateAction = async () => {
-    navigation.navigate("RegisterScreen");
+
+     const registrationOption = "RegisterManually"
+           const combinedData = null
+            navigation.navigate("RegisterScreen", {combinedData, registrationOption});
   };
   const dispatch = useAppDispatch();
   const saveFeaturesForVc = useAppSelector((state) => state.saveFeatures);
