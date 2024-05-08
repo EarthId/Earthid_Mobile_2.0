@@ -395,7 +395,7 @@ const selectedDocument = "ID"
           processedDoc: "",
           base64: getImage,
           categoryType: selectedDocument && selectedDocument?.split("(")[0]?.trim(),
-          docName: "Id Document",
+          docName: "ID Document",
           isVerifyNeeded: true,
           isLivenessImage: null,
           name: "",
@@ -707,7 +707,7 @@ const selectedDocument = "ID"
               </View>
             </BottomSheet>
           </View>
-          <View>
+          {/* <View>
             {!__DEV__ &&<View
               style={{
                 justifyContent: "center",
@@ -735,7 +735,7 @@ const selectedDocument = "ID"
                 offColor={Screens.darkGray}
               />
             </View>}
-          </View>
+          </View> */}
           <TouchableOpacity
             style={{ marginTop: 20 }}
             onPress={() => setLanguageVisible(true)}

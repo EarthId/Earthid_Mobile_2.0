@@ -51,6 +51,8 @@ import { SavedCredVerify } from "../../../redux/reducer/saveDataReducer";
 import { SaveVerifyCred } from "../../../redux/actions/LocalSavingActions";
 import { RouteProp } from "@react-navigation/native";
 import axios from "axios";
+import CheckBox from "@react-native-community/checkbox";
+import { addConsent } from "../../../utils/consentApis";
 
 interface IRegister {
   navigation: any;
@@ -76,7 +78,10 @@ const Register = ({ navigation, route }: IRegister) => {
   const [callingCode, setcallingCode] = useState<string>("1");
   const [isValidMobileNumber, setValidMobileNumber] = useState<boolean>(false);
   const [isMobileEmpty, setMobileEmpty] = useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
 
+  console.log("This is for consent:-------------------------------------------------", isChecked)
+  //console.log("These are userDetails:-------------------------------------------------", userDetails)
   const saveFeaturesForVc = useAppSelector((state) => state.saveFeatures);
   // createVerifiableCrendital
 
@@ -288,6 +293,68 @@ const Register = ({ navigation, route }: IRegister) => {
         };
 
 
+                     //createAge VC
+                     const generateAgeProof = async (userDOB: any) => {
+                      try {
+        
+                          //const signature = await createUserIdSignature(profileData);
+                          const data = {"schemaName": "UserAgeSchema:1",
+                          "isEncrypted": true,
+                          "dependantVerifiableCredential": [
+                          ],
+                          "credentialSubject": {
+                            "earthId":userDetails?.responseData?.earthId,
+                            "dateOfBirth": userDOB
+                          }
+                        };
+                    
+                          const config = {
+                              method: 'post',
+                              url: `${ssiBaseUrl}/issuer/verifiableCredential`,
+                              headers: {
+                                  'X-API-KEY': authorizationKey,
+                                  did: keys.responseData.newUserDid,
+                                  publicKey: keys.responseData.generateKeyPair.publicKey,
+                                  'Content-Type': 'application/json',
+                              },
+                              data: JSON.stringify(data),
+                          };
+                    console.log('AgeProofVC', config)
+                          const response = await axios.request(config);
+                          console.log('AgeProofVC response', response.data.data.verifiableCredential)
+                          //const verifiableCredential = response.data.data.verifiableCredential;
+                        
+                          return response.data.data.verifiableCredential;
+                    
+                      } catch (error) {
+                          console.log(error);
+                          throw error;
+                      }
+                    };
+
+      
+  const addConsentCall = async () => {
+    try{
+      console.log('These are userDetails===============================', userDetails)
+   const apiData = {
+    
+      "earthId": userDetails.responseData.earthId,
+      "flowName": "New User Registeration",
+      "description": "Added new user",
+      "relyingParty": "EarthID",
+      "timeDuration": 1,
+      "isConsentActive": true,
+      "purpose": "User Data Storage"
+  
+   }
+const consentApiCall = await addConsent(apiData)
+console.log('Consent Api response------:', consentApiCall)
+    }catch (error) {
+      throw new Error(`Error adding consent: ${error}`);
+    }
+  }      
+
+
   const _registerAction = async ({ publicKey }: any) => {
     const token = await getDeviceId();
     const deviceName = await getDeviceName();
@@ -331,11 +398,21 @@ const Register = ({ navigation, route }: IRegister) => {
       console.log('Sending details to the api2')
       const uploadDocVcResponse = await createUploadDocVc(combinedData)
       console.log('UploadedDocVc is:::::::::::', uploadDocVcResponse)
+
       if(uploadDocVcResponse){
         await AsyncStorage.setItem("uploadedDocVc", JSON.stringify(uploadDocVcResponse));
       }
+
+      if(combinedData.dateOfBirth!==null){
+       const ageProofVC = await generateAgeProof(combinedData.dateOfBirth)
+await AsyncStorage.setItem("ageProofVC", JSON.stringify(ageProofVC));
+      }
+      
     })();
     }
+    (async () => {
+   await addConsentCall()
+  })();
     setsuccessResponse(true);
     userDetails.isAccountCreatedSuccess = false;
     console.log(
@@ -378,13 +455,22 @@ const Register = ({ navigation, route }: IRegister) => {
 
   const Footer = () => (
     <View style={{ marginHorizontal: 20, backgroundColor: "#fff" }}>
+       {/* Checkbox with text */}
+       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10  }}>
+        <CheckBox
+          value={isChecked}
+
+          onValueChange={(newValue) => setIsChecked(newValue)}
+        />
+        <GenericText style={{marginLeft: 10,marginRight: 35, fontSize: 11}}>I agree to the terms and conditions and provide my consent to EarthID for using my data</GenericText>
+      </View>
       <Button
-        disabled={!isValidMobileNumber || islastNameError || isfirstNameError || isemailError || firstName==='' || email==='' || lastName === '' }
+        disabled={!isChecked || !isValidMobileNumber || islastNameError || isfirstNameError || isemailError || firstName==='' || email==='' || lastName === '' }
         onPress={_navigateAction}
         style={{
           buttonContainer: {
             elevation: 5,
-            opacity:isValidMobileNumber && !islastNameError && !isfirstNameError && !isemailError &&  lastName!==''&& firstName!=='' && email !=='' ?1:0.5
+            opacity:isChecked && isValidMobileNumber && !islastNameError && !isfirstNameError && !isemailError &&  lastName!==''&& firstName!=='' && email !=='' ?1:0.5
           },
           text: {
             color: Screens.pureWhite,

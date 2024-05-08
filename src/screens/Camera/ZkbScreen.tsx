@@ -22,14 +22,16 @@ import { Dropdown } from "react-native-element-dropdown";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { LocalImages } from "../../constants/imageUrlConstants";
 import { SCREENS } from "../../constants/Labels";
+import LinearGradients from "../../components/GradientsPanel/LinearGradient";
+import { Switch } from "react-native-gesture-handler";
+import { addConsent } from "../../utils/consentApis";
 
 export const QrScannerMaskedWidget = ({
   createVerifiableCredentials,
-  setIsCamerVisible,
   barCodeDataDetails,
-  setisDocumentModalkyc,
   isLoading,
   onDataShare,
+  navigation, // Add navigation prop
 }: any) => {
   const documentsDetailsList = useAppSelector((state) => state?.Documents);
   const [showVisibleDOB, setshowVisibleDOB] = useState(false);
@@ -38,6 +40,13 @@ export const QrScannerMaskedWidget = ({
   const [childCheckboxes, setChildCheckboxes] = useState({});
 
   const [documentVc, setDocumentVc] = useState(null);
+  const [isChecked, setIsChecked] = useState(false);
+
+  const userDetails = useAppSelector((state) => state.account);
+
+  console.log("This is for consent:-------------------------------------------------", isChecked)
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,6 +89,7 @@ console.log('Stored Document VC', storedDocumentVc)
       await AsyncStorage.setItem("selectedFields", JSON.stringify({ selectedFields }));
       await AsyncStorage.setItem("selectedVc", JSON.stringify({ documentVc }));
       onDataShare(selectedFields, documentVc);
+      await addConsentCall()
     }
     
   };
@@ -111,11 +121,11 @@ console.log('Stored Document VC', storedDocumentVc)
         onPress={() => (setExpandedItem(item.id), handleParentCheckboxChange())}
       >
         <View
-          style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: "#ccc" }}
+          style={{ padding: 3, marginBottom: 15}}
         >
           <View
             style={{
-              height: 100,
+              height: 90,
               backgroundColor: "#fff",
               borderRadius: 20,
               padding: 15,
@@ -157,15 +167,17 @@ console.log('Stored Document VC', storedDocumentVc)
               </View>
             </View>
   
-            <CheckBox
-              disabled={false}
-              value={parentCheckbox}
-              onValueChange={handleParentCheckboxChange}
-            />
+            <Switch
+  trackColor={{ false: "#767577", true: "#81b0ff" }}
+  thumbColor={parentCheckbox ? "#007AFF" : "#f4f3f4"} // Change the thumb color to blue when active
+  ios_backgroundColor="#3e3e3e"
+  onValueChange={handleParentCheckboxChange}
+  value={parentCheckbox}
+/>
           </View>
   
           {expandedItem === item.id && (
-  <View style={{ marginTop: 8, marginLeft: 20 }}>
+  <View style={{ marginTop: 8 }}>
   {documentVc && documentVc.credentialSubject[0] && Object.keys(documentVc.credentialSubject[0]).map((fieldName, fieldIndex) => {
     // Check if the field value is not null
     if (documentVc.credentialSubject[0][fieldName] !== null) {
@@ -177,15 +189,24 @@ console.log('Stored Document VC', storedDocumentVc)
             justifyContent: "space-between",
             padding: 10,
             borderWidth: 0.6,
-            borderColor: "#0163f7",
+            margin: 3,
+            borderColor: "#0000001A",
+            borderRadius: 5
           }}
         >
-          <Text>{fieldName}: {documentVc.credentialSubject[0][fieldName]}</Text>
-          <CheckBox
-            disabled={false}
-            value={childCheckboxes[fieldName]}
-            onValueChange={() => handleChildCheckboxChange(fieldName)}
-          />
+          {/* <Text>{fieldName}: {documentVc.credentialSubject[0][fieldName]}</Text> */}
+          <Text style={
+            {
+              marginTop: 7
+            }
+          }>{fieldName}</Text>
+<Switch
+  trackColor={{ false: "#767577", true: "#81b0ff" }}
+  thumbColor={childCheckboxes[fieldName] ? "#007AFF" : "#f4f3f4"} // Change the thumb color to blue when active
+  ios_backgroundColor="#3e3e3e"
+  onValueChange={() => handleChildCheckboxChange(fieldName)}
+  value={childCheckboxes[fieldName]}
+/>
         </View>
       );
     } else {
@@ -223,31 +244,78 @@ console.log('Stored Document VC', storedDocumentVc)
     return getDropDownList()?.length > 0;
   };
 
+
+  const addConsentCall = async () => {
+    try{
+      console.log('These are userDetails===============================', userDetails)
+   const apiData = {
+    
+      "earthId": userDetails.responseData.earthId,
+      "flowName": "Selective Data Disclosure",
+      "description": "Sharing selective fields from a document",
+      "relyingParty": "EarthID",
+      "timeDuration": 1,
+      "isConsentActive": true,
+      "purpose": "Sharing of information for selective disclosure"
+  
+   }
+const consentApiCall = await addConsent(apiData)
+console.log('Consent Api response------:', consentApiCall)
+    }catch (error) {
+      throw new Error(`Error adding consent: ${error}`);
+    }
+  } 
+
+
+  const navigateToBack = () => {
+    navigation.goBack(); // Use the navigation prop to go back
+  }
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff", zIndex: 100 }}>
-      <ScrollView>
-        <View>
-          <View style={{ margin: 20 }}>
-            <TouchableOpacity
-              onPress={() => {
-                setisDocumentModalkyc(false);
-                setIsCamerVisible(true);
-              }}
-            >
-              <Image
-                resizeMode="contain"
-                style={{ width: 15, height: 15, tintColor: "#000" }}
-                source={LocalImages.closeImage}
-              ></Image>
-            </TouchableOpacity>
-          </View>
-          <GenericText
-            style={{
-              padding: 5,
-              color: "#000",
-              fontSize: 16            }}>
-              {"Select which details to share?"}
-            </GenericText>
+   
+    <View style={styles.sectionContainer}
+    >
+      
+      <ScrollView contentContainerStyle={styles.sectionContainer}>
+      <View style={styles.linearStyle}>
+      <LinearGradients
+        endColor={Screens.colors.header.endColor}
+       // middleColor={Screens.colors.header.middleColor}
+        startColor={Screens.colors.header.startColor}
+        style={styles.linearStyle}
+        horizontalGradient={false}
+      >
+         </LinearGradients>
+         </View>     
+        <View style={styles.category}>
+     
+           
+            
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 15}}>
+  <GenericText
+    style={{
+      padding: 5,
+      color: "#000",
+      fontSize: 18,
+      fontWeight: 600
+
+    }}
+  >
+    {"Select which details to share?"}
+  </GenericText>
+  <View style={{ marginEnd: 20 }}>
+    <TouchableOpacity
+      onPress={() => {
+        navigateToBack();
+      }}
+    >
+      <Image
+        resizeMode="contain"
+        style={{ width: 15, height: 15, tintColor: "#000" }}
+        source={LocalImages.closeImage}
+      />
+    </TouchableOpacity>
+  </View>
+</View>
             <GenericText
               style={{
                 padding: 5,
@@ -279,12 +347,22 @@ console.log('Stored Document VC', storedDocumentVc)
                 keyExtractor={(item) => item.id}
               />
             </View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10, marginBottom: 20  }}>
+        <CheckBox
+          value={isChecked}
+
+          onValueChange={(newValue) => setIsChecked(newValue)}
+        />
+        <GenericText style={{marginLeft: 10,marginRight: 35,  fontSize: 11}}>I agree to the terms and conditions and provide my consent to EarthID for using my data</GenericText>
+      </View>
+
   
-            <View style={{ flex: 1, marginBottom: 100 }}>
+            <View style={{ flex: 1, marginBottom: 20 }}>
               {!isLoading && (
                 <TouchableOpacity
                   style={{
-                    opacity: !checkDisable() ? 0.5 : 1,
+                    opacity: isChecked ? 1 : 0.5,
                     backgroundColor: "#0163f7",
                     marginHorizontal: 10,
                     padding: 15,
@@ -292,7 +370,7 @@ console.log('Stored Document VC', storedDocumentVc)
                     justifyContent: "center",
                     alignItems: "center",
                   }}
-                  disabled={!checkDisable()}
+                  disabled={!checkDisable()|| !isChecked}
                   onPress={() => {
                     sendDataToParent(); // Call sendDataToParent when share button is clicked
                     createVerifiableCredentials(); // Optionally, call createVerifiableCredentials
@@ -306,11 +384,126 @@ console.log('Stored Document VC', storedDocumentVc)
                 </TouchableOpacity>
               )}
             </View>
-          </View>
+            </View>
+         
         </ScrollView>
+       
       </View>
     );
   };
+
+
+  const styles = StyleSheet.create({
+
+    sectionContainer: {
+      flexGrow: 1,
+      backgroundColor: Screens.colors.background,
+    },
+    title: {
+      color: Screens.grayShadeColor,
+    },
+    subtitle: {
+      color: Screens.black,
+      paddingLeft: 20,
+      fontWeight: "bold",
+      fontSize: 15,
+      opacity: 1,
+    },
+    containerForSocialMedia: {
+      marginTop: 10,
+      marginHorizontal: 10,
+      borderColor: Screens.grayShadeColor,
+      borderWidth: 0.5,
+      borderRadius: 10,
+      justifyContent: "center",
+    },
+    logoContainer: {
+      width: 100,
+      height: 100,
+    },
+    textContainer: {
+      justifyContent: "flex-start",
+      alignItems: "flex-start",
+    },
+    linearStyle: {
+      height: 350,
+      borderBottomLeftRadius: 30,
+      borderBottomRightRadius: 30,
+      elevation: 4,
+    },
+    categoryHeaderText: {
+      marginHorizontal: 20,
+      marginVertical: 10,
+  
+      color: Screens.headingtextColor,
+    },
+  
+    flatPanel: {
+      marginHorizontal: 25,
+      height: 80,
+      borderRadius: 15,
+      backgroundColor: Screens.colors.background,
+      elevation: 15,
+      marginTop: -40,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 20,
+    },
+    logoContainers: {
+      width: 30,
+      height: 30,
+      tintColor: Screens.grayShadeColor,
+    },
+    alignCenter: { justifyContent: "center", alignItems: "center" },
+    label: {
+      fontWeight: "bold",
+      color: Screens.black,
+    },
+    category: {
+      backgroundColor: Screens.pureWhite,
+      padding: 10,
+      marginTop: -280,
+      marginHorizontal: 15,
+      elevation: 5,
+      borderRadius: 10,
+      flex: 0.1,
+      justifyContent: "space-between",
+      marginBottom: 100
+    },
+    avatarContainer: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      marginHorizontal: 8,
+      flexDirection: "row",
+      backgroundColor: Screens.lightGray,
+    },
+    avatarImageContainer: {
+      width: 25,
+      height: 30,
+      marginTop: 5,
+    },
+    avatarTextContainer: {
+      fontSize: 13,
+      fontWeight: "500",
+    },
+    cardContainer: {
+      flex: 1,
+      paddingVertical: 9,
+      title: {
+        color: Screens.grayShadeColor,
+      },
+    },
+    textInputContainer: {
+      borderRadius: 10,
+      borderColor: Screens.colors.primary,
+      borderWidth: 2,
+      marginLeft: 10,
+      marginTop: -2,
+    },
+  });
   
   export default QrScannerMaskedWidget;
   
+

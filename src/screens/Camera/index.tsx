@@ -40,6 +40,7 @@ import { dateTime } from "../../utils/encryption";
 import { postApi } from "../../utils/createUserSignaturekey";
 import ZkbScreen from "./DisclosureScreen";
 import SelctiveDisclosure from "./ZkbScreen";
+import { addConsent } from "../../utils/consentApis";
 
 const data = [
   { label: " 1", value: "1" },
@@ -110,6 +111,11 @@ const CameraScreen = (props: any) => {
   );
 
   const [createSignatureKey, setCreateSignatureKey] = useState();
+
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
+  console.log("This is for consent:-------------------------------------------------", isChecked)
+
 
 
   //const [sharedData, setSharedData] = useState<{ selectedFields: any, documentVc: any } | null>(null);
@@ -205,8 +211,47 @@ const CameraScreen = (props: any) => {
    // return {selectedFields, documentVc}
   };
 
+  const addConsentCall = async () => {
+    try{
+      console.log('These are userDetails===============================', userDetails)
+   const apiData = {
+    
+      "earthId": userDetails.responseData.earthId,
+      "flowName": "Login",
+      "description": "Authorization for login",
+      "relyingParty": "EarthID",
+      "timeDuration": 1,
+      "isConsentActive": true,
+      "purpose": "Login info share"
+  
+   }
+const consentApiCall = await addConsent(apiData)
+console.log('Consent Api response------:', consentApiCall)
+    }catch (error) {
+      throw new Error(`Error adding consent: ${error}`);
+    }
+  } 
 
-
+  const addConsentCallDoc = async () => {
+    try{
+      console.log('These are userDetails===============================', userDetails)
+   const apiData = {
+    
+      "earthId": userDetails.responseData.earthId,
+      "flowName": "Document Share",
+      "description": "To share document",
+      "relyingParty": "EarthID",
+      "timeDuration": 1,
+      "isConsentActive": true,
+      "purpose": "Sharing document and its information"
+  
+   }
+const consentApiCall = await addConsent(apiData)
+console.log('Consent Api response------:', consentApiCall)
+    }catch (error) {
+      throw new Error(`Error adding consent: ${error}`);
+    }
+  } 
 
   const getVcdata = async () => {
     const getvcCred: any = await AsyncStorage.getItem("vcCred");
@@ -356,45 +401,47 @@ const CameraScreen = (props: any) => {
   const generateAgeVC = async (success: { request: string; value: string; } | undefined) => {
     //const amount =  documentsDetailsList?.responseData?.filter((item: { amount: any; })=>item?.amount)[0]?.amount
     const dateOfBirth : any = await AsyncStorage.getItem("userDOB");
+    const ageProof = await AsyncStorage.getItem("ageProofVC");
     console.log('Userdetails for dob:.............', dateOfBirth)
-    console.log('datapayload===>12345',JSON.stringify({
-      "Content-Type": "application/json",
-      "publicKey": publicKey,
-      "did":UserDid,
-      "X-API-KEY": '01a41742-aa8e-4dd6-8c71-d577ac7d463c',
-    }))
+    console.log('AgeProofVC for dob:.............', ageProof)
+    // console.log('datapayload===>12345',JSON.stringify({
+    //   "Content-Type": "application/json",
+    //   "publicKey": publicKey,
+    //   "did":UserDid,
+    //   "X-API-KEY": '01a41742-aa8e-4dd6-8c71-d577ac7d463c',
+    // }))
     try {
       // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
-      const response = await fetch("https://ssi-test.myearth.id/api/issuer/verifiableCredential", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "publicKey": publicKey,
-          "did":UserDid,
-          "X-API-KEY": '01a41742-aa8e-4dd6-8c71-d577ac7d463c',
-        },
-        body:JSON.stringify({"schemaName": "UserAgeSchema:1",
-        "isEncrypted": true,
-        "dependantVerifiableCredential": [
-        ],
-        "credentialSubject": {
-          "earthId":userDetails?.responseData?.earthId,
-          "dateOfBirth": dateOfBirth
-        }
-      }),
-      });
+      // const response = await fetch("https://ssi-test.myearth.id/api/issuer/verifiableCredential", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "publicKey": publicKey,
+      //     "did":UserDid,
+      //     "X-API-KEY": '01a41742-aa8e-4dd6-8c71-d577ac7d463c',
+      //   },
+      //   body:JSON.stringify({"schemaName": "UserAgeSchema:1",
+      //   "isEncrypted": true,
+      //   "dependantVerifiableCredential": [
+      //   ],
+      //   "credentialSubject": {
+      //     "earthId":userDetails?.responseData?.earthId,
+      //     "dateOfBirth": dateOfBirth
+      //   }
+      // }),
+      // });
    
-      console.log("Response Status:", response);
-      // Check if the request was successful
-      if (!response.ok) {
+      // console.log("Response Status:", response);
+      // // Check if the request was successful
+      // if (!response.ok) {
        
-        throw new Error("Network response was not ok");
-      }
+      //   throw new Error("Network response was not ok");
+      // }
 
       // Get the response text directly
-      const resulst = await response.json();
-
-      console.log('response?.data?.verifiableCredential',resulst?.data?.verifiableCredential)
+     // const resulst = await response.json();
+const ageProofJSON = JSON.parse(ageProof)
+     // console.log('response?.data?.verifiableCredential',resulst?.data?.verifiableCredential)
       let payload 
    
      if(success?.request === 'minAge'){
@@ -407,7 +454,8 @@ const CameraScreen = (props: any) => {
       verifyParams: [
         `dateOfBirth=${(dateOfBirth)}`
       ],
-      credentials:resulst?.data?.verifiableCredential
+      //credentials:resulst?.data?.verifiableCredential
+      credentials: ageProofJSON
     }
      }else{
        payload ={
@@ -1032,11 +1080,18 @@ const CameraScreen = (props: any) => {
   const getArrayOfBase64 =()=>{
     let datas: any[] =[]
       documentsDetailsList?.responseData.map((item: { base64: string; isVc: any; selectedForCheckBox: any; isVerifyNeeded: any; },_index: any)=>{
-       // console.log('itemselected',item)
+      // console.log('itemselected for docShare------------------',item)
         if(item?.base64 && !item.isVc && item.selectedForCheckBox){
           if(item?.isVerifyNeeded){
-            const baseImage =item?.base64?.split('data:image/png;base64,')[1]
-            datas.push(baseImage)
+            if(item.base64.startsWith('data:')){
+              console.log('baase64 of selected docuemnt for sharing----------',item.base64)
+              const baseImage =item?.base64?.split('data:image/png;base64,')[1]
+              console.log('this is base image-------', baseImage)
+              datas.push(baseImage)
+            }else{
+              datas.push(item.base64)
+            }
+            
           }
           else{
             datas.push(item.base64)
@@ -1115,7 +1170,7 @@ const CameraScreen = (props: any) => {
      auditFlowApi()
     generateUserSignature();
  getData()
-     
+    await addConsentCallDoc();
     setloadingforGentSchemaAPI(true);
 
     if (barCodeDataDetails?.requestType === "document") {
@@ -1428,8 +1483,10 @@ const CameraScreen = (props: any) => {
         loadingText={successMessage}
       />
       <ModalView
-        width={deviceWidth / 1.45}
-        height={350}
+        width={deviceWidth / 1.35}
+        height={450}
+        marginLeft={20}
+        justifyContent={"center"}
         isModalVisible={issuerLogin}
       >
         <View
@@ -1473,15 +1530,28 @@ const CameraScreen = (props: any) => {
           >
             {"plsauthorizeit"}
           </GenericText>
+
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10  }}>
+        <CheckBox
+          value={isChecked}
+
+          onValueChange={(newValue) => setIsChecked(newValue)}
+        />
+        <GenericText style={{marginLeft: 10,marginRight: 35, fontSize: 11}}>I agree to the terms and conditions and provide my consent to EarthID for using my data</GenericText>
+      </View>
+
           <Button
             onPress={() => {
               setissuerLogin(false);
               getData();
+              addConsentCall()
             }}
             style={{
               buttonContainer: {
                 elevation: 5,
                 marginHorizontal: 10,
+                opacity: isChecked ? 1 : 0.5,
               },
               text: {
                 color: Screens.pureWhite,
@@ -1624,7 +1694,7 @@ const CameraScreen = (props: any) => {
                       console.log("item", item);
                       return (
                         <View
-                          style={{ flexDirection: "row", marginVertical: 10 }}
+                          style={{ flexDirection: "row", marginVertical: 10, marginLeft: 15 }}
                         >
                           <CheckBox
                             disabled={false}
@@ -1711,12 +1781,22 @@ const CameraScreen = (props: any) => {
               }}
             />
           </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10, marginLeft: 10, marginRight: 15  }}>
+        <CheckBox
+          value={isChecked}
+
+          onValueChange={(newValue) => setIsChecked(newValue)}
+        />
+        <GenericText style={{marginLeft: 15,marginRight: 15, fontSize: 11}}>I agree to the terms and conditions and provide my consent to EarthID for using my data</GenericText>
+      </View>
           <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              marginVertical: 50,
-              marginHorizontal: 20,
+              marginVertical: 20,
+              marginHorizontal: 30,
+              
             }}
           >
             <TouchableOpacity
@@ -1732,9 +1812,11 @@ const CameraScreen = (props: any) => {
               </GenericText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{ opacity: checkDisable() ? 0.5 : 1 }}
-              disabled={ checkDisable()}
-              onPress={createVerifiableCredentials}
+              style={{ opacity: checkDisable() || !isChecked ? 0.5 : 1 }}
+              disabled={ checkDisable() || !isChecked}
+              onPress={
+                createVerifiableCredentials
+              }
             >
               <GenericText
                 style={{ color: "green", fontSize: 16, fontWeight: "700" }}
@@ -1780,6 +1862,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
+    marginHorizontal: 10
   },
   icon: {
     marginRight: 5,

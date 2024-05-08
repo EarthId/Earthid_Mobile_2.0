@@ -627,7 +627,14 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
            
         
          const username = uploadDocResponseData.person?.firstName?.value ?? null;
-   
+         
+         const userDOB = uploadDocResponseData?.person?.dateOfBirth?.value ?? null;
+
+         let ageProofVC
+         if(userDOB!==null){
+ageProofVC = await generateAgeProof(userDOB)
+await AsyncStorage.setItem("ageProofVC", JSON.stringify(ageProofVC));
+         }
         //  const docFrontBase64 = await urlToBase64(documentFront.url)
         //  console.log(docFrontBase64);
         
@@ -681,7 +688,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
                   processedDoc: "",
                   base64: getImage,
                   categoryType: selectedDocument && selectedDocument?.split("(")[0]?.trim(),
-                  docName: "Id Document",
+                  docName: "ID Document",
                   isVerifyNeeded: true,
                   isLivenessImage: null,
                   name: "",
@@ -704,7 +711,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
                   date: date?.date,
                   time: date?.time,
                   txId: "data?.result",
-                  docType: uploadDocVcResponse?.type[1],
+                  docType: ageProofVC?.type[1],
                   docExt: ".jpg",
                   processedDoc: "",
                   isVc: true,
@@ -720,7 +727,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
                     processedDoc: "",
                     isVc: true,
                   }),
-                  verifiableCredential: uploadDocVcResponse,
+                  verifiableCredential: ageProofVC,
                   docName: "",
                   base64: undefined,
                   isLivenessImage: "",
@@ -861,6 +868,46 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
                 throw error;
             }
           };
+
+
+             //createAge VC
+             const generateAgeProof = async (userDOB: any) => {
+              try {
+
+                  //const signature = await createUserIdSignature(profileData);
+                  const data = {"schemaName": "UserAgeSchema:1",
+                  "isEncrypted": true,
+                  "dependantVerifiableCredential": [
+                  ],
+                  "credentialSubject": {
+                    "earthId":userDetails?.responseData?.earthId,
+                    "dateOfBirth": userDOB
+                  }
+                };
+            
+                  const config = {
+                      method: 'post',
+                      url: `${ssiBaseUrl}/issuer/verifiableCredential`,
+                      headers: {
+                          'X-API-KEY': authorizationKey,
+                          did: keys.responseData.newUserDid,
+                          publicKey: keys.responseData.generateKeyPair.publicKey,
+                          'Content-Type': 'application/json',
+                      },
+                      data: JSON.stringify(data),
+                  };
+            console.log('AgeProofVC', config)
+                  const response = await axios.request(config);
+                  console.log('AgeProofVC response', response.data.data.verifiableCredential)
+                  //const verifiableCredential = response.data.data.verifiableCredential;
+                
+                  return response.data.data.verifiableCredential;
+            
+              } catch (error) {
+                  console.log(error);
+                  throw error;
+              }
+            };
       
 
   const _keyExtractor = ({ path }: any) => path.toString();

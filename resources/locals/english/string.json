@@ -49,7 +49,7 @@
   "securityscreeninstruction": "Locking this app is required for added security",
   "securityscreeninstructions": "To keep your data secure, we store your  personal data on your device, not on the  centralized servers.",
 
-  "confirminstruction": "Please confirm your 6- digit passcode to proceed further",
+  "confirminstruction": "Please confirm your 6-digit passcode to proceed further",
   "usetouchid": "USE TOUCH ID",
   "usefaceid": "USE FACE ID",
   "usepasscode": "USE PASSCODE",

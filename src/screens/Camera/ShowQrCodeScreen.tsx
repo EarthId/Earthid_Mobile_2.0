@@ -86,7 +86,7 @@ const CameraScreen = (props: any) => {
   const securityModalPopup = () => {
     Alert.alert(
       "Device Permission",
-      "To grant Device id you need to all the app permission from (Setting > App > Earth Id > Permission)",
+      "To grant Device id you need to all the app permission from (Setting > App > EarthID > Permission)",
       [
         // {
         //   text: 'Cancel',

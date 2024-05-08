@@ -977,7 +977,7 @@ PODS:
     - React-Core
   - react-native-camera/RN (4.2.1):
     - React-Core
-  - react-native-cameraroll (7.6.0):
+  - react-native-cameraroll (7.6.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1002,6 +1002,9 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.10.1):
     - React-Core
+  - react-native-sdk (6.0.0):
+    - React
+    - VeriffSDK (= 6.23.0)
   - react-native-splash-screen (3.3.0):
     - React-Core
   - react-native-version-check (3.4.7):
@@ -1220,6 +1223,7 @@ PODS:
   - SocketRocket (0.6.1)
   - TouchID (4.4.1):
     - React
+  - VeriffSDK (6.23.0)
   - Yoga (1.14.0)
   - ZXingObjC (3.6.9):
     - ZXingObjC/All (= 3.6.9)
@@ -1275,6 +1279,7 @@ DEPENDENCIES:
   - react-native-plaid-link-sdk (from `../node_modules/react-native-plaid-link-sdk`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - "react-native-sdk (from `../node_modules/@veriff/react-native-sdk`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-version-check (from `../node_modules/react-native-version-check`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
@@ -1340,6 +1345,7 @@ SPEC REPOS:
     - Plaid
     - PromisesObjC
     - SocketRocket
+    - VeriffSDK
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -1434,6 +1440,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-randombytes"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-sdk:
+    :path: "../node_modules/@veriff/react-native-sdk"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
   react-native-version-check:
@@ -1530,7 +1538,7 @@ SPEC CHECKSUMS:
   FBLazyVector: f64d1e2ea739b4d8f7e4740cde18089cd97fe864
   FBReactNativeSpec: 9f2b8b243131565335437dba74923a8d3015e780
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: 035f1e36e53b355cf70f6434d161b36e7d21fecd
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleMLKit: 97ac7af399057e99182ee8edfa8249e3226a4065
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
@@ -1571,7 +1579,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 84ea43c6c6232049135b1550b8c60b2faac19fab
   react-native-biometrics: 352e5a794bfffc46a0c86725ea7dc62deb085bdc
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
-  react-native-cameraroll: 02b1aa5459f64d2abc8312261339b4f83850d5e4
+  react-native-cameraroll: cb0d0a2b76a9d56461ea0ab5782f69e694544840
   react-native-date-picker: 312c387d2ff873c66c5e4cf78ff6827fa91644e2
   react-native-document-picker: cd4d6b36a5207ad7a9e599ebb9eb0c2e84fa0b87
   react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
@@ -1582,6 +1590,7 @@ SPEC CHECKSUMS:
   react-native-plaid-link-sdk: 16c6c09bbe2bab1e343b72b5fbca107f39f45f1e
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
+  react-native-sdk: c9e667e09e39c10b8c3d6271fbad1f952152c9b8
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-version-check: 6cd36aad4e30b8e3216747e3b4ddeb09e0647af8
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
@@ -1623,7 +1632,8 @@ SPEC CHECKSUMS:
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
-  Yoga: 805bf71192903b20fc14babe48080582fee65a80
+  VeriffSDK: 5ea1d34c3a1b761b7d4a77660cdf122d2e88fdf2
+  Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 80a5f5205cdd05ad5dbb19079bc1aa61dcda3cd9
