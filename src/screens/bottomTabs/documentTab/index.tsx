@@ -480,17 +480,20 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
      
         Alert.alert(
           "Confirmation!",
-          "Please confirm that this is a self-attested document",
+          "Please select the type of document you wish to add:",
+
+          "For a government-issued photo ID, click 'Photo ID.'",
+          "For a self-attested document, click 'Self-attested.'",
           [
             {
-              text: "Yes",
+              text: "Self-attested",
               onPress: () => {
                 navigation.navigate("uploadDocumentsScreen");
               },
               style: "cancel",
             },
             {
-              text: "No",
+              text: "Photo ID",
               onPress: () => {
      
 

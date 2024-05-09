@@ -354,7 +354,7 @@ console.log('Consent Api response------:', consentApiCall)
 
           onValueChange={(newValue) => setIsChecked(newValue)}
         />
-        <GenericText style={{marginLeft: 10,marginRight: 35,  fontSize: 11}}>I agree to the terms and conditions and provide my consent to EarthID for using my data</GenericText>
+        <GenericText style={{marginLeft: 10,marginRight: 35,  fontSize: 11}}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
       </View>
 
   
