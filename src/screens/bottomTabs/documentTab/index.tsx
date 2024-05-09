@@ -479,11 +479,10 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
       
      
         Alert.alert(
-          "Confirmation!",
           "Please select the type of document you wish to add:",
-
-          "For a government-issued photo ID, click 'Photo ID.'",
-          "For a self-attested document, click 'Self-attested.'",
+    
+    "For a government-issued photo ID, click 'Photo ID.'\n\n" +
+    "For a self-attested document, click 'Self-attested.'",
           [
             {
               text: "Self-attested",
@@ -503,7 +502,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
               },
             },
           ],
-          { cancelable: false }
+          { cancelable: true }
         );
       }
 
