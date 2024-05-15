@@ -756,7 +756,7 @@
 				MARKETING_VERSION = 2.9.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.earthid.ShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-new.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -802,7 +802,7 @@
 				);
 				MARKETING_VERSION = 2.9.5;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.earthid.ShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-new.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -831,19 +831,20 @@
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = EarthId/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = EarthID;
+				INFOPLIST_KEY_CFBundleDisplayName = EarthID1.0;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.6.6;
+				MARKETING_VERSION = 4.6.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.earthid;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-new";
 				PRODUCT_NAME = EarthId;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -867,19 +868,20 @@
 				DEVELOPMENT_TEAM = 3D5QUAXZH3;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = EarthId/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = EarthID;
+				INFOPLIST_KEY_CFBundleDisplayName = EarthID1.0;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.6.6;
+				MARKETING_VERSION = 4.6.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.earthid;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-new";
 				PRODUCT_NAME = EarthId;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

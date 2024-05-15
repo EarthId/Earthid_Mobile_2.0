@@ -510,262 +510,284 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
       const veriffSdkLaunch = async () => {
 
             const sessionRes = await createVerification()
-            const sessionUrl = sessionRes.verification.url
-            const sessionId = sessionRes.verification.id
-        
-            
-        
-            var result = await VeriffSdk.launchVeriff({
-              sessionUrl: sessionUrl,
-              branding: {
-                logo: resolveAssetSource(earthIDLogo), // see alternative options for logo below
-                //background: '#fffff',
-                //onBackground: '#ffffff',
-               // onBackgroundSecondary: '#000',
-               // onBackgroundTertiary: '#000000',
-                primary: '#293fee',
-                onPrimary: '#ffffff',
-                secondary: '#00bbf9',
-                onSecondary: '#ffffff',
-                outline: '#444444',
-                cameraOverlay: '#863ded',
-                onCameraOverlay: '#ffffff',
-                error: '#d90429',
-                success: '#00bbf9',
-                buttonRadius: 28,
-                iOSFont: {
-                  regular: 'Font-Regular',
-                  medium: 'Font-Medium',
-                  bold: 'Font-Bold',
+
+            if(sessionRes.status=="success"){
+              const sessionUrl = sessionRes.verification.url
+              const sessionId = sessionRes.verification.id
+          
+              
+          
+              var result = await VeriffSdk.launchVeriff({
+                sessionUrl: sessionUrl,
+                branding: {
+                  logo: resolveAssetSource(earthIDLogo), // see alternative options for logo below
+                  //background: '#fffff',
+                  //onBackground: '#ffffff',
+                 // onBackgroundSecondary: '#000',
+                 // onBackgroundTertiary: '#000000',
+                  primary: '#293fee',
+                  onPrimary: '#ffffff',
+                  secondary: '#00bbf9',
+                  onSecondary: '#ffffff',
+                  outline: '#444444',
+                  cameraOverlay: '#863ded',
+                  onCameraOverlay: '#ffffff',
+                  error: '#d90429',
+                  success: '#00bbf9',
+                  buttonRadius: 28,
+                  iOSFont: {
+                    regular: 'Font-Regular',
+                    medium: 'Font-Medium',
+                    bold: 'Font-Bold',
+                  },
+                  androidFont: {
+                    regular: 'font_regular',
+                    medium: 'font-medium',
+                    bold: 'font_bold',
+                  }
                 },
-                androidFont: {
-                  regular: 'font_regular',
-                  medium: 'font-medium',
-                  bold: 'font_bold',
-                }
-              },
-            });
-          
-            setLoad(true);
-        console.log('Response of sdk:', result )
-        
-        let uploadDocResponseData
-        let getDocImages
-        let getImage
-        let uploadDocVcResponse
-        
-        if(result.status=="STATUS_DONE"){
-        
-          await new Promise(resolve => setTimeout(resolve, 8000));
-        
-            uploadDocResponseData = await getSessionDecision(sessionId);
-            getDocImages = await getMediaData(sessionId);
-
-            const documentFront = getDocImages.images.find(image => image.name === 'document-front-pre');
-            console.log(documentFront);
-            getImage = await getMediaImage(documentFront.id)
-       
-        
-            console.log("Document Data", uploadDocResponseData)
-          console.log("Document Images", getDocImages)
-          console.log("Media Image", getImage)
-
-
-
-       
-        
-         // Extracting data from the person object
-         const personData: { [key: string]: string } = {};
-         for (const key in uploadDocResponseData.person) {
-           if (typeof uploadDocResponseData.person[key]?.value === "string") {
-             personData[key] = uploadDocResponseData.person[key].value;
-           }
-         }
-         
-         // Extracting data from the document object
-         const documentData: { [key: string]: string } = {};
-         for (const key in uploadDocResponseData.document) {
-           if (typeof uploadDocResponseData.document[key]?.value === "string") {
-             documentData[key] = uploadDocResponseData.document[key].value;
-           }
-         }
-         
-         // Combining the extracted data into one object
-         const combinedData = {
-           ...personData,
-           ...documentData
-         };
-         
-         // Logging the combined data
-         console.log("Combined Data:", combinedData);
-         
-        
-             console.log('Sending details to the api2')
-             uploadDocVcResponse = await createUploadDocVc(combinedData)
-             console.log('UploadedDocVc is:::::::::::', uploadDocVcResponse)
-             await createPayLoadFromDocumentData(uploadDocResponseData, uploadDocVcResponse)
-        
-      
-        
-      
-
-
-        // const sessionId = "90c1146a-5f81-4c9a-8993-ad0675341a04";
-        // const mediaId = "7b752371-0bba-48c1-b283-f50b5c8c4628";
-        // const uploadDocResponseData = await getSessionDecision(sessionId);
-        // const getDocImages = await getMediaData(sessionId);
-        // const getImage = await getMediaImage(mediaId)
-       
-        
-        //    console.log("Document Data", uploadDocResponseData)
-        //  console.log("Document Images", getDocImages)
-        //  console.log("Media Image", getImage)
-
-
-        //  console.log("UploadDocData:", uploadDocResponseData)
-    
-        
+              });
             
-           
-        
-         const username = uploadDocResponseData.person?.firstName?.value ?? null;
-         
-         const userDOB = uploadDocResponseData?.person?.dateOfBirth?.value ?? null;
-
-         let ageProofVC
-         if(userDOB!==null){
-ageProofVC = await generateAgeProof(userDOB)
-await AsyncStorage.setItem("ageProofVC", JSON.stringify(ageProofVC));
-         }
-        //  const docFrontBase64 = await urlToBase64(documentFront.url)
-        //  console.log(docFrontBase64);
-        
-        const selectedDocument = "ID"
-             // verifiAPICall()
+              setLoad(true);
+          console.log('Response of sdk:', result )
           
-             setTimeout(() => {
-              // const index = documentsDetailsList?.responseData?.findIndex(
-              //   (obj: { id: any; }) => obj?.id === selectedItem?.id
-              // );
-              // console.log("index", index);
-              // if (selectedItem) {
-              //   console.log("indexData", "index1");
-              //   setsuccessResponse(true);
+          let uploadDocResponseData
+          let getDocImages
+          let getImage
+          let uploadDocVcResponse
+          
+          if(result.status=="STATUS_DONE"){
+          
+            await new Promise(resolve => setTimeout(resolve, 8000));
+          
+              uploadDocResponseData = await getSessionDecision(sessionId);
+              if(uploadDocResponseData.decision=="approved"){
+  if(uploadDocResponseData.decisionScore>=0.5){
+    getDocImages = await getMediaData(sessionId);
+  
+    const documentFront = getDocImages.images.find(image => image.name === 'document-front-pre');
+    console.log(documentFront);
+    getImage = await getMediaImage(documentFront.id)
+  
+  
+    console.log("Document Data", uploadDocResponseData)
+  console.log("Document Images", getDocImages)
+  console.log("Media Image", getImage)
+  
+  
+  
+  
+  
+  // Extracting data from the person object
+  const personData: { [key: string]: string } = {};
+  for (const key in uploadDocResponseData.person) {
+   if (typeof uploadDocResponseData.person[key]?.value === "string") {
+     personData[key] = uploadDocResponseData.person[key].value;
+   }
+  }
+  
+  // Extracting data from the document object
+  const documentData: { [key: string]: string } = {};
+  for (const key in uploadDocResponseData.document) {
+   if (typeof uploadDocResponseData.document[key]?.value === "string") {
+     documentData[key] = uploadDocResponseData.document[key].value;
+   }
+  }
+  
+  // Combining the extracted data into one object
+  const combinedData = {
+   ...personData,
+   ...documentData
+  };
+  
+  // Logging the combined data
+  console.log("Combined Data:", combinedData);
+  
+  
+     console.log('Sending details to the api2')
+     uploadDocVcResponse = await createUploadDocVc(combinedData)
+     console.log('UploadedDocVc is:::::::::::', uploadDocVcResponse)
+     await createPayLoadFromDocumentData(uploadDocResponseData, uploadDocVcResponse)
+  
+  
+  
+  
+  
+  
+  // const sessionId = "90c1146a-5f81-4c9a-8993-ad0675341a04";
+  // const mediaId = "7b752371-0bba-48c1-b283-f50b5c8c4628";
+  // const uploadDocResponseData = await getSessionDecision(sessionId);
+  // const getDocImages = await getMediaData(sessionId);
+  // const getImage = await getMediaImage(mediaId)
+  
+  
+  //    console.log("Document Data", uploadDocResponseData)
+  //  console.log("Document Images", getDocImages)
+  //  console.log("Media Image", getImage)
+  
+  
+  //  console.log("UploadDocData:", uploadDocResponseData)
+  
+  
+    
+   
+  
+  const username = uploadDocResponseData.person?.firstName?.value ?? null;
+  
+  const userDOB = uploadDocResponseData?.person?.dateOfBirth?.value ?? null;
+  
+  let ageProofVC
+  if(userDOB!==null){
+  ageProofVC = await generateAgeProof(userDOB)
+  await AsyncStorage.setItem("ageProofVC", JSON.stringify(ageProofVC));
+  }
+  //  const docFrontBase64 = await urlToBase64(documentFront.url)
+  //  console.log(docFrontBase64);
+  
+  const selectedDocument = "ID"
+     // verifiAPICall()
+  
+     setTimeout(() => {
+      // const index = documentsDetailsList?.responseData?.findIndex(
+      //   (obj: { id: any; }) => obj?.id === selectedItem?.id
+      // );
+      // console.log("index", index);
+      // if (selectedItem) {
+      //   console.log("indexData", "index1");
+      //   setsuccessResponse(true);
+  
+      //   const obj = documentsDetailsList?.responseData[index];
+      //   obj.documentName = selectedDocument;
+      //   obj.categoryType =
+      //     selectedDocument && selectedDocument?.split("(")[0]?.trim();
+      //   dispatch(
+      //     updateDocuments(documentsDetailsList?.responseData, index, obj)
+      //   );
+      //   setTimeout(async () => {
+      //     setsuccessResponse(false);
+      //     const item = await AsyncStorage.getItem("flow");
+      //     //const userDetails = await AsyncStorage.getItem("userDetails");
+      //     if (userDetails.responseData) {
+      //       //props.navigation.navigate("Documents");
+      //     } else {
+      //       // generateVc()
+      //       navigation.navigate("RegisterScreen");
+            
+      //     }
+      //   }, 2000);
+      // } else {
+        console.log("indexData", "index2");
+  
+        var date = dateTime();
+        const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
+        var documentDetails: IDocumentProps = {
+          id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
+          // name: selectedDocument,
+          documentName: selectedDocument,
+          path: filePath,
+          date: date?.date,
+          time: date?.time,
+          //txId: data?.result,
+          txId: sessionId,
+          docType: "jpg",
+          docExt: ".jpg",
+          processedDoc: "",
+          base64: getImage,
+          categoryType: selectedDocument && selectedDocument?.split("(")[0]?.trim(),
+          docName: "ID Document",
+          isVerifyNeeded: true,
+          isLivenessImage: null,
+          name: "",
+          vc: uploadDocVcResponse,
+          isVc: false,
+          signature: undefined,
+          typePDF: undefined,
+          verifiableCredential: uploadDocVcResponse
+        };
+  
+        var DocumentList = documentsDetailsList?.responseData
+          ? documentsDetailsList?.responseData
+          : [];
+        var documentDetails1: IDocumentProps = {
+          id: `ID_VERIFICATION${Math.random()}${"selectedDocument"}${Math.random()}`,
+          name: "Proof of age",
+          path: "filePath",
+          documentName: "Proof of age",
+          categoryType: "ID",
+          date: date?.date,
+          time: date?.time,
+          txId: "data?.result",
+          docType: ageProofVC?.type[1],
+          docExt: ".jpg",
+          processedDoc: "",
+          isVc: true,
+          vc: JSON.stringify({
+            name: "Proof of age",
+            documentName: "Acknowledgement Token",
+            path: "filePath",
+            date: date?.date,
+            time: date?.time,
+            txId: "data?.result",
+            docType: "pdf",
+            docExt: ".jpg",
+            processedDoc: "",
+            isVc: true,
+          }),
+          verifiableCredential: ageProofVC,
+          docName: "",
+          base64: undefined,
+          isLivenessImage: "",
+          signature: undefined,
+          typePDF: undefined
+        };
+  
+        var DocumentList = documentsDetailsList?.responseData
+          ? documentsDetailsList?.responseData
+          : [];
+        DocumentList.push(documentDetails);
+       DocumentList.push(documentDetails1);
+        dispatch(saveDocuments(DocumentList));
+        setsuccessResponse(true);
+        getHistoryReducer.isSuccess = false;
+        setTimeout(async () => {
+          setsuccessResponse(false);
+          const item = await AsyncStorage.getItem("flow");
+          
+            // generateVc()
+           // navigation.navigate("RegisterScreen");
+            
+          
+        }, 2000);
+      //}
+    }, 200);
+    setLoad(false);
+  }else{
+    seterrorResponse(true)
+    throw new Error('An error occurred during image validation');
+  }
+              }else{
+                seterrorResponse(true)
+                throw new Error('An error occurred during image validation');
+              }
+  
+            }else{
+              console.log("Didn't recieve uploaded doc data")
+              seterrorResponse(true)
+              throw new Error('An error occurred during image validation');
+            }
+            }else{
+              seterrorResponse(true)
+              throw new Error('An error occurred during image validation');
+            }
+
         
-              //   const obj = documentsDetailsList?.responseData[index];
-              //   obj.documentName = selectedDocument;
-              //   obj.categoryType =
-              //     selectedDocument && selectedDocument?.split("(")[0]?.trim();
-              //   dispatch(
-              //     updateDocuments(documentsDetailsList?.responseData, index, obj)
-              //   );
-              //   setTimeout(async () => {
-              //     setsuccessResponse(false);
-              //     const item = await AsyncStorage.getItem("flow");
-              //     //const userDetails = await AsyncStorage.getItem("userDetails");
-              //     if (userDetails.responseData) {
-              //       //props.navigation.navigate("Documents");
-              //     } else {
-              //       // generateVc()
-              //       navigation.navigate("RegisterScreen");
-                    
-              //     }
-              //   }, 2000);
-              // } else {
-                console.log("indexData", "index2");
+          }
         
-                var date = dateTime();
-                const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
-                var documentDetails: IDocumentProps = {
-                  id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
-                  // name: selectedDocument,
-                  documentName: selectedDocument,
-                  path: filePath,
-                  date: date?.date,
-                  time: date?.time,
-                  //txId: data?.result,
-                  txId: sessionId,
-                  docType: "jpg",
-                  docExt: ".jpg",
-                  processedDoc: "",
-                  base64: getImage,
-                  categoryType: selectedDocument && selectedDocument?.split("(")[0]?.trim(),
-                  docName: "ID Document",
-                  isVerifyNeeded: true,
-                  isLivenessImage: null,
-                  name: "",
-                  vc: uploadDocVcResponse,
-                  isVc: false,
-                  signature: undefined,
-                  typePDF: undefined,
-                  verifiableCredential: uploadDocVcResponse
-                };
-        
-                var DocumentList = documentsDetailsList?.responseData
-                  ? documentsDetailsList?.responseData
-                  : [];
-                var documentDetails1: IDocumentProps = {
-                  id: `ID_VERIFICATION${Math.random()}${"selectedDocument"}${Math.random()}`,
-                  name: "Proof of age",
-                  path: "filePath",
-                  documentName: "Proof of age",
-                  categoryType: "ID",
-                  date: date?.date,
-                  time: date?.time,
-                  txId: "data?.result",
-                  docType: ageProofVC?.type[1],
-                  docExt: ".jpg",
-                  processedDoc: "",
-                  isVc: true,
-                  vc: JSON.stringify({
-                    name: "Proof of age",
-                    documentName: "Acknowledgement Token",
-                    path: "filePath",
-                    date: date?.date,
-                    time: date?.time,
-                    txId: "data?.result",
-                    docType: "pdf",
-                    docExt: ".jpg",
-                    processedDoc: "",
-                    isVc: true,
-                  }),
-                  verifiableCredential: ageProofVC,
-                  docName: "",
-                  base64: undefined,
-                  isLivenessImage: "",
-                  signature: undefined,
-                  typePDF: undefined
-                };
-        
-                var DocumentList = documentsDetailsList?.responseData
-                  ? documentsDetailsList?.responseData
-                  : [];
-                DocumentList.push(documentDetails);
-               DocumentList.push(documentDetails1);
-                dispatch(saveDocuments(DocumentList));
-                setsuccessResponse(true);
-                getHistoryReducer.isSuccess = false;
-                setTimeout(async () => {
-                  setsuccessResponse(false);
-                  const item = await AsyncStorage.getItem("flow");
-                  
-                    // generateVc()
-                   // navigation.navigate("RegisterScreen");
-                    
-                  
-                }, 2000);
-              //}
-            }, 200);
+          const hideErrorPopup = () => {
+            // navigation.goBack(); // Use the navigation prop to go back
+            seterrorResponse(false)
             setLoad(false);
-          }else{
-            console.log("Didn't recieve uploaded doc data")
-            seterrorResponse(true)
-            throw new Error('An error occurred during image validation');
-          }
-        
-          }
-        
-        
+           }   
         
           const urlToBase64 = async (url: any) => {
             try {
@@ -1219,6 +1241,7 @@ await AsyncStorage.setItem("ageProofVC", JSON.stringify(ageProofVC));
 <ErrorPopUp // Error popup component
   isLoaderVisible={errorResponse}
   loadingText={"An error occurred. Please try again."}
+  onHide={hideErrorPopup}
 />
     </View>
   );

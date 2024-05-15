@@ -1,7 +1,6 @@
 import React from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
-import LottieView from "lottie-react-native";
 import { LocalImages } from "../../constants/imageUrlConstants";
 import GenericText from "../Text";
 import { Screens } from "../../themes";
@@ -15,6 +14,7 @@ const ErrorPopUp = ({
     Status,
     loadingText,
     type = "error",
+    onHide, // onHide function to hide the modal
 }: ILoaderProps) => (
   <Modal style={{ marginLeft: deviceWidth / 6 }} isVisible={isLoaderVisible}>
     <View
@@ -59,6 +59,17 @@ const ErrorPopUp = ({
       >
         {loadingText}
       </GenericText>
+      <TouchableOpacity onPress={onHide}>
+        <GenericText
+          style={{
+            color: Screens.primaryColor,
+            fontWeight: "bold",
+            marginTop: 10,
+          }}
+        >
+          Close
+        </GenericText>
+      </TouchableOpacity>
     </View>
   </Modal>
 );

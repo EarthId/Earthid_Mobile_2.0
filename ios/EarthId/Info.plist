@@ -64,6 +64,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>We need access to NFC to read passport information for identification purposes.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -78,29 +80,15 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>To allow the app for scanning the documentation</string>
+	<string>We need access to your camera to capture photos and video for identification purposes.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>$(PRODUCT_NAME) requires FaceID access to allows you quick and secure access.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone to record audio for identification purposes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>$(PRODUCT_NAME) uses photos</string>
-
-<key>NSCameraUsageDescription</key>
-    <string>We need access to your camera to capture photos and video for identification purposes.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>We need access to your microphone to record audio for identification purposes.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>We need access to your photo library to import photos for identification purposes.</string>
-    <key>NFCReaderUsageDescription</key>
-    <string>We need access to NFC to read passport information for identification purposes.</string>
-    <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
-    <array>
-        <string>A0000002471001</string>
-        <string>A0000002472001</string>
-        <string>00000000000000</string>
-    </array>
-
+	<string>We need access to your photo library to import photos for identification purposes.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen.storyboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -117,6 +105,11 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	
+	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+	<array>
+		<string>A0000002471001</string>
+		<string>A0000002472001</string>
+		<string>00000000000000</string>
+	</array>
 </dict>
 </plist>
