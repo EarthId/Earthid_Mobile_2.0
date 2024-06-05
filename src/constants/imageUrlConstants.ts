@@ -88,4 +88,7 @@ export const LocalImages = {
     success: require("../../resources/lottie/31973-success-message.json"),
     loader: require("../../resources/lottie/load.json"),
   },
+  backup: require("../../resources/images/backup.png"),
+  cloud: require("../../resources/images/cloud.png"),
+  key: require("../../resources/images/key.png"),
 };

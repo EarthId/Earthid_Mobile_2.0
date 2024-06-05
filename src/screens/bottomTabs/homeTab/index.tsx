@@ -1,4 +1,4 @@
-import { values } from "lodash";
+import { set, values } from "lodash";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
@@ -46,6 +46,8 @@ import { createVerifiableCred } from "../../../utils/createVerifiableCred";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { StackActions } from "@react-navigation/native";
 import TouchID from "react-native-touch-id";
+import GLOBAL from "../../../utils/globals";
+import { AWS_API_BASE } from "../../../constants/URLContstants";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -68,6 +70,11 @@ const optionalConfigObject = {
   passcodeFallback: false, // iOS - allows the device to fall back to using the passcode, if faceid/touch is not available. this does not mean that if touchid/faceid fails the first few times it will revert to passcode, rather that if the former are not enrolled, then it will use the passcode.
 };
 const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
+  // GLOBAL.credentials = {test: "does this work?"};
+  // //wait two seconds then print global.credentials
+  // setTimeout(() => {
+  //   console.log(AWS_ACCESS_KEY, AWS_SECRET_KEY);
+  // }, 2000);
   const userDetails = useAppSelector((state) => state.account);
   const getHistoryReducer = useAppSelector((state) => state.getHistoryReducer);
   const profilePicture = useAppSelector((state) => state.savedPic);
@@ -121,6 +128,31 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
     return () => {
       appStateListener?.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    async function getCredentials() {
+      const response = await fetch("http://" + AWS_API_BASE + "auth/gettoken", {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userID: userDetails.responseData.Id,
+        }),
+      });
+      let myJson = await response.json();
+      GLOBAL.credentials = {
+        accessKeyId: myJson.Credentials.AccessKeyId,
+        expiration: myJson.Credentials.Expiration,
+        secretAccessKey: myJson.Credentials.SecretAccessKey,
+        sessionToken: myJson.Credentials.SessionToken,
+      },
+      GLOBAL.awsID = myJson.SubjectFromWebIdentityToken;
+      console.log(GLOBAL.credentials)
+    }
+    getCredentials();
   }, []);
 
   const getItemsForSection =(data: any[])=>{

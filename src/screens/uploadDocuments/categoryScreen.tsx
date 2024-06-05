@@ -38,6 +38,8 @@ import { alertBox, getCategoriesApi } from "../../utils/earthid_account";
 import { dateTime } from "../../utils/encryption";
 import { isEarthId } from "../../utils/PlatFormUtils";
 import { IDocumentProps } from "./VerifiDocumentScreen";
+import GLOBALS from "../../utils/globals";
+import { AWS_API_BASE } from "../../constants/URLContstants";
 const deviceWidth = Dimensions.get("window").width;
 interface IDocumentScreenProps {
   navigation?: any;
@@ -109,7 +111,50 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
     setIsPrceedForLivenessTest(false);
   }, []);
 
-  const onSubmitAction = () => {
+  async function uploadToS3(myData, category, name, type) {
+    if (category === "ID") { category = "Identification"; }
+    const response = await fetch("http://" + AWS_API_BASE + "documents/upload", {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        base64: myData.base64,
+        category: category,
+        name: name,
+        type: type,
+        credentials: GLOBALS.credentials,
+        awsID: GLOBALS.awsID,
+      }),
+    });
+    let myJson = await response.json();
+    console.log(myJson);
+  }
+
+  async function editS3Doc(path, category, name) {
+    if (category === "ID") { category = "Identification"; }
+    let suffix = path.split('.').pop();
+    name = name + "." + suffix;
+    const response = await fetch("http://" + AWS_API_BASE + "documents/edit", {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        category: category,
+        docname: name,
+        path: path,
+        credentials: GLOBALS.credentials,
+        awsID: GLOBALS.awsID,
+      }),
+    });
+    let myJson = await response.json();
+    console.log(myJson);
+  }
+
+  const onSubmitAction = async () => {
     if (docname?.length > 0) {
       setButton(true);
 
@@ -141,6 +186,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
             ? documentsDetailsList?.responseData
             : [];
           DocumentList.push(documentDetails);
+          await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
           dispatch(saveDocuments(DocumentList));
           setsuccessResponse(true);
           setTimeout(() => {
@@ -176,6 +222,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
               ? documentsDetailsList?.responseData
               : [];
             DocumentList.push(documentDetails);
+            await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".jpg");
             dispatch(saveDocuments(DocumentList));
             setsuccessResponse(true);
             setTimeout(() => {
@@ -215,6 +262,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
             ? documentsDetailsList?.responseData
             : [];
           DocumentList.push(documentDetails);
+          await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
           dispatch(saveDocuments(DocumentList));
           setsuccessResponse(true);
           setTimeout(() => {
@@ -250,6 +298,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
               ? documentsDetailsList?.responseData
               : [];
             DocumentList.push(documentDetails);
+            await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".jpg");
             dispatch(saveDocuments(DocumentList));
             setsuccessResponse(true);
             setTimeout(() => {
@@ -271,21 +320,22 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
                   console.log("testing", "pass2");
 
                   setsuccessResponse(true);
-                  const document: any[0] = categoryList[
-                    selectedParentIndex
-                  ]?.value?.filter((data: any) => data.isSelected);
-                  const obj = documentsDetailsList?.responseData[index];
-                  obj.docName = docname;
-                  obj.documentName = `${categoryList[selectedParentIndex].key} (${document[0]?.title})`;
-                  obj.categoryType = categoryList[selectedParentIndex].key;
-                  console.log("index===>", obj.categoryType);
-                  dispatch(
-                    updateDocuments(
-                      documentsDetailsList?.responseData,
-                      index,
-                      obj
-                    )
-                  );
+                  // const document: any[0] = categoryList[
+                  //   selectedParentIndex
+                  // ]?.value?.filter((data: any) => data.isSelected);
+                  // const obj = documentsDetailsList?.responseData[index];
+                  // obj.docName = docname;
+                  // obj.documentName = `${categoryList[selectedParentIndex].key} (${document[0]?.title})`;
+                  // obj.categoryType = categoryList[selectedParentIndex].key;
+                  // console.log("index===>", obj.categoryType);
+                  // dispatch(
+                  //   updateDocuments(
+                  //     documentsDetailsList?.responseData,
+                  //     index,
+                  //     obj
+                  //   )
+                  // );
+                  editS3Doc(selectedItem.fullPath, categoryList[selectedParentIndex].key, docname);
                   setTimeout(async () => {
                     setsuccessResponse(false);
                     const item = await AsyncStorage.getItem("flow");
@@ -302,21 +352,22 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
                   console.log("here", "here4");
                   console.log("testing", "pass3");
                   setsuccessResponse(true);
-                  const document: any[0] = categoryList[
-                    selectedParentIndex
-                  ]?.value?.filter((data: any) => data.isSelected);
-                  const obj = documentsDetailsList?.responseData[index];
-                  obj.docName = docname;
-                  obj.documentName = `${categoryList[selectedParentIndex].key} (${document[0]?.title})`;
-                  obj.categoryType = categoryList[selectedParentIndex].key;
-                  console.log("index===>", obj.categoryType);
-                  dispatch(
-                    updateDocuments(
-                      documentsDetailsList?.responseData,
-                      index,
-                      obj
-                    )
-                  );
+                  // const document: any[0] = categoryList[
+                  //   selectedParentIndex
+                  // ]?.value?.filter((data: any) => data.isSelected);
+                  // const obj = documentsDetailsList?.responseData[index];
+                  // obj.docName = docname;
+                  // obj.documentName = `${categoryList[selectedParentIndex].key} (${document[0]?.title})`;
+                  // obj.categoryType = categoryList[selectedParentIndex].key;
+                  // console.log("index===>", obj.categoryType);
+                  // dispatch(
+                  //   updateDocuments(
+                  //     documentsDetailsList?.responseData,
+                  //     index,
+                  //     obj
+                  //   )
+                  // );
+                  editS3Doc(selectedItem.fullPath, categoryList[selectedParentIndex].key, docname);
                   setTimeout(async () => {
                     setsuccessResponse(false);
                     const item = await AsyncStorage.getItem("flow");

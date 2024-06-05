@@ -84,6 +84,14 @@ export const ABOUT_ROUTES = {
   //   SCREEN: "Logout",
   //   COLOR: "#F6BDE9",
   // },
+  DEV: {
+    RIGHT_ICON: LocalImages.sideArrowImage,
+    URI: LocalImages.deleteImage,
+    CARD: "Development",
+    TITLE: "DEV",
+    SCREEN: "Dev",
+    COLOR: "#C5BDF6",
+  },
 };
 
 export const SETTING_LIST = [

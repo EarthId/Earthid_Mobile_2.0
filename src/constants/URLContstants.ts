@@ -15,6 +15,9 @@ export const URI = {
   },
 };
 
+// export const AWS_API_BASE = "192.168.1.12:3000/api2/";
+export const AWS_API_BASE = "54.210.18.24:3000/api2/";
+
 export const ALLOWED_DOMAINS = [
   ".amazon.in",
   ".amazon.com",
