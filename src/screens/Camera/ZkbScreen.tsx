@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -51,11 +52,26 @@ export const QrScannerMaskedWidget = ({
   useEffect(() => {
     const fetchData = async () => {
       const storedDocumentVc = await retrieveDocumentVcFromStorage();
-     console.log('Stored Document VC', storedDocumentVc)
-      //console.log('This is documentDetailsList---------------------------------', documentsDetailsList)
-//const storedDocumentVc = documentsDetailsList.responseData[documentsDetailsList.responseData.length - 2]?.vc
-console.log('Stored Document VC', storedDocumentVc)
-      setDocumentVc(storedDocumentVc);
+      if (storedDocumentVc === null) {
+        Alert.alert(
+          "No Documents",
+          "Please add the required documents",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.navigate("Documents"),
+            },
+          ],
+          { cancelable: false }
+        );
+      } else{
+        console.log('Stored Document VC', storedDocumentVc)
+        //console.log('This is documentDetailsList---------------------------------', documentsDetailsList)
+  //const storedDocumentVc = documentsDetailsList.responseData[documentsDetailsList.responseData.length - 2]?.vc
+  console.log('Stored Document VC', storedDocumentVc)
+        setDocumentVc(storedDocumentVc);
+      }
+     
     };
 
     fetchData();
@@ -175,7 +191,7 @@ console.log('Stored Document VC', storedDocumentVc)
   value={parentCheckbox}
 />
           </View>
-  
+
           {expandedItem === item.id && (
   <View style={{ marginTop: 8 }}>
   {documentVc && documentVc.credentialSubject[0] && Object.keys(documentVc.credentialSubject[0]).map((fieldName, fieldIndex) => {
@@ -271,11 +287,16 @@ console.log('Consent Api response------:', consentApiCall)
     navigation.goBack(); // Use the navigation prop to go back
   }
   return (
-   
-    <View style={styles.sectionContainer}
+   <View style={styles.sectionContainer}>
+    <ScrollView contentContainerStyle={styles.sectionContainer}>
+ <View 
+    style={{flexGrow: 1,
+      backgroundColor:'#fff'
+      }}
+    //style={styles.sectionContainer}
     >
+
       
-      <ScrollView contentContainerStyle={styles.sectionContainer}>
       <View style={styles.linearStyle}>
       <LinearGradients
         endColor={Screens.colors.header.endColor}
@@ -286,23 +307,11 @@ console.log('Consent Api response------:', consentApiCall)
       >
          </LinearGradients>
          </View>     
-        <View style={styles.category}>
-     
-           
-            
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 15}}>
-  <GenericText
-    style={{
-      padding: 5,
-      color: "#000",
-      fontSize: 18,
-      fontWeight: 600
 
-    }}
-  >
-    {"Select which details to share?"}
-  </GenericText>
-  <View style={{ marginEnd: 20 }}>
+        <View style={styles.category}>
+            
+       
+        <View style={{ marginEnd: 5, alignItems: 'flex-end' }}>
     <TouchableOpacity
       onPress={() => {
         navigateToBack();
@@ -315,30 +324,60 @@ console.log('Consent Api response------:', consentApiCall)
       />
     </TouchableOpacity>
   </View>
-</View>
+
+
+  {isLoading ? <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>        
+          <ActivityIndicator color={'red'} size='large' />
+          </View>:
+        <View style={{ flex: 1, paddingHorizontal: 5 }}>
+
+  <GenericText
+    style={{
+      //padding: 5,
+      color: "#000",
+      fontSize: 18,
+      fontWeight: 600,
+      paddingBottom: 5,
+      paddingLeft: 9,
+      paddingRight: 9,
+
+    }}
+  >
+    {"Select which details to share?"}
+  </GenericText>
+ 
+
             <GenericText
               style={{
                 padding: 5,
                 color: "#000",
                 fontSize: 16,
-                marginTop: 1,
+                paddingBottom: 15,
+              paddingLeft: 9,
+    paddingRight: 9,
               }}
             >
               {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
             </GenericText>
-            {isLoading ? (
+            {/* <ScrollView
+    style={{ flexGrow: 1 }}
+    contentContainerStyle={{ flexGrow: 1 }}
+  > */}
+            {/* {isLoading ? (
+            
               <View
                 style={{
                   flex: 1,
                   justifyContent: "center",
-                  alignItems: "center",
+                 alignItems: "center",
                 }}
               >
                 <ActivityIndicator color={"red"} size="large" />
               </View>
+          
             ) : (
               <View style={{ flex: 1, paddingHorizontal: 5 }}></View>
-            )}
+            )} */}
   
             <View style={{ marginTop: 10 }}>
               <FlatList
@@ -347,7 +386,7 @@ console.log('Consent Api response------:', consentApiCall)
                 keyExtractor={(item) => item.id}
               />
             </View>
-
+{/* </ScrollView> */}
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10, marginBottom: 20  }}>
         <CheckBox
           value={isChecked}
@@ -357,18 +396,19 @@ console.log('Consent Api response------:', consentApiCall)
         <GenericText style={{marginLeft: 10,marginRight: 35,  fontSize: 11}}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
       </View>
 
+</View>}
   
-            <View style={{ flex: 1, marginBottom: 20 }}>
+            <View style={{  marginBottom: 5 }}>
               {!isLoading && (
                 <TouchableOpacity
                   style={{
                     opacity: isChecked ? 1 : 0.5,
-                    backgroundColor: "#0163f7",
-                    marginHorizontal: 10,
-                    padding: 15,
-                    borderRadius: 20,
-                    justifyContent: "center",
-                    alignItems: "center",
+                    backgroundColor:'#2AA2DE',
+                    marginHorizontal:10,
+                    padding:15 ,
+                    borderRadius:50,
+                    justifyContent:'center',
+                    alignItems:'center'
                   }}
                   disabled={!checkDisable()|| !isChecked}
                   onPress={() => {
@@ -384,11 +424,41 @@ console.log('Consent Api response------:', consentApiCall)
                 </TouchableOpacity>
               )}
             </View>
+            <View style={{marginTop: 5}}>
+  {!isLoading && (
+    <TouchableOpacity
+      style={{
+        //opacity: !checkDisable() ? 0.5 : 1,
+        backgroundColor: '#fff',
+        marginHorizontal: 10,
+        padding: 15,
+        borderRadius: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#D3D3D3',
+      }}
+      //disabled={!checkDisable()}
+      onPress={() => {
+        navigateToBack();
+      }}
+    >
+      <GenericText
+        style={{ color: "#525252", fontSize: 13, fontWeight: "700" }}
+      >
+        {"NO THANKS"}
+      </GenericText>
+    </TouchableOpacity>
+  )}
+</View>
             </View>
          
-        </ScrollView>
-       
+          
       </View>
+      </ScrollView>
+   </View>
+   
+     
     );
   };
 
@@ -398,6 +468,7 @@ console.log('Consent Api response------:', consentApiCall)
     sectionContainer: {
       flexGrow: 1,
       backgroundColor: Screens.colors.background,
+      zIndex:1000
     },
     title: {
       color: Screens.grayShadeColor,
@@ -463,11 +534,11 @@ console.log('Consent Api response------:', consentApiCall)
     category: {
       backgroundColor: Screens.pureWhite,
       padding: 10,
-      marginTop: -280,
+      marginTop: -320,
       marginHorizontal: 15,
       elevation: 5,
       borderRadius: 10,
-      flex: 0.1,
+      flex: 1,
       justifyContent: "space-between",
       marginBottom: 100
     },

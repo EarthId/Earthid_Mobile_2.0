@@ -65,7 +65,7 @@ const UpdateAuthentication = (props: any) => {
           { cancelable: false }
         );
     
-       // props.navigation.navigate("PasswordCheck1",{passingType:"UpdateFaceId"})
+      props.navigation.navigate("PasswordCheck1",{passingType:"UpdateFaceId"})
       }else if(item.card=="OldPincode"){
         console.log("OldPincode==>","OldPincode");
         props.navigation.navigate("PasswordCheck1",{passingType1:"OldPincode"})

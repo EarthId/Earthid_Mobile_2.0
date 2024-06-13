@@ -989,6 +989,8 @@ const ageProofJSON = JSON.parse(ageProof)
         setisDocumentModalkyc(true);
       } else if (barCodeDataDetails?.requestType === "document") {
         setisDocumentModalkyc(true);
+      } else if (barCodeDataDetails?.requestType === "selectiveData") {
+        setisDocumentModalkyc(true);
       } else if (barCodeDataDetails?.requestType === "generateCredentials") {
         setisDocumentModalkyc(true);
       }
@@ -1028,6 +1030,7 @@ const ageProofJSON = JSON.parse(ageProof)
         setisDocumentModalkyc(false);
         setisLoading(false)
         setIsCamerVisible(true);
+        Alert.alert("Selected Credentials have been shared successfully");
       }
       if (barCodeDataDetails?.requestType === "shareCredentials") {
         setisDocumentModalkyc(false);
@@ -1072,6 +1075,7 @@ const ageProofJSON = JSON.parse(ageProof)
       props.navigation.goBack(null);
     }
   }, [shareCredientialData]);
+
   const getSchemeDetails = () => {
     setisDocumentModalkyc(false);
     getData();

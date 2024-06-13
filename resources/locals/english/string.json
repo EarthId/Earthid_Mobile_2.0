@@ -146,7 +146,7 @@
   "globalgeneratesuccess": "Your GlobaliD is generated successfully.",
   "generateglobalid": "GENERATE GLOBALID",
   "passcodeinstruction": "Secure your GlobaliD with a memorable 6-digit code",
-  "globalidwanttoaccess": "GlobalId wants to access your following information",
+  "globalidwanttoaccess": "GlobalId wants to access your following information.",
   "globalidwanttoaccessKyc": "GlobalId wants to access your ACK token",
 
   "alreadyhaveearthid": "I already have my EarthID",
@@ -154,7 +154,7 @@
   "earthidgeneratesuccess": "Your EarthID is generated successfully.",
   "generateeathid": "GENERATE EARTHID",
   "passcodeinstructionEarthid": "Secure your EarthID with a memorable 6-digit code",
-  "earthidwanttoaccess": "EarthID wants to access your following information",
+  "earthidwanttoaccess": "EarthID wants to access your following information.",
   "earthidwanttoaccessKyc": "EarthID wants to access your ACK token",
   "share":"Share",
   "delete":"Delete",

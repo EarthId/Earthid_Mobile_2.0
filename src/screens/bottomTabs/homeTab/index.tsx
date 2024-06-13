@@ -93,35 +93,46 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
   const disPatch = useAppDispatch();
 
   let flatListRef: any = useRef();
+  let idleTimer = useRef(null);
+  let lastActiveTime = useRef(Date.now());
   const IDLE_TIMEOUT = 60000 * 10; // 10 minute
   console.log(signature, "sign");
   console.log(createVerify, "createVerify");
   console.log(UserDid, "UserDid");
   console.log(userDetails?.responseData?.publicKey, "publickey");
-  let idleTimer: string | number | NodeJS.Timeout | undefined;
+  //let idleTimer: string | number | NodeJS.Timeout | undefined;
   //recent activity
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const recentData = documentsDetailsList?.responseData;
   const data = documentsDetailsList?.responseData;
 
   const [aState, setAppState] = useState(AppState.currentState);
+  
   useEffect(() => {
-    setLanguage();
-    const appStateListener = AppState.addEventListener(
-      "change",
-      (nextAppState) => {
-        console.log("Next AppState is: ", nextAppState);
-        if (nextAppState === "active") {
-          ShareMenu.getInitialShare(handleShare);
+    const handleAppStateChange = async (nextAppState) => {
+      const sdkStatus = await AsyncStorage.getItem("sdkStatus");
+      console.log("SDKStatus in HomeScreen is: ", sdkStatus);
+
+      console.log("Next AppState is: ", nextAppState);
+      if (aState.match(/inactive|background/) && nextAppState === "active") {
+        if(sdkStatus=="true"){
+          console.log('SDK is launched')
+          await AsyncStorage.setItem("sdkStatus", "false");
+        }else{
+          checkAuth();
         }
-        setLanguage();
-        setAppState(nextAppState);
+        
       }
-    );
+      setLanguage();
+      ShareMenu.getInitialShare(handleShare);
+      setAppState(nextAppState);
+    };
+
+    const appStateListener = AppState.addEventListener("change", handleAppStateChange);
     return () => {
       appStateListener?.remove();
     };
-  }, []);
+  }, [aState]);
 
   const getItemsForSection =(data: any[])=>{
     const idDocuments = data?.filter((item: { categoryType: string; })=>item?.categoryType === "ID" ||item?.categoryType === "id")
@@ -209,11 +220,56 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
     }
   };
   // Function to handle idle timeout
-  const handleIdle = () => {
-    if (userDetails && userDetails?.responseData?.publicKey) {
-      checkAuth();
-    }
-  };
+
+
+
+  //Handletimer
+  // const handleIdle = () => {
+  //   const currentTime = Date.now();
+  //   const idleDuration = currentTime - lastActiveTime.current;
+  //   if (idleDuration >= IDLE_TIMEOUT) {
+  //     checkAuth();
+  //   }
+  // };
+
+  // const resetIdleTimer = useCallback(() => {
+  //   lastActiveTime.current = Date.now();
+  //   if (idleTimer.current) {
+  //     clearTimeout(idleTimer.current);
+  //   }
+  //   idleTimer.current = setTimeout(() => {
+  //     handleIdle();
+  //   }, IDLE_TIMEOUT);
+  // }, [handleIdle]);
+
+  // useEffect(() => {
+  //   resetIdleTimer();
+  // }, [resetIdleTimer]);
+
+  // useEffect(() => {
+  //   const handleAppStateChange = async (nextAppState) => {
+  //     console.log("Next AppState is: ", nextAppState);
+  //     if (nextAppState === "active") {
+  //       resetIdleTimer();
+  //     }
+  //   };
+
+  //   const appStateListener = AppState.addEventListener("change", handleAppStateChange);
+
+  //   return () => {
+  //     appStateListener.remove();
+  //     if (idleTimer.current) {
+  //       clearTimeout(idleTimer.current);
+  //     }
+  //   };
+  // }, [resetIdleTimer]);
+
+  // useEffect(() => {
+  //   resetIdleTimer();
+  // }, [resetIdleTimer]);
+
+
+  //Handle timer ends
 
   const setLanguage = async () => {
     const language = await AsyncStorage.getItem("setLanguage");

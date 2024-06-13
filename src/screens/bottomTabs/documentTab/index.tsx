@@ -103,6 +103,8 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const [successResponse, setsuccessResponse] = useState(false);
   const [errorResponse, seterrorResponse] = useState(false);
 
+  const [sdkStatus, setsdkStatus] = useState(false);
+
   const userDetails = useAppSelector((state) => state.account);
   const keys = useAppSelector((state) => state.user);
 
@@ -514,8 +516,11 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
             if(sessionRes.status=="success"){
               const sessionUrl = sessionRes.verification.url
               const sessionId = sessionRes.verification.id
-          
-              
+
+             // setsdkStatus(true)
+         // const sdkStatusString = sdkStatus? 'true':'false'
+         // console.log('SdkStatus from document screen1:', sdkStatus, sdkStatusString)
+              await AsyncStorage.setItem("sdkStatus", "true");
           
               var result = await VeriffSdk.launchVeriff({
                 sessionUrl: sessionUrl,
@@ -548,16 +553,22 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
                 },
               });
             
-              setLoad(true);
+              
           console.log('Response of sdk:', result )
-          
+
+          // setsdkStatus(false)
+          // const sdkStatusString2 = sdkStatus? 'true':'false'
+          // console.log('SdkStatus from document screen2:', sdkStatus, sdkStatusString2)
+          //    await AsyncStorage.setItem("sdkStatus", sdkStatusString2);
+         
+
           let uploadDocResponseData
           let getDocImages
           let getImage
           let uploadDocVcResponse
           
           if(result.status=="STATUS_DONE"){
-          
+            setLoad(true);
             await new Promise(resolve => setTimeout(resolve, 8000));
           
               uploadDocResponseData = await getSessionDecision(sessionId);
@@ -770,16 +781,22 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
                 throw new Error('An error occurred during image validation');
               }
   
+            }else if(result.status=="STATUS_CANCELED"){
+              console.log("Veriff SDK closed by user")
+              setLoad(false);
+              // seterrorResponse(true)
+              // throw new Error('An error occurred during image validation');
             }else{
-              console.log("Didn't recieve uploaded doc data")
-              seterrorResponse(true)
-              throw new Error('An error occurred during image validation');
+              console.log("Veriff SDK closed unexpectedly")
+              setLoad(false);
+              // seterrorResponse(true)
+              // throw new Error('An error occurred during image validation');
             }
             }else{
               seterrorResponse(true)
               throw new Error('An error occurred during image validation');
             }
-
+            setLoad(false);
         
           }
         

@@ -267,7 +267,7 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
         },
       });
     
-  setLoad(true);
+  
   console.log('Response of sdk:', result )
   
   let uploadDocResponseData
@@ -275,7 +275,7 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
   let getImage
   
   if(result.status=="STATUS_DONE"){
-  
+    setLoad(true);
     await new Promise(resolve => setTimeout(resolve, 8000));
   
       uploadDocResponseData = await getSessionDecision(sessionId);
@@ -474,10 +474,16 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
   throw new Error('An error occurred during image validation');
 }
   
+  }else if(result.status=="STATUS_CANCELED"){
+    console.log("Veriff SDK closed by user")
+    setLoad(false);
+    // seterrorResponse(true)
+    // throw new Error('An error occurred during image validation');
   }else{
-    console.log("Didn't recieve uploaded doc data")
-   seterrorResponse(true)
-    throw new Error('An error occurred during image validation');
+    console.log("Veriff SDK closed unexpectedly")
+    setLoad(false);
+   //seterrorResponse(true)
+    //throw new Error('An error occurred during image validation');
   }
   
   

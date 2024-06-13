@@ -263,6 +263,8 @@ console.log('sec=======>',securityReducer)
                 onPress={() => {
                   rnBiometrics.isSensorAvailable().then((resultObject) => {
                     const { available, biometryType } = resultObject;
+                    console.log('Available biometrics:', resultObject)
+                    console.log('Available biometrics2222:', available, biometryType, BiometryTypes)
                     if (available && biometryType === BiometryTypes.FaceID) {
                       rnBiometrics
                         .simplePrompt({ promptMessage: "Confirm fingerprint" })
