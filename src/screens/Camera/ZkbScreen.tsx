@@ -403,7 +403,8 @@ console.log('Consent Api response------:', consentApiCall)
                 <TouchableOpacity
                   style={{
                     opacity: isChecked ? 1 : 0.5,
-                    backgroundColor:'#2AA2DE',
+                   // backgroundColor:'#2AA2DE',
+                   backgroundColor: Screens.colors.primary,
                     marginHorizontal:10,
                     padding:15 ,
                     borderRadius:50,

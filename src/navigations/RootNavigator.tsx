@@ -28,6 +28,14 @@ import FaceCheck from "../screens/FaceRegister/FaceCheck";
 import LivenessCameraScreen from "../screens/uploadDocuments/LivenessCameraScreen";
 import VerifiDocumentScreen from "../screens/uploadDocuments/VerifiDocumentScreen";
 import PasswordCheck1 from "../screens/onboarding/security/passcode/PasswordCheck1";
+import Dev from "../screens/onboarding/newDesigns/dev";
+import Dev2 from "../screens/onboarding/newDesigns/dev2";
+import Dev3 from "../screens/onboarding/newDesigns/dev3";
+import Dev4 from "../screens/onboarding/newDesigns/dev4";
+import Dev5 from "../screens/onboarding/newDesigns/dev5";
+import Dev6 from "../screens/onboarding/newDesigns/dev6";
+import Dev7 from "../screens/onboarding/newDesigns/dev7";
+import RegisterOTP from "../screens/UploadQr/RegisterOTP";
 
 // Before rendering any navigation stack
 const animations: any = SlidAnimation;
@@ -55,7 +63,14 @@ export default function RootNavigator() {
     UploadDocumentPreviewScreen: UploadDocumentPreviewScreen,
     LivenessCameraScreen: LivenessCameraScreen,
     VerifiDocumentScreen: VerifiDocumentScreen,
-  
+    Dev: Dev,
+    Dev2: Dev2,
+    Dev3: Dev3,
+    Dev4: Dev4,
+    Dev5: Dev5,
+    Dev6: Dev6,
+    Dev7: Dev7,
+    RegisterOTP:RegisterOTP
   };
 
   function AuthStack() {
@@ -162,6 +177,55 @@ export default function RootNavigator() {
           }}
           name={"ConfirmPincode"}
           component={ConfirmPincode}
+        />
+        <Stack.Screen
+          options={{
+            ...animations,
+          }}
+          name={"Dev"}
+          component={Dev}
+        />
+        <Stack.Screen
+          options={{
+            ...animations,
+          }}
+          name={"Dev2"}
+          component={Dev2}
+        />
+        <Stack.Screen
+          options={{
+            ...animations,
+          }}
+          name={"Dev3"}
+          component={Dev3}
+        />
+        <Stack.Screen
+          options={{
+            ...animations,
+          }}
+          name={"Dev4"}
+          component={Dev4}
+        />
+        <Stack.Screen
+          options={{
+            ...animations,
+          }}
+          name={"Dev5"}
+          component={Dev5}
+        />
+        <Stack.Screen
+          options={{
+            ...animations,
+          }}
+          name={"Dev6"}
+          component={Dev6}
+        />
+        <Stack.Screen
+          options={{
+            ...animations,
+          }}
+          name={"Dev7"}
+          component={Dev7}
         />
       </Stack.Navigator>
     </NavigationContainer>

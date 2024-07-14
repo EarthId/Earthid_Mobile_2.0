@@ -37,6 +37,8 @@ import ImageResizer from "react-native-image-resizer";
 import RNFS from "react-native-fs";
 import AWS from "aws-sdk";
 import { deleteAllBuckets } from "../../../utils/awsSetup";
+import GLOBALS from "../../../utils/globals";
+import { AWS_API_BASE } from "../../../constants/URLContstants";
 
 interface IDocumentScreenProps {
   navigation?: any;
@@ -52,6 +54,8 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const [documentsDetailsList, setdocumentsDetailsList] = useState(
     documentsDetailsListData
   );
+  const [s3documentsDetailsList, sets3documentsDetailsList] = useState<any[]>([]);
+  const [s3DocFullPath, sets3DocFullPath] = useState([]);
   const [selectedDocuments, setselectedDocuments] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
   let [qrBase64, setBase64] = useState("");
@@ -137,6 +141,93 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
     setdocumentsDetailsList(documentsDetailsListData);
   }, [documentsDetailsListData?.responseData]);
 
+
+  useEffect(() => {
+    console.log(GLOBALS.credentials);
+    async function getAllDocs() {
+      const response = await fetch("https://" + AWS_API_BASE + "documents/getall", {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          credentials: GLOBALS.credentials,
+          awsID: GLOBALS.awsID,
+        }),
+      })
+      const myJson = await response.json();
+      console.log('this is my json1----------', myJson)
+      let result = [];
+      let content = myJson.Contents;
+      for (let i = 0; i < content.length; i++) {
+        let myObject = content[i];
+
+        if (myObject.Key.substr(-1) == "/") {
+          continue;
+        }
+
+        let myKey = myObject.Key.split("/");
+        let date = new Date(Date.parse(myObject.LastModified));
+        let myDate = date.getDate();
+        myDate = myDate < 10 ? "0" + myDate : myDate;
+        let myMonth = date.getMonth() + 1;
+        myMonth = myMonth < 10 ? "0" + myMonth : myMonth;
+        let myHours = date.getHours();
+        myHours = myHours < 10 ? "0" + myHours : myHours;
+        let myMinutes = date.getMinutes();
+        myMinutes = myMinutes < 10 ? "0" + myMinutes : myMinutes;
+
+        result.push({
+          title: myKey[myKey.length - 1],
+          name: myKey[myKey.length - 1],
+          displayName: myKey[myKey.length - 1].split(".")[0],
+          fullPath: myObject.Key,
+          upload:
+            myDate +
+            "/" +
+            myMonth +
+            "/" +
+            date.getFullYear() +
+            " " +
+            myHours +
+            ":" +
+            myMinutes,
+          uploadTime: date,
+          category: myKey[myKey.length - 2],
+        });
+      }
+      documentsDetailsListData = result;
+      console.log('this is s3 retrieved documents details::::::::::::::::::' ,result);
+      sets3documentsDetailsList(result);
+     // setData(result);
+      // console.log(getFilteredData());
+    }
+    getAllDocs();
+  }, []);
+
+  const getFullPath = async (displayName: string) =>{
+    console.log('this is my s3 doc list',s3documentsDetailsList)
+    for (let i = 0; i < s3documentsDetailsList.length; i++) {
+      if (s3documentsDetailsList[i].displayName === displayName) {
+        console.log('This is the s3 path:', s3documentsDetailsList[i].fullPath)
+        const s3docPath = s3documentsDetailsList[i].fullPath
+        console.log('path', s3docPath)
+        sets3DocFullPath(s3docPath)
+        return s3docPath
+      }
+    }
+    return null;
+  }
+
+  const handleDocPress = async (item:any) => {
+    console.log('Item docname is:', item.docName)
+          const s3DocFullPath =  await getFullPath(item.docName)
+           console.log('This is the s3 path for view cred page:', s3DocFullPath)
+           navigation.navigate("ViewCredential", { documentDetails: item, s3DocFullPath })
+                //navigation.navigate("ViewCredential", { documentDetails: item })
+  }
+
   const multiSelect = (item: any) => {
     // console.log(item?.base64, "@@@@@@@@@");
     // setMultipleDucuments(item);
@@ -192,8 +283,8 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
         onPress={
           isCheckBoxEnable
             ? () => _selectTigger(item)
-            : () =>
-                navigation.navigate("ViewCredential", { documentDetails: item })
+            : () => handleDocPress(item)
+                //navigation.navigate("ViewCredential", { documentDetails: item })
         }
       >
       

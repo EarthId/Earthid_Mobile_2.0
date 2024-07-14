@@ -67,6 +67,7 @@ export const LocalImages = {
   spainflag: require("../../resources/images/spain.png"),
   portugalflag: require("../../resources/images/portugal.png"),
   menudot: require("../../resources/images/menu-dots.png"),
+  scanbarcodeImg: require('../../resources/images/scan-barcodeImg.png'),
   //categories
   CATEGORIES: {
     travelImage: require("../../resources/images/travel.png"),
@@ -88,4 +89,7 @@ export const LocalImages = {
     success: require("../../resources/lottie/31973-success-message.json"),
     loader: require("../../resources/lottie/load.json"),
   },
+  backup: require("../../resources/images/backup.png"),
+  cloud: require("../../resources/images/cloud.png"),
+  key: require("../../resources/images/key.png"),
 };

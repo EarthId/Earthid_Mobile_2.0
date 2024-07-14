@@ -425,7 +425,8 @@ export const QrScannerMaskedWidget = ({ createVerifiableCredentials,
           {!isLoading && <TouchableOpacity
             style={{
               opacity: !checkDisable() || !isChecked ? 0.5 : 1,
-              backgroundColor: '#2AA2DE',
+              //backgroundColor: '#2AA2DE',
+              backgroundColor: Screens.colors.primary,
               marginHorizontal: 10,
               padding: 15,
               borderRadius: 50,

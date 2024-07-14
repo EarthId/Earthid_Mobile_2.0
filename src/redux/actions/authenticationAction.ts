@@ -17,6 +17,7 @@ const {
     CREATE_ACCOUNT: createAccountUrl,
     APPROVE_EMAIL_OTP: approveOTPEmail,
     APPROVE_PHONE_OTP: approvePhoneOtp,
+    APPROVE_REGQR_OTP: approveRegQrPhoneOTP,
     GET_HISTORY: get_History,
   },
 } = URI;
@@ -33,7 +34,7 @@ export const GeneratedKeysAction = () => async (dispatch: any): Promise<any> => 
       "https://api-stage.myearth.id/contract/generateKeys"
     );
     const responseData = await _responseHandler(response);
-    console.log('responseData',responseData)
+    console.log('responseData from response handler',responseData)
 
     // Use Promise.all to parallelize the API calls
     const [responseIssuerDid, responseGenerateKeyPair, responseNewUserDid] = await Promise.all([
@@ -72,6 +73,23 @@ export const GeneratedKeysAction = () => async (dispatch: any): Promise<any> => 
     });
   }
 };
+
+
+
+// export const dispatchExistingKeys = async (keysData: any, dispatch: any) => {
+ 
+ 
+   
+
+//     const issuerDid = 
+
+//     dispatch({
+//       type: ACTION_TYPES.GENERATED_KEYS_RESPONSE,
+//       payload: {
+//         responseData: { ...responseData, ...data },
+//       },
+//     });
+// };
 
 
 export const createAccount = (requestPayload: IUserAccountRequest) => async (dispatch: any): Promise<any> => {
@@ -226,6 +244,53 @@ export const  approveOTP =
     }
   };
 
+
+  export const  approveRegQrOTP =
+  (requestPayload: any, type: string) =>
+  async (dispatch: any): Promise<any> => {
+
+    let responseData;
+    try {
+      dispatch({
+        type: ACTION_TYPES.APPROVE_OTP,
+      });
+      let response;
+      if (type === "phone") {
+        response = await postCall(approveRegQrPhoneOTP, requestPayload);
+        // SnackBar({
+        //   indicationMessage: "Verify Mobile number should be verified successfully",
+        // });
+      } else {
+        response = await postCall(approveOTPEmail, requestPayload);
+        // SnackBar({
+        //   indicationMessage: "Verify Email id should be verified successfully",
+        // });
+      }
+
+      responseData = await _responseHandler(response);
+
+
+      dispatch({
+        type: ACTION_TYPES.APPROVEOTP_RESPONSE,
+        payload: {
+          responseData,
+          errorMesssage: "",
+        },
+      });
+    } catch (error) {
+   
+      dispatch({
+        type: ACTION_TYPES.APPROVEOTP_ERROR,
+        payload: {
+          errorMesssage: error,
+        },
+      });
+      SnackBar({
+        indicationMessage: "Please enter a correct OTP",
+      });
+    }
+  };
+
 export const getHistory =
   (requestPayload: any) =>
   async (dispatch: any): Promise<any> => {
@@ -341,7 +406,7 @@ const _responseHandler = async (response: any): Promise<any> => {
     }
   });
 };
-
+ 
 
 export const _s3responseHandler = async (response: any): Promise<any> => {
   return new Promise(async (resolve, reject) => {

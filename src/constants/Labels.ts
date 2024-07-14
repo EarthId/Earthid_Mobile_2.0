@@ -296,7 +296,7 @@ export const SCREENS = {
     BACKUP: "backupidentity",
     DELETE_IDENTITY: "deleteyouridentity",
     LOGOUT: "logout",
-    PAYMENT: "Payment",
+    PAYMENT: "Banking",
   },
   HOMESCREENTITLES: {
     CATEGORIES: "categories",

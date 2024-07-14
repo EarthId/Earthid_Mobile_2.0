@@ -88,12 +88,12 @@ const CameraScreen = (props: any) => {
       "Device Permission",
       "To grant Device id you need to all the app permission from (Setting > App > EarthID > Permission)",
       [
-        // {
-        //   text: 'Cancel',
-        //   onPress: () => console.log('Cancel'),
-        //   style: 'cancel',
-        // },
-        { text: "OK", onPress: () => BackHandler.exitApp() },
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel'),
+          style: 'cancel',
+        },
+        // { text: "OK", onPress: () => BackHandler.exitApp() },
       ],
       { cancelable: false }
     );

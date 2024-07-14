@@ -37,6 +37,9 @@ import AnimatedLoader from "../../../components/Loader/AnimatedLoader";
 import SuccessPopUp from "../../../components/Loader";
 import ErrorPopUp from "../../../components/Loader/errorPopup";
 
+import GLOBALS from "../../../utils/globals";
+import { AWS_API_BASE } from "../../../constants/URLContstants";
+
 const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
 const earthIDLogo = require('../../../../resources/images/earthidLogoBlack.png');
 
@@ -225,6 +228,29 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
   };
 
 
+  const uploadToS3 = async (base64: any, category: any, name: any, type: any) => {
+    if (category === "ID") { category = "Identification"; }
+    const response = await fetch("https://" + AWS_API_BASE + "documents/upload", {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        base64: base64,
+        category: category,
+        name: name,
+        type: type,
+        credentials: GLOBALS.credentials,
+        awsID: GLOBALS.awsID,
+      }),
+    });
+    let myJson = await response.json();
+    console.log('Uploaded to s3', myJson)
+    console.log(myJson);
+  }
+
+
   const veriffSdkLaunch = async () => {
 
     const sessionRes = await createVerification()
@@ -291,6 +317,8 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
       console.log("Document Data", uploadDocResponseData)
    console.log("Document Images", getDocImages)
    console.log("Media Image", getImage)
+
+   await uploadToS3(getImage, "ID", "ID Document", ".jpg");
   
    await createPayLoadFromDocumentData(uploadDocResponseData )
   
@@ -345,7 +373,7 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
   const selectedDocument = "ID"
       // verifiAPICall()
    
-      setTimeout(() => {
+      setTimeout(async() => {
        // const index = documentsDetailsList?.responseData?.findIndex(
        //   (obj: { id: any; }) => obj?.id === selectedItem?.id
        // );
@@ -445,6 +473,7 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
          DocumentList.push(documentDetails);
         DocumentList.push(documentDetails1);
          dispatch(saveDocuments(DocumentList));
+        
          setsuccessResponse(true);
          getHistoryReducer.isSuccess = false;
          setTimeout(async () => {

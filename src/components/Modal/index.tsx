@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginLef: deviceWidth / 2,
+    marginLeft: deviceWidth / 2,
     backgroundColor: Screens.colors.primary,
     padding: 15,
     flexDirection: "row",

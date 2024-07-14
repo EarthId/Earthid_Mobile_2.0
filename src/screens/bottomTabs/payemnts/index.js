@@ -28,6 +28,8 @@ import {
 } from "react-native-plaid-link-sdk";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
+
 const Payment = (props) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -38,6 +40,9 @@ const Payment = (props) => {
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const [accounts, setAccounts] = useState([]);
   const navigation = useNavigation();
+
+  const rnBiometrics = new ReactNativeBiometrics();
+  
   const createVerifiableCred = (verifyVcCred) => {
     var date = dateTime();
     setLoading(true);
@@ -89,7 +94,7 @@ const Payment = (props) => {
           },
           body: "grant_type=client_credentials",
         });
-        console.log("Response Status:", response.status);
+        console.log("Response Status:::::::::::::", response.status);
         // Check if the request was successful
         if (!response.ok) {
           setLoading(false);
@@ -182,6 +187,7 @@ const Payment = (props) => {
         }
       );
       console.log("Response Status:123", response.status);
+      console.log('this is the response', response)
       // Check if the request was successful
       if (!response.ok) {
         setLoading(false);
@@ -190,6 +196,7 @@ const Payment = (props) => {
 
       // Get the response text directly
       const result = await response.json();
+      console.log('this is the result', result)
       setAccounts(result?.Data?.Account);
 
       setLoading(false);
@@ -200,6 +207,8 @@ const Payment = (props) => {
       console.error("Error fetching data:1234", error);
     }
   };
+
+
   const renderItem = ({ item }) => (
     <View
       style={{ borderBottomWidth: 1, borderBottomColor: "#000", padding: 10 }}
@@ -265,11 +274,11 @@ const Payment = (props) => {
     </View>
   );
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={{ flexGrow: 1, backgroundColor: Screens.colors.background, }}>
       <Header
         letfIconPress={() => getBack()}
         isLogoAlone={true}
-        headingText={"Payments"}
+        headingText={"Banking"}
         linearStyle={styles.linearStyle}
         containerStyle={{
           iconStyle: {
@@ -284,7 +293,7 @@ const Payment = (props) => {
         onPress={() => navigation.goBack()}
         style={{
           position: "absolute",
-          marginTop: 38,
+          marginTop: -78,
           marginLeft: 20,
         }}
       >
@@ -320,9 +329,36 @@ const Payment = (props) => {
           </Text>
           <TouchableOpacity
             onPress={() =>
-              props.navigation.navigate("BankLoginScreen", {
-                accounts: accounts,
-              })
+
+              rnBiometrics.isSensorAvailable()
+      .then((resultObject) => {
+        const { available, biometryType } = resultObject;
+        if (available) {
+          rnBiometrics.simplePrompt({ promptMessage: 'Confirm Biometric' })
+            .then((resultObject) => {
+              const { success } = resultObject;
+              if (success) {
+                props.navigation.navigate('Accountszzz', { accounts: accounts });
+              } else {
+                console.log('User cancelled biometric prompt');
+                props.navigation.navigate("BankLoginScreen", {
+                  accounts: accounts,
+                })
+              }
+            })
+            .catch(() => {
+              console.log('Biometrics failed');
+            });
+        }
+      })
+      .catch(() => {
+        console.log('Biometric sensor is not available');
+        props.navigation.navigate("BankLoginScreen", {
+          accounts: accounts,
+        })
+      })
+
+              
             }
           >
             <View>

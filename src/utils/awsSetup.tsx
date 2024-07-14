@@ -1,6 +1,7 @@
 
 import AWS from 'aws-sdk';
 import RNFetchBlob from 'rn-fetch-blob';
+//import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } from "@env";
 
 //AWS S3 bucket
 const bucketName = 'idv-sessions'
@@ -8,12 +9,15 @@ const bucketName = 'idv-sessions'
 const accessKey = 'AKIAU4JK3LMEAKCXLXWE';
 const secretKey = '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';
 
+// const accessKey = AWS_ACCESS_KEY_ID
+// const secretKey = AWS_SECRET_ACCESS_KEY
+
 AWS.config.update({
   accessKeyId: accessKey,
   secretAccessKey: secretKey,
 });
 
-
+//Not being used anymore
 export async function createUserSpecificBucket(username:any) {
 
     try {

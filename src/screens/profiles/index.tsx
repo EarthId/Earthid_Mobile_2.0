@@ -381,7 +381,7 @@ const ProfileScreen = ({ navigation }: IHomeScreenProps) => {
                   {
                     color: userDetails?.responseData?.mobileApproved
                       ? Screens.success
-                      : "red",
+                      : Screens.colors.primary2,
                   },
                 ],
               }}
@@ -409,7 +409,7 @@ const ProfileScreen = ({ navigation }: IHomeScreenProps) => {
                   {
                     color: userDetails?.responseData?.emailApproved
                       ? Screens.success
-                      : "red",
+                      : Screens.colors.primary2,
                   },
                 ],
               }}
@@ -487,7 +487,7 @@ const ProfileScreen = ({ navigation }: IHomeScreenProps) => {
                   {
                     fontSize: 14,
                     paddingHorizontal: 10,
-                    color: Screens.colors.primary,
+                    color: Screens.colors.primary2,
                     textDecorationLine: "underline",
                   },
                 ]}
@@ -513,11 +513,11 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 15,
     height: 15,
-    tintColor: Screens.colors.primary,
+    tintColor: Screens.colors.primary2,
   },
   subtitle: {
     color: Screens.black,
-    paddingLeft: 20,
+    //paddingLeft: 20,
     fontWeight: "bold",
     fontSize: 15,
     opacity: 1,

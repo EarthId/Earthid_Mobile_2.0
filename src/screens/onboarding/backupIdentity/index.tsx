@@ -44,6 +44,7 @@ const Register = ({ navigation,route }: IHomeScreenProps) => {
   const [isLoading, setIsLoading] = useState(false);
   let [qrBase64, setBase64] = useState("");
   const userDetails = useAppSelector((state) => state.account);
+  console.log('Qr code page userdetails:', userDetails)
   const viewShot: any = useRef();
   const { loading: getUserLoading } = useFetch();
   const dispatch = useAppDispatch();
@@ -55,12 +56,13 @@ const Register = ({ navigation,route }: IHomeScreenProps) => {
 
   let qrData = {
     earthId: userDetails?.responseData.earthId,
-    publicKey:publicKey,
-    privateKey:privateKey,
-    UserDid:UserDid,
+    // publicKey:publicKey,
+    // privateKey:privateKey,
+    // UserDid:UserDid,
     bucketName:`idv-sessions-${userDetails?.responseData.username.toLowerCase()}`
   };
   const serializedData = JSON.stringify(qrData);
+  console.log("This is qrcode data:", qrBase64)
   const secretKey = 'idv-sessions';
   const encryptedData = CryptoJS.AES.encrypt(serializedData, secretKey).toString();
   let data = {

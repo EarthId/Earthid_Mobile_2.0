@@ -2,10 +2,41 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { LocalImages } from "../../../constants/imageUrlConstants";
 import Header from "../../../components/Header";
+//import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
+
+
 const BankLoginScreen = (props) => {
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
   const { accounts } = props.route.params;
+  //const rnBiometrics = new ReactNativeBiometrics();
+
+  // useEffect(() => {
+  //   rnBiometrics.isSensorAvailable()
+  //     .then((resultObject) => {
+  //       const { available, biometryType } = resultObject;
+  //       if (available) {
+  //         rnBiometrics.simplePrompt({ promptMessage: 'Confirm Biometric' })
+  //           .then((resultObject) => {
+  //             const { success } = resultObject;
+  //             if (success) {
+  //               props.navigation.navigate('Accountszzz', { accounts: accounts });
+  //             } else {
+  //               console.log('User cancelled biometric prompt');
+  //             }
+  //           })
+  //           .catch(() => {
+  //             console.log('Biometrics failed');
+  //           });
+  //       }
+  //     })
+  //     .catch(() => {
+  //       console.log('Biometric sensor is not available');
+  //     });
+  // }, []);
+
   const handleLogin = () => {
     // Implement your login logic here
     console.log('Username:', username);
@@ -23,9 +54,13 @@ const BankLoginScreen = (props) => {
   
     // Add logic to validate credentials and navigate to the next screen if successful
   };
+
+
   const _toggleDrawer = () => {
     props.navigation.openDrawer();
   };
+
+
   return (
     <View style={{flex:1,backgroundColor:'#fff'}}>
         <Header

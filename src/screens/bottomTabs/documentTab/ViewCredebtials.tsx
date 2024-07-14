@@ -33,7 +33,8 @@ const DocumentPreviewScreen = (props: any) => {
   const dispatch = useAppDispatch();
   const { fileUri, type } = props.route.params;
   const { documentDetails } = props?.route?.params;
-  // console.log("documentDetails============>", documentDetails);
+  const { s3DocFullPath } = props?.route?.params;
+   console.log("documentDetails36============>", documentDetails);
   const pdfRef = useRef(null);
   const HistoryParams = props?.route?.params?.history;
   let documentsDetailsList = useAppSelector((state) => state.Documents);
@@ -219,7 +220,7 @@ const DocumentPreviewScreen = (props: any) => {
   }
   const handleUploadImage = async () => {
     setisBottomSheetForSideOptionVisible(false);
-    props.navigation.navigate("ShareQr", { selectedItem: selectedItem });
+    props.navigation.navigate("ShareQr", { selectedItem: selectedItem, s3DocFullPath });
     console.log("selectedItem", selectedItem);
   };
   const RowOption = ({ icon, title, rowAction }: any) => (
@@ -422,25 +423,47 @@ const DocumentPreviewScreen = (props: any) => {
             </View>
           ) : (
             <Image
-              resizeMode={"contain"}
-              style={{
-                flex: 1,
-              }}
-              //   source={{ uri:documentDetails?.type === 'deeplink' ? `${documentDetails?.base64}`: documentDetails?.docType == "jpg"? `data:image/jpeg;base64,${documentDetails?.base64}`
-              //   : documentDetails?.isLivenessImage === 'livenessImage' ? documentDetails?.base64  : `data:image/png;base64,${documentDetails?.base64}`
-              // }}
-              source={{
-                uri:
-                  documentDetails?.type === "deeplink"
-                    ? `data:image/jpeg;base64,${documentDetails?.base64}`
-                    : documentDetails?.isLivenessImage === "livenessImage"
-                    ? documentDetails?.base64
-                    : documentDetails?.docType == "jpg"
-                    ? `data:image/jpeg;base64,${documentDetails?.base64}`
-                    : `data:image/png;base64,${documentDetails?.base64}`,
-              }}
-              onError={(error) => console.log("Image loading error:", error)}
-            ></Image>
+  resizeMode={"contain"}
+  style={{
+    flex: 1,
+  }}
+  source={{
+    uri: (() => {
+      const fileName = documentDetails?.name || '';
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+
+      console.log("File Extension:", fileExtension);
+      console.log("Document Details:", documentDetails);
+
+      if (documentDetails?.type === "deeplink") {
+        return `data:image/jpeg;base64,${documentDetails?.base64}`;
+      }
+
+      if (documentDetails?.isLivenessImage === "livenessImage") {
+        return documentDetails?.base64;
+      }
+
+      const base64 = documentDetails?.base64;
+      if (!base64) {
+        console.error("Base64 string is null or undefined");
+        return "";
+      }
+
+      switch (fileExtension) {
+        case 'jpg':
+        case 'jpeg':
+          return `data:image/jpeg;base64,${base64}`;
+        case 'png':
+          return `data:image/png;base64,${base64}`;
+        default:
+          console.warn("Unknown file extension, defaulting to jpeg");
+          return `data:image/jpeg;base64,${base64}`;
+      }
+    })()
+  }}
+  onError={(error) => console.log("Image loading error:", error)}
+></Image>
+
           )
         ) : (
           <GenericText
@@ -470,7 +493,7 @@ const DocumentPreviewScreen = (props: any) => {
           marginTop: 5,
         }}
       >
-        {`Uploaded on ${documentDetails.date} at ${documentDetails.time}`}
+        {`Uploaded on ${documentDetails.date || documentDetails.upload} at ${documentDetails.time || documentDetails.uploadTime}`}
       </GenericText>
 
       <View

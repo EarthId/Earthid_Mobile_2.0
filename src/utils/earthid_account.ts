@@ -1,12 +1,15 @@
 import { Platform, Alert } from "react-native";
 import CryptoJS from "react-native-crypto-js";
-import { EARTHID_DEV_BASE } from "../constants/URLContstants";
+import { EARTHID_DEV_BASE, EARTHID_NEW_DEV_BASE } from "../constants/URLContstants";
 export const isTestnet = true;
 export const BASE_URL = EARTHID_DEV_BASE;
+export const NEW_BASE_URL = EARTHID_NEW_DEV_BASE
 
 export const api = BASE_URL + "/verification/sendEmailOTP";
 export const superAdminApi = BASE_URL + "/admin/getSuperAdmin";
 export const phoneOtp = BASE_URL + "/verification/sendPhoneOTP";
+export const regQrPhoneOtp = NEW_BASE_URL + "/verification/sendRegQrPhoneOTP";
+export const verifyRegQrPhoneOtp = NEW_BASE_URL + "/verification/regQrPhoneVerify";
 export const updatephoneOtp = BASE_URL + "/verification/sendVerifiedPhoneOTP";
 export const updateEmailOtp = BASE_URL + "/verification/sendVerifiedEmailOTP";
 export const updateEmail = BASE_URL + "/verification/verifiedEmailVerify";

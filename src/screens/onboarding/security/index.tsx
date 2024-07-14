@@ -54,13 +54,16 @@ console.log('sec=======>',securityReducer)
       securityReducer?.securityData?.length > 0
     ) {
       payLoad = securityReducer?.securityData;
+      console.log('payload value is1:', payLoad[0]?.types )
     }
     if (
+      
       (payLoad[0]?.types === ESecurityTypes.FACE ||
         payLoad[0]?.types === ESecurityTypes.FINGER) &&
       securityMode !== ESecurityTypes.PASSCORD &&
       payLoad[0]?.enabled
     ) {
+      console.log('payload value is2:', payLoad[0]?.types )
       if (payLoad.length === 0) {
         payLoad.push({
           types: securityMode,
@@ -118,7 +121,8 @@ console.log('sec=======>',securityReducer)
       //navigation.navigate("Security");
     }
   }, [securityReducer]);
-  const saveSelectionSecuritiess = async () => {
+  const saveSelectionSecuritiess = async (biometryType: any) => {
+    console.log('BiometricType for savesecurities function:', biometryType)
     let payLoad = [];
     payLoad.push({
       types: ESecurityTypes.FACE,
@@ -212,7 +216,7 @@ console.log('sec=======>',securityReducer)
             >
               {SCREENS.SECURITYSCREEN.instructions}
             </GenericText>
-            <Button
+            {/* <Button
               selected={getSelectedDState(ESecurityTypes.FINGER)}
               disabled={
                 getSelectedDState(ESecurityTypes.FINGER) ||
@@ -251,9 +255,94 @@ console.log('sec=======>',securityReducer)
               }}
               leftIcon={LocalImages.touchidpic}
               title={"usetouchid"}
-            ></Button>
+            ></Button> */}
 
-            <View style={{ marginTop: -20 }}>
+<View style={{ marginTop: -20 }}>
+              <Button
+                selected={getSelectedDState(ESecurityTypes.FACE)}
+                disabled={
+                  getSelectedDState(ESecurityTypes.FACE) ||
+                  getSelectedDState(ESecurityTypes.FINGER)
+                }
+                onPress={() => {
+                  rnBiometrics.isSensorAvailable().then((resultObject) => {
+                    const { available, biometryType } = resultObject;
+                    console.log('Available biometrics:', resultObject)
+                    console.log('Available biometrics2222:', available, biometryType, BiometryTypes)
+                    //let promptMessage
+                    if (available) {
+                      
+        
+                      rnBiometrics
+                        .simplePrompt({ promptMessage: "Confirm Biometric" })
+                        .then((resultObject) => {
+                          const { success } = resultObject;
+                          console.log("resultObject===>", resultObject);
+                          if (success) {
+
+                            if (biometryType === BiometryTypes.FaceID) {
+                              saveSelectionSecuritiess(biometryType);
+                            } else if (biometryType === BiometryTypes.TouchID) {
+                              saveSelectionSecurities(
+                                ESecurityTypes.FINGER,
+                                false,
+                                "FingerPrintInstructionScreen"
+                              );
+                            }else if (biometryType === BiometryTypes.Biometrics) {
+                              AsyncStorage.setItem("biometrics", biometryType)
+                              saveSelectionSecurities(
+                                ESecurityTypes.PASSCORD,
+                        false,
+                        "SetPin",
+                        false
+                              );
+                            }
+                            
+
+                            console.log("successful biometrics provided");
+                          } else {
+                            console.log("user cancelled biometric prompt");
+                          }
+                        })
+                        .catch(() => {
+                          console.log("biometrics failed");
+                        });
+                    } else {
+                      saveSelectionSecurities(
+                        ESecurityTypes.PASSCORD,
+                        false,
+                        "SetPin",
+                        false
+                      );
+                    }
+                  });
+                }}
+                style={{
+                  buttonContainer: {
+                    backgroundColor: getSelectedDState(ESecurityTypes.FINGER)
+                      ? "#D3D3D3"
+                      : getSelectedDState(ESecurityTypes.FACE)
+                      ? "#e6ffe6"
+                      : "#fff",
+                    elevation: 2,
+                    borderColor: getSelectedDState(ESecurityTypes.FINGER)
+                      ? "#D3D3D3"
+                      : getSelectedDState(ESecurityTypes.FACE)
+                      ? "green"
+                      : Screens.colors.primary,
+                  },
+                  iconStyle: {
+                    tintColor: getSelectedDState(ESecurityTypes.FINGER)
+                      ? "grey"
+                      : Screens.colors.primary,
+                  },
+                }}
+                leftIcon={LocalImages.faceidpic}
+                title="USE BIOMETRICS"
+              ></Button>
+            </View>
+
+            {/* <View style={{ marginTop: -20 }}>
               <Button
                 selected={getSelectedDState(ESecurityTypes.FACE)}
                 disabled={
@@ -314,7 +403,7 @@ console.log('sec=======>',securityReducer)
                 leftIcon={LocalImages.faceidpic}
                 title={"usefaceid"}
               ></Button>
-            </View>
+            </View> */}
             <View style={{ marginTop: -20 }}>
               <Button
                 selected={getSelectedDState(ESecurityTypes.PASSCORD)}

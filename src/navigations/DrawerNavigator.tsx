@@ -37,6 +37,7 @@ import UpdateTouchId from "../screens/onboarding/security/UpdateTouchId";
 import Payment from "../screens/bottomTabs/payemnts/index"
 import BankLoginScreen from '../screens/bottomTabs/payemnts/BankLoginScreen'
 import Accountszzz from '../screens/bottomTabs/payemnts/Accounts'
+import RegisterOTP from "../screens/UploadQr/RegisterOTP";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -72,7 +73,8 @@ const dashBoardStack = {
   ShareQr:ShareQr,
   Payment:Payment,
   BankLoginScreen:BankLoginScreen,
-  Accountszzz:Accountszzz
+  Accountszzz:Accountszzz,
+  RegisterOTP:RegisterOTP
 };
 
 const tabs = {

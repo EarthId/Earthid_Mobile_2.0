@@ -222,9 +222,11 @@ function replaceObjectByName(array, nameToFind, replacementObject) {
     return (
       index !==0 && index!==1 && index !==2 &&
       <View>
-        <><GenericText style={[styles.categoryHeaderText, { fontSize: 13 }]}>
+        <>
+        <GenericText style={[styles.categoryHeaderText, { fontSize: 13 }]}>
         {item.TITLE}
-      </GenericText><TextInput
+      </GenericText>
+      <TextInput
           style={{
             container: [
               styles.containerForSocialMedia,
@@ -246,7 +248,8 @@ function replaceObjectByName(array, nameToFind, replacementObject) {
           value={item.DOMAIN}
           onChangeText={(text) => onChangeHandler(text, index)}
           onFocus={() => setFocus(index)}
-          onBlur={() => setFocus(false)} /></>
+          onBlur={() => setFocus(false)} />
+          </>
       </View>
     );
   };
@@ -367,8 +370,8 @@ console.log('medialList=============>,',medialList)
                   styles.textInputContainer,
                   {
                     borderColor: nameFocus
-                      ? Screens.colors.primary
-                      : Screens.grayShadeColor,
+                      ? Screens.headingtextColor
+                      : Screens.colors.primary,
                     borderWidth: nameFocus ? 2 : 1,
                   },
                 ],
@@ -400,8 +403,8 @@ console.log('medialList=============>,',medialList)
                   styles.textInputContainer,
                   {
                     borderColor: nameFocus
-                      ? Screens.colors.primary
-                      : Screens.grayShadeColor,
+                      ? Screens.headingtextColor
+                      : Screens.colors.primary,
                     borderWidth: nameFocus ? 2 : 1,
                   },
                 ],
@@ -489,12 +492,13 @@ const styles = StyleSheet.create({
     backgroundColor: Screens.colors.background,
   },
   title: {
-    color: Screens.grayShadeColor,
+    color: Screens.headingtextColor,
+    fontSize: 13,
+    opacity: 1,
   },
   subtitle: {
     color: Screens.black,
     paddingLeft: 20,
-    fontWeight: "bold",
     fontSize: 15,
     opacity: 1,
   },
@@ -507,13 +511,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   socialMediaContainer: {
-    marginTop: 20,
+    marginTop: 25,
+    marginBottom: 35,
     marginHorizontal: 10,
     elevation: 5,
     backgroundColor: Screens.pureWhite,
     borderRadius: 10,
     justifyContent: "center",
     paddingBottom: 30,
+    paddingTop: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -548,8 +554,8 @@ const styles = StyleSheet.create({
   },
   categoryHeaderText: {
     marginHorizontal: 20,
-    marginVertical: 10,
-
+    marginTop: 15,
+marginBottom: 0,
     color: Screens.headingtextColor,
   },
 
@@ -588,6 +594,7 @@ const styles = StyleSheet.create({
   category: {
     backgroundColor: Screens.pureWhite,
     padding: 10,
+    paddingBottom: 25,
     marginTop: -35,
     marginHorizontal: 10,
     elevation: 5,

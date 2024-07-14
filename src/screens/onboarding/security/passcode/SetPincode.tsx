@@ -138,7 +138,7 @@ const Register = ({ navigation,route }: IHomeScreenProps) => {
             style={{
               buttonContainer: {
                 elevation: 5,
-                backgroundColor:'transparent'
+                backgroundColor:'#ffff'
               },
               text: {
                 color :isEarthId() ? "#293fee" : "#2AA2DE",

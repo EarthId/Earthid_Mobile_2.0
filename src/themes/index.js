@@ -20,7 +20,8 @@ export const Screens = {
   thickGray: "#EDF1F4",
   colors: {
     background: "#F5F5F5",
-    primary: isEarthId() ? "#293fee" : "#50A0D9",
+    primary: isEarthId() ? "#4816B8" : "#50A0D9",
+    primary2: isEarthId() ? "#293fee" : "#50A0D9",
     ScanButton: {
       startColor: isEarthId() ? "#8059D0" : "#f0f4f7",
       middleColor: isEarthId() ? "#8059D0" : "#dbe4ee",

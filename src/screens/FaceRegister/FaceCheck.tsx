@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { RNCamera } from "react-native-camera";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ReactNativeBiometrics from 'react-native-biometrics';
 
 import Button from "../../components/Button";
 import { SnackBar } from "../../components/SnackBar";
@@ -30,6 +31,8 @@ import { SERVICE } from "../../utils/securityServices";
 import DocumentMask from "../uploadDocuments/DocumentMask";
 import { EARTHID_DEV_BASE } from "../../constants/URLContstants";
 import { useFetch } from "../../hooks/use-fetch";
+
+const rnBiometrics = new ReactNativeBiometrics();
 
 const LivenessCameraScreen = (props: any) => {
   const [maskedColor, setmaskedColor] = useState("#fff");
@@ -194,17 +197,30 @@ const LivenessCameraScreen = (props: any) => {
     }
   };
 
-  // const faceidonly = () => {
-  //   props.navigation.dispatch(
-  //     StackActions.replace("DrawerNavigator", { type: "Faceid" })
-  //   );
-  // };
+  const handleFaceID = async () => {
+    rnBiometrics.simplePrompt({ promptMessage: 'Authenticate with Biometrics' })
+      .then((resultObject) => {
+        const { success } = resultObject;
+        if (success) {
+          Alert.alert('Authenticated successfully');
+          saveSelectionSecurities();
+        } else {
+          Alert.alert('Authentication failed');
+        }
+      })
+      .catch((error) => {
+        Alert.alert('Authentication error', error.message);
+      });
+  };
 
   const { colors } = useTheme();
   const camRef: any = useRef();
 
   useEffect(() => {
-    console.log("route==>", props.route);
+    // if (Platform.OS === 'ios') {
+    //   handleFaceID();
+    // }
+    handleFaceID()
   }, []);
 
   return (
@@ -219,26 +235,28 @@ const LivenessCameraScreen = (props: any) => {
         </TouchableOpacity>
       </View>
 
-      <RNCamera
-        ref={camRef}
-        onMountError={(errr) => {
-          console.log("onmount error", errr);
-        }}
-        style={styles.preview}
-        androidCameraPermissionOptions={null}
-        type={RNCamera.Constants.Type.front}
-        focusDepth={1.0}
-        trackingEnabled={true}
-        faceDetectionClassifications={
-          RNCamera.Constants.FaceDetection.Classifications.all
-        }
-        faceDetectionLandmarks={RNCamera.Constants.FaceDetection.Landmarks.all}
-        faceDetectionMode={RNCamera.Constants.FaceDetection.Mode.accurate}
-        onFacesDetected={!data && _handleBarCodeRead}
-        captureAudio={false}
-      >
-        <DocumentMask color={maskedColor} />
-      </RNCamera>
+      {Platform.OS === 'android' && (
+        <RNCamera
+          ref={camRef}
+          onMountError={(errr) => {
+            console.log("onmount error", errr);
+          }}
+          style={styles.preview}
+          androidCameraPermissionOptions={null}
+          type={RNCamera.Constants.Type.front}
+          focusDepth={1.0}
+          trackingEnabled={true}
+          faceDetectionClassifications={
+            RNCamera.Constants.FaceDetection.Classifications.all
+          }
+          faceDetectionLandmarks={RNCamera.Constants.FaceDetection.Landmarks.all}
+          faceDetectionMode={RNCamera.Constants.FaceDetection.Mode.accurate}
+          onFacesDetected={!data && _handleBarCodeRead}
+          captureAudio={false}
+        >
+          <DocumentMask color={maskedColor} />
+        </RNCamera>
+      )}
       <GenericText
         style={{
           textAlign: "center",

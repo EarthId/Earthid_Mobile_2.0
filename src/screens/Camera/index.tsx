@@ -41,6 +41,7 @@ import { postApi } from "../../utils/createUserSignaturekey";
 import ZkbScreen from "./DisclosureScreen";
 import SelctiveDisclosure from "./ZkbScreen";
 import { addConsent } from "../../utils/consentApis";
+import LinearGradients from "../../components/GradientsPanel/LinearGradient";
 
 const data = [
   { label: " 1", value: "1" },
@@ -1030,7 +1031,7 @@ const ageProofJSON = JSON.parse(ageProof)
         setisDocumentModalkyc(false);
         setisLoading(false)
         setIsCamerVisible(true);
-        Alert.alert("Selected Credentials have been shared successfully");
+        Alert.alert("Selected information has been shared successfully");
       }
       if (barCodeDataDetails?.requestType === "shareCredentials") {
         setisDocumentModalkyc(false);
@@ -1042,14 +1043,14 @@ const ageProofJSON = JSON.parse(ageProof)
         setisDocumentModalkyc(false);
         setIsCamerVisible(true);
         setisLoading(false)
-        Alert.alert("Proof sharing completed successfully");
+        Alert.alert("Proof of funds has been shared successfully");
         
       }
       if (barCodeDataDetails?.requestType?.request === "minAge") {
         setisDocumentModalkyc(false);
         setIsCamerVisible(true);
         setisLoading(false)
-        Alert.alert("Proof sharing completed successfully");
+        Alert.alert("Proof of age has been shared successfully");
         
       }
       if (barCodeDataDetails?.requestType === "document") {
@@ -1464,6 +1465,25 @@ const ageProofJSON = JSON.parse(ageProof)
           <Image
             resizeMode="contain"
             style={[styles.logoContainer]}
+            source={LocalImages.scanbarcodeImg}
+          ></Image>
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+          zIndex: 100,
+        }}
+      >
+        <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <Image
+            resizeMode="contain"
+            style={[
+              styles.logoContainer,
+              { tintColor: Screens.pureWhite, width: 15, height: 15 },
+            ]}
             source={LocalImages.closeImage}
           ></Image>
         </TouchableOpacity>
@@ -1487,16 +1507,15 @@ const ageProofJSON = JSON.parse(ageProof)
         loadingText={successMessage}
       />
       <ModalView
-        width={deviceWidth / 1.35}
-        height={450}
-        marginLeft={20}
-        justifyContent={"center"}
+        width={deviceWidth / 1.2}
+        height={480}
+        left={30}
         isModalVisible={issuerLogin}
+        style={{ marginRight: 20 }}
       >
         <View
           style={{
             flex: 1,
-
             width: "100%",
             justifyContent: "space-between",
           }}
@@ -1506,14 +1525,23 @@ const ageProofJSON = JSON.parse(ageProof)
        <ActivityIndicator color={'red'} size='large' />
      </View>
 }
-
+<LinearGradients
+          endColor={Screens.colors.header.endColor}
+          // middleColor={Screens.colors.header.middleColor}
+          startColor={Screens.colors.header.startColor}
+          style={{borderTopLeftRadius: 18,
+            borderTopRightRadius: 18,}}
+          horizontalGradient={false}
+        >
           <View
             style={{
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: isEarthId()
-                ? Screens.colors.ScanButton.startColor
-                : "#fff",
+              // backgroundColor: isEarthId()
+              //   ? Screens.colors.ScanButton.startColor
+              //   : "#fff",
+                borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
             }}
           >
             <Image
@@ -1522,6 +1550,8 @@ const ageProofJSON = JSON.parse(ageProof)
               source={LocalImages.logoImage}
             ></Image>
           </View>
+        </LinearGradients>
+          
           <GenericText
             style={{
               textAlign: "center",
@@ -1536,13 +1566,13 @@ const ageProofJSON = JSON.parse(ageProof)
           </GenericText>
 
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10  }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10, marginLeft:22  }}>
         <CheckBox
           value={isChecked}
 
           onValueChange={(newValue) => setIsChecked(newValue)}
         />
-        <GenericText style={{marginLeft: 10,marginRight: 35, fontSize: 11}}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
+        <GenericText style={{marginLeft: 10,marginRight: 60, fontSize: 11}}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
       </View>
 
           <Button
@@ -1551,11 +1581,15 @@ const ageProofJSON = JSON.parse(ageProof)
               getData();
               addConsentCall()
             }}
+            disabled={!isChecked}
             style={{
               buttonContainer: {
                 elevation: 5,
                 marginHorizontal: 10,
                 opacity: isChecked ? 1 : 0.5,
+               borderWidth: 2,
+   // borderColor: 'transparent',
+   backgroundColor: Screens.colors.primary
               },
               text: {
                 color: Screens.pureWhite,
@@ -1567,7 +1601,7 @@ const ageProofJSON = JSON.parse(ageProof)
             }}
             title={"authorize"}
           ></Button>
-          <View style={{ marginTop: -20 }}>
+          <View style={{ marginTop: -50 }}>
             <Button
               onPress={() => {
                 setIsCamerVisible(true);
@@ -1577,10 +1611,12 @@ const ageProofJSON = JSON.parse(ageProof)
                 buttonContainer: {
                   elevation: 5,
                   marginHorizontal: 10,
-                  backgroundColor: "red",
+                  backgroundColor: "#fff",
+                  //borderWidth: 0,
+    //borderColor: 'transparent',
                 },
                 text: {
-                  color: Screens.pureWhite,
+                  color: Screens.colors.primary,
                   fontSize: 12,
                 },
                 iconStyle: {
@@ -1627,7 +1663,7 @@ const ageProofJSON = JSON.parse(ageProof)
         </SelctiveDisclosure>:
 
        <ModalView
-        left={deviceWidth / 9}
+        left={deviceWidth / 12}
         width={deviceWidth / 1.2}
         isModalVisible={isDocumentModalkyc}
         height={500}
@@ -1800,7 +1836,6 @@ const ageProofJSON = JSON.parse(ageProof)
               justifyContent: "space-between",
               marginVertical: 20,
               marginHorizontal: 30,
-              
             }}
           >
             <TouchableOpacity
@@ -1808,9 +1843,18 @@ const ageProofJSON = JSON.parse(ageProof)
                 setisDocumentModalkyc(false);
                 setIsCamerVisible(true);
               }}
-            >
+          >
               <GenericText
-                style={{ color: "red", fontSize: 16, fontWeight: "700" }}
+                style={{ backgroundColor: '#fff',
+                marginHorizontal: 10,
+                paddingHorizontal: 25, 
+                paddingVertical: 10,
+                borderRadius: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: '#D3D3D3',
+                color: "#525252", fontSize: 13, fontWeight: "700" }}
               >
                 Cancel
               </GenericText>
@@ -1823,7 +1867,7 @@ const ageProofJSON = JSON.parse(ageProof)
               }
             >
               <GenericText
-                style={{ color: "green", fontSize: 16, fontWeight: "700" }}
+                style={{ color: "white", fontSize: 13,fontWeight: "700", backgroundColor: Screens.colors.primary, paddingHorizontal: 25, paddingVertical: 11, borderRadius: 30 }}
               >
                 {"authorize"}
               </GenericText>
@@ -1859,6 +1903,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 30,
     height: 30,
+    
   },
   dropdown: {
     height: 50,

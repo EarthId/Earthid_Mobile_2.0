@@ -56,6 +56,7 @@ export interface IDocumentProps {
   signature: any;
   typePDF: any;
   verifiableCredential: any;
+  fullPath: any;
 }
 const VerifiDocumentScreen = (props: any) => {
   const { uploadedDocuments } = props.route.params;

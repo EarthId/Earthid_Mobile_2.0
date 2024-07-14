@@ -33,9 +33,11 @@ import { isEarthId } from "../../utils/PlatFormUtils";
 const UploadQr = (props: any) => {
   const { colors } = useTheme();
   const camRef: any = useRef();
+  const { navigation } = props;
 
   const [message, Setmessage] = useState<string>("ooo");
   const [data, SetData] = useState(null);
+  //const [keys, setKeys] = useState(null);
   const [source, setSource] = useState({});
   const [filePath, setFilePath] = useState();
   const [isBarcodeScanned,setBarCodeScanned] = useState(false)
@@ -83,11 +85,15 @@ const UploadQr = (props: any) => {
 
   const getDetailsForBucket = async()=>{
     const bucketName = `idv-sessions-${getUserResponse.username.toLowerCase()}`;
+    console.log('This is userdetailsresponse:', getUserResponse)
 
     dispatch(byPassUserDetailsRedux(getUserResponse,bucketName)).then(() => {
-      props.navigation.navigate("Security");
+      //navigation.navigate("OTPScreen", { type: "phone" });
+     // props.navigation.navigate("RegisterOTP", { type: "phone" });
+      //props.navigation.navigate("Security");
      
     });
+    navigation.navigate("RegisterOTP", { type: "phone" });
   }
 
   const requestPermission = async () => {
@@ -167,6 +173,11 @@ const UploadQr = (props: any) => {
         const decryptedData = CryptoJS.AES.decrypt(barCodeData?.data, secretKey).toString(CryptoJS.enc.Utf8);
 
 const decryptedJsonObject = JSON.parse(decryptedData);
+console.log("this is the retrieved data from qr code:", decryptedJsonObject)
+// const keys = {
+//   UserDid: decryptedJsonObject.UserDid,
+
+// }
         detectedBarCodes(decryptedJsonObject);
       }
       catch (error) {
@@ -203,6 +214,14 @@ const decryptedJsonObject = JSON.parse(decryptedData);
       getUser(url, {}, "GET");
     }
   };
+
+  const sendOtp = async () => {
+    if(getUserResponse){
+
+    }else{
+      console.log("Cannot find mobile number to send otp")
+    }
+  }
 
   return (
     <View style={styles.sectionContainer}>

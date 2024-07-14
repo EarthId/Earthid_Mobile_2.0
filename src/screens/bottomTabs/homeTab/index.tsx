@@ -1,4 +1,4 @@
-import { values } from "lodash";
+import { set, values } from "lodash";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
@@ -46,6 +46,12 @@ import { createVerifiableCred } from "../../../utils/createVerifiableCred";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { StackActions } from "@react-navigation/native";
 import TouchID from "react-native-touch-id";
+import GLOBAL from "../../../utils/globals";
+import GLOBALS from "../../../utils/globals";
+import { AWS_API_BASE } from "../../../constants/URLContstants";
+import ReactNativeBiometrics from "react-native-biometrics";
+
+
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -67,7 +73,15 @@ const optionalConfigObject = {
   unifiedErrors: false, // use unified error messages (default false)
   passcodeFallback: false, // iOS - allows the device to fall back to using the passcode, if faceid/touch is not available. this does not mean that if touchid/faceid fails the first few times it will revert to passcode, rather that if the former are not enrolled, then it will use the passcode.
 };
+
+const rnBiometrics = new ReactNativeBiometrics();
+
 const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
+  // GLOBAL.credentials = {test: "does this work?"};
+  // //wait two seconds then print global.credentials
+  // setTimeout(() => {
+  //   console.log(AWS_ACCESS_KEY, AWS_SECRET_KEY);
+  // }, 2000);
   const userDetails = useAppSelector((state) => state.account);
   const getHistoryReducer = useAppSelector((state) => state.getHistoryReducer);
   const profilePicture = useAppSelector((state) => state.savedPic);
@@ -81,6 +95,9 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
   if (route?.params && route?.params?.category) {
     categoryTypes = route?.params?.category;
   }
+
+ 
+
   const [createVerify, setCreateVerify] = useState({});
   const [randomString,setRandomString] =useState('')
   const keys = useAppSelector((state) => state.user);
@@ -99,10 +116,16 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
   console.log(signature, "sign");
   console.log(createVerify, "createVerify");
   console.log(UserDid, "UserDid");
+  console.log(userDetails, "UserDetails");
   console.log(userDetails?.responseData?.publicKey, "publickey");
   //let idleTimer: string | number | NodeJS.Timeout | undefined;
   //recent activity
-  const documentsDetailsList = useAppSelector((state) => state.Documents);
+  let documentsDetailsListData = useAppSelector((state) => state.Documents);
+  const [documentsDetailsList, setdocumentsDetailsList] = useState(
+    documentsDetailsListData
+  );
+  const [s3documentsDetailsList, sets3documentsDetailsList] = useState<any[]>([]);
+  const [s3DocFullPath, sets3DocFullPath] = useState([]);
   const recentData = documentsDetailsList?.responseData;
   const data = documentsDetailsList?.responseData;
 
@@ -133,6 +156,113 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
       appStateListener?.remove();
     };
   }, [aState]);
+
+  useEffect(() => {
+    async function getCredentials() {
+      const response = await fetch("https://" + AWS_API_BASE + "auth/gettoken", {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userID: userDetails.responseData.Id,
+        }),
+      });
+      console.log('this is userID s3 getcred', userDetails.responseData.Id)
+      let myJson = await response.json();
+      console.log('this is myJson response s3 getcred', myJson)
+      GLOBAL.credentials = {
+        accessKeyId: myJson.Credentials.AccessKeyId,
+        expiration: myJson.Credentials.Expiration,
+        secretAccessKey: myJson.Credentials.SecretAccessKey,
+        sessionToken: myJson.Credentials.SessionToken,
+      },
+      GLOBAL.awsID = myJson.SubjectFromWebIdentityToken;
+      console.log("These are the aws s3 cred:",GLOBAL.credentials)
+    }
+    getCredentials();
+  }, []);
+
+
+  useEffect(() => {
+    console.log(GLOBALS.credentials);
+    async function getAllDocs() {
+      const response = await fetch("https://" + AWS_API_BASE + "documents/getall", {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          credentials: GLOBALS.credentials,
+          awsID: GLOBALS.awsID,
+        }),
+      })
+      const myJson = await response.json();
+      console.log('this is my json1----------', myJson)
+      let result = [];
+      let content = myJson.Contents;
+      for (let i = 0; i < content.length; i++) {
+        let myObject = content[i];
+
+        if (myObject.Key.substr(-1) == "/") {
+          continue;
+        }
+
+        let myKey = myObject.Key.split("/");
+        let date = new Date(Date.parse(myObject.LastModified));
+        let myDate = date.getDate();
+        myDate = myDate < 10 ? "0" + myDate : myDate;
+        let myMonth = date.getMonth() + 1;
+        myMonth = myMonth < 10 ? "0" + myMonth : myMonth;
+        let myHours = date.getHours();
+        myHours = myHours < 10 ? "0" + myHours : myHours;
+        let myMinutes = date.getMinutes();
+        myMinutes = myMinutes < 10 ? "0" + myMinutes : myMinutes;
+
+        result.push({
+          title: myKey[myKey.length - 1],
+          name: myKey[myKey.length - 1],
+          displayName: myKey[myKey.length - 1].split(".")[0],
+          fullPath: myObject.Key,
+          upload:
+            myDate +
+            "/" +
+            myMonth +
+            "/" +
+            date.getFullYear() +
+            " " +
+            myHours +
+            ":" +
+            myMinutes,
+          uploadTime: date,
+          category: myKey[myKey.length - 2],
+        });
+      }
+      documentsDetailsListData = result;
+      console.log('this is s3 retrieved documents details::::::::::::::::::' ,result);
+      sets3documentsDetailsList(result);
+     // setData(result);
+      // console.log(getFilteredData());
+    }
+    getAllDocs();
+  }, []);
+
+  const getFullPath = async (displayName: string) =>{
+    console.log('this is my s3 doc list',s3documentsDetailsList)
+    for (let i = 0; i < s3documentsDetailsList.length; i++) {
+      if (s3documentsDetailsList[i].displayName === displayName) {
+        console.log('This is the s3 path:', s3documentsDetailsList[i].fullPath)
+        const s3docPath = s3documentsDetailsList[i].fullPath
+        console.log('path', s3docPath)
+        sets3DocFullPath(s3docPath)
+        return s3docPath
+      }
+    }
+    return null;
+  }
+
 
   const getItemsForSection =(data: any[])=>{
     const idDocuments = data?.filter((item: { categoryType: string; })=>item?.categoryType === "ID" ||item?.categoryType === "id")
@@ -208,11 +338,15 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
     const fingerPrint = await AsyncStorage.getItem("fingerprint");
     const passcode = await AsyncStorage.getItem("passcode");
     const FaceID = await AsyncStorage.getItem("FaceID");
+    const Biometrics = await AsyncStorage.getItem("biometrics")
     console.log("FaceID===>", FaceID);
     if (fingerPrint && passcode) {
       aunthenticateBioMetricInfo();
     } else if (FaceID && passcode) {
       navigation.dispatch(StackActions.replace("FaceCheck"));
+    } else if (Biometrics) {
+      handleBiometrics()
+      navigation.dispatch(StackActions.replace("PasswordCheck"));
     } else if (passcode) {
       navigation.dispatch(StackActions.replace("PasswordCheck"));
     } else {
@@ -221,7 +355,23 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
   };
   // Function to handle idle timeout
 
-
+  const handleBiometrics = async () => {
+    rnBiometrics.simplePrompt({ promptMessage: 'Authenticate with Biometrics' })
+      .then((resultObject) => {
+        const { success } = resultObject;
+        if (success) {
+          //Alert.alert('Authenticated successfully');
+          console.log('Authentication successful')
+          //saveSelectionSecurities();
+        } else {
+          console.log('Authentication failed')
+          //Alert.alert('Authentication failed');
+        }
+      })
+      .catch((error) => {
+        Alert.alert('Authentication error', error.message);
+      });
+  };
 
   //Handletimer
   // const handleIdle = () => {
@@ -341,7 +491,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
         const imagePath = data;
         console.log("imagePath====>", imagePath);
         const base64 = await RNFS.readFile(imagePath, "base64");
-        console.log("data====>", base64);
+       // console.log("data====>", base64);
         const fileUri = {
           base64: base64,
           type: mimeType,
@@ -389,7 +539,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
       } else {
         const imagePath = extraData?.data?.replaceAll("%20", " ");
         const base64 = await RNFS.readFile(imagePath, "base64");
-        console.log("data====>", base64);
+       // console.log("data====>", base64);
         const fileUri = {
           base64: base64,
           type: extraData?.mimeType,
@@ -633,11 +783,21 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
 
     //
 
-    console.log('data',data)
+   // console.log('data',data)
   return getItemsForSection(data)
   };
 
+
+  const handleDocPress = async (item:any) => {
+    console.log('Item docname is:', item.docName)
+          const s3DocFullPath =  await getFullPath(item.docName)
+           console.log('This is the s3 path for view cred page:', s3DocFullPath)
+           navigation.navigate("ViewCredential", { documentDetails: item, s3DocFullPath })
+                //navigation.navigate("ViewCredential", { documentDetails: item })
+  }
+
   const _renderItemNew = ({ item, index }: any) => {
+    //console.log('This is item:', item)
    
     return (
       <TouchableOpacity
@@ -646,8 +806,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
           marginBottom: 20,
         }}
         onPress={()=>
-        
-                navigation.navigate("ViewCredential", { documentDetails: item })
+          handleDocPress(item)
         }
       >
       

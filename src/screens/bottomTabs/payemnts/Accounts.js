@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   StyleSheet,
+  Image,
   TouchableOpacity
 } from "react-native";
 import { Screens } from "../../../themes";
@@ -13,10 +14,14 @@ import { dateTime } from "../../../utils/encryption";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { LocalImages } from "../../../constants/imageUrlConstants";
 import Header from "../../../components/Header";
+import { isEarthId } from "../../../utils/PlatFormUtils";
 import {
   createUserSignature,
   saveDocuments,
 } from "../../../redux/actions/authenticationAction";
+import { useNavigation } from "@react-navigation/native";
+
+
 const Accounts = (props) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -26,8 +31,9 @@ const Accounts = (props) => {
   const [accessTokenNew, setAccessTokenNew] = useState(null);
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const { accounts } = props.route.params;
+  const navigation = useNavigation();
 
-
+console.log('This is accounts:', accounts)
   const createVerifiableCred = (balance) => {
     var date = dateTime();
     setLoading(true);
@@ -134,6 +140,24 @@ const Accounts = (props) => {
             }}
             linearStyle={styles.linearStyle}
           ></Header>
+          <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{
+          position: "absolute",
+          marginTop: 50,
+          marginLeft: 8,
+        }}
+      >
+        <Image
+          source={LocalImages.backImage}
+          style={{
+            height: 20,
+            width: 20,
+            resizeMode: "contain",
+            tintColor: isEarthId() ? Screens.pureWhite : Screens.black,
+          }}
+        />
+      </TouchableOpacity>
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
