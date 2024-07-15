@@ -30,6 +30,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
 
+import { OPEN_BANK_BASE_URL, OPEN_BANK_KEYS_MASTERCARD, OPEN_BANK_KEYS_WOCCU, OPEN_BANK_BASE2_URL } from "../../../constants/URLContstants";
+
 const Payment = (props) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -79,17 +81,43 @@ const Payment = (props) => {
     });
   };
 
+  const generateBasicToken = async () => {
+    try {
+//MasterCard Keys
+      const key = OPEN_BANK_KEYS_WOCCU.Client_Id;
+  const secret = OPEN_BANK_KEYS_WOCCU.Client_Secret;
+      // Concatenate the key and secret with a colon
+      const combined = `${key}:${secret}`;
+      
+      // Encode the combined string to Base64
+      const token_basic = Buffer.from(combined).toString('base64');
+      
+      return token_basic;
+    } catch (error) {
+      console.error('Error generating basic token:', error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
-        const response = await fetch("https://api.4wrd.tech:8243/token", {
+        const url = OPEN_BANK_BASE_URL + "/token"
+        console.log('URL is:', url)
+
+        const basic_token = await generateBasicToken()
+        const auth_basic = "Basic " + basic_token
+        console.log('This is auth basic:', auth_basic)
+
+        const response = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            Authorization:
-              "Basic NWpGQTRFOGM4Rjhqb1kwbGFhc1VtU0NUSnJVYTpuQTFFSXJJNFp6aVpvZXRhakxRa3B2QTFJTkFh",
+            Authorization: 
+            auth_basic
+             // "Basic NWpGQTRFOGM4Rjhqb1kwbGFhc1VtU0NUSnJVYTpuQTFFSXJJNFp6aVpvZXRhakxRa3B2QTFJTkFh",
             // You may need to include additional headers here, such as authentication headers
           },
           body: "grant_type=client_credentials",
@@ -130,9 +158,11 @@ const Payment = (props) => {
       body.append("username", encodeURIComponent(username));
       body.append("password", encodeURIComponent(password));
 
+      const url = OPEN_BANK_BASE2_URL + "/authorize/2.0/token?provider=AB4WRD"
+        console.log('URL is:', url)
       // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
       const response = await fetch(
-        "https://api.4wrd.tech:8243/authorize/2.0/token?provider=AB4WRD",
+        url,
         {
           method: "POST",
           headers: {
@@ -175,8 +205,12 @@ const Payment = (props) => {
     setLoading(true);
     try {
       // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
+      const url = OPEN_BANK_BASE2_URL + "/manage-accounts/api/2.0/accounts?provider=AB4WRD"
+        console.log('URL is:', url)
+
       const response = await fetch(
-        "https:/api.4wrd.tech:8243/manage-accounts/api/2.0/accounts?provider=AB4WRD",
+        //"https:/api.4wrd.tech:8243/manage-accounts/api/2.0/accounts?provider=AB4WRD",
+        url,
         {
           method: "GET",
           headers: {
