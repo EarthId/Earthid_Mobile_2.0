@@ -13,7 +13,8 @@ import {
   Alert,
   Text,
   Dimensions,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  LayoutAnimation, UIManager,
 } from "react-native";
 import { RNCamera } from "react-native-camera";
 import DocumentPicker from "react-native-document-picker";
@@ -30,11 +31,40 @@ import { encodeBase64 } from "react-native-image-base64";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { saveDocuments } from "../../redux/actions/authenticationAction";
 import { dateTime } from "../../utils/encryption";
+import CustomPopup from "../../components/Loader/customPopup";
+import ImagePicker from "react-native-image-crop-picker";
+
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
+
+
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const useForceUpdate = () => {
+  console.log("Simulated Alert triggered for UI fix1");
+  setTimeout(() => {
+    Alert.alert(
+      '',  // Empty title
+      '',  // Empty message
+      [],  // No buttons
+      { cancelable: true }
+    );
+    console.log("Simulated Alert triggered for UI fix2");
+    // Immediately trigger layout animation to force UI update
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    console.log("Simulated Alert triggered for UI fix3");
+  }, 0);
+};
+
 const UploadScreen = (props: any) => {
+  
+ 
+
   const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
+  const [layoutFixKey, setLayoutFixKey] = useState(0);
 
   const camRef: any = useRef();
   const { loading } = useFetch();
@@ -46,8 +76,24 @@ const UploadScreen = (props: any) => {
 
   const [url, setUrl] = useState("");
   const [isLoading, setisLoading] = useState(false);
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const dispatch = useAppDispatch();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [isDocumentPickerActive, setDocumentPickerActive] = useState(false);
+
+
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   const _takePicture = async () => {
     const options = { quality: 0.1, base64: true };
@@ -155,22 +201,55 @@ const UploadScreen = (props: any) => {
   }
 
   const openFilePicker = async () => {
+
+    
+    if (isDocumentPickerActive) return; // Prevents multiple calls
+
+    setDocumentPickerActive(true); // Set active state
+
+    console.log("Open file picker 1");
     if (Platform.OS == "android") {
+      console.log("Open file picker 2");
       requestMediaPermission();
+      console.log("Open file picker 3");
     }
+    console.log("Open file picker 4");
     try {
+      
+      console.log("Open file picker 5");
       const resp: any = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
-        readContent: true,
+        type: [DocumentPicker.types.allFiles]
       });
+
+      //useForceUpdate()
+    //   // Force a re-render by updating the state after DocumentPicker closes
+    //   setLayoutFixKey(prevKey => prevKey + 1);
+
+    //   // Optionally, trigger a layout animation to ensure layout updates
+    // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
+     // const resp: any = [{"fileCopyUri": null, "name": "sample.pdf", "size": 18810, "type": "application/pdf", "uri": "file:///Users/vaibhav/Library/Developer/CoreSimulator/Devices/CB3B813A-80B2-4AF8-BB9D-5D538C589AA8/data/Containers/Data/Application/019A7237-C78A-4E22-8307-034B95CDE3A4/tmp/com.globalidiq.main-Inbox/sample.pdf"}]
+      console.log("Open file picker 6");
       console.log("resp===>", resp);
+  
+      // Get the file size in MB
+      const fileSizeInMB = resp[0].size / (1024 * 1024);
+  
+      // Check if file size exceeds 100MB
+      if (fileSizeInMB > 100) {
+        setVisible(true);
+        Setmessage("File size exceeds 100MB. Please choose a smaller file.");
+        return;
+      }
+  
       let decodedFileName = resp[0].uri;
       decodedFileName = resp[0]?.uri?.replaceAll("%20", " ");
+      console.log("Open file picker 7");
       if (Platform.OS == "android") {
       } else {
         decodedFileName = decodeURIComponent(decodedFileName);
       }
-
+  
       if (
         resp[0]?.type === "image/jpeg" ||
         resp[0]?.type === "image/jpg" ||
@@ -181,7 +260,7 @@ const UploadScreen = (props: any) => {
           .then(async (res) => {
             console.log("res", resp);
             console.log("typePDF", resp[0].uri);
-
+  
             if (resp[0].type == "application/pdf") {
               props.navigation.navigate("DocumentPreviewScreen", {
                 fileUri: {
@@ -239,21 +318,79 @@ const UploadScreen = (props: any) => {
             console.log("real error====>", out);
           });
       } else {
-        // Alert.alert("Warning", "This format is not supported", [
-        //   {
-        //     text: "Cancel",
-        //     onPress: () => console.log("Cancel Pressed"),
-        //     style: "cancel",
-        //   },
-        //   { text: "OK", onPress: () => console.log("OK Pressed") },
-        // ]);
-
         setVisible(true);
+        Setmessage("This format is not supported");
       }
+      // Force a layout update after file picker closes
+    //setLayoutFixKey(layoutFixKey + 1);
+    
+    setPopupVisible(false);
     } catch (err) {
-      console.log("data==>", err);
+      if (DocumentPicker.isCancel(err)) {
+        console.log("User canceled the picker");
+      } else {
+        console.log("Error with document picker", err);
+      }
+
+      // Ensure the modal is closed even if the document picker is canceled
+      setPopupVisible(false);
+    } finally {
+      setDocumentPickerActive(false); // Reset active state after completion
     }
   };
+  
+  // const openFilePicker2 = async () => {
+  //   if (isDocumentPickerActive) return; // Prevent multiple calls
+
+  //   setDocumentPickerActive(true); // Set active state
+
+  //   try {
+  //     console.log("Open file picker");
+
+  //     const resp = await DocumentPicker.pick({
+  //       type: [DocumentPicker.types.allFiles],
+  //     });
+  //     setPopupVisible(false); 
+  //     console.log("File selected:", resp);
+
+  //     // Handle the selected document here
+
+  //   } catch (err) {
+  //     setPopupVisible(false); 
+  //     if (DocumentPicker.isCancel(err)) {
+  //       console.log("User canceled the picker");
+  //     } else {
+  //       console.log("Error with document picker", err);
+  //     }
+  //   } finally {
+  //     setPopupVisible(false); 
+  //     setDocumentPickerActive(false); // Reset active state after completion
+  //   }
+  // };
+
+  // const handleDocumentSelection = async () => {
+  //  // setPopupVisible(false); // Close the modal first
+
+  //   // Wait for the modal to close before opening the document picker
+  //   setTimeout(async () => {
+  //     await openFilePicker2(); // Open the document picker
+  //   }, 300); // Small delay to ensure the modal is closed
+  // };
+
+  // const openModal = () => {
+  //   setPopupVisible(true);
+  //   showPopup(
+  //     "Please select the document you wish to add:",
+  //     '',
+  //     [
+  //       {
+  //         text: 'Select Document',
+  //         onPress: handleDocumentSelection, // Handle document selection with delay
+  //       },
+  //       { text: "Close", onPress: () => setPopupVisible(false) }
+  //     ]
+  //   );
+  // };
 
   // const openFilePicker = async () => {
   //   let options:any = {
@@ -342,7 +479,8 @@ const UploadScreen = (props: any) => {
             width: 60,
             height: 60,
             borderRadius: 30,
-            backgroundColor: colors.primary,
+            marginBottom: 30,
+            backgroundColor: Screens.colors.primary,
             alignSelf: "center",
             justifyContent: "center",
             alignItems: "center",
@@ -405,89 +543,76 @@ const UploadScreen = (props: any) => {
         textStyle={styles.spinnerTextStyle}
       />
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setVisible(!visible);
+<Modal
+  animationType="slide"
+  transparent={true}
+  visible={visible}
+  onRequestClose={() => {
+    showPopup(
+      "Modal Closed",
+      "Modal has been closed.",
+      [{ text: "OK", onPress: () => setPopupVisible(false) }]
+    );
+    setVisible(!visible);
+  }}
+>
+  <View style={styles.centeredView}>
+    <View style={styles.modalView}>
+      <Image
+        resizeMode="contain"
+        style={{ height: "35%", width: "40%" }}
+        source={LocalImages.condition}
+      ></Image>
+      <Text
+        style={{
+          fontFamily: "Roboto",
+          fontSize: 20,
+          fontWeight: "bold",
+          color: "#000",
+          top: 2,
         }}
       >
-        {/* <TouchableWithoutFeedback
-        onPress={()=>setVisible(!visible)}
-        > */}
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Image
-              resizeMode="contain"
-              style={{ height: "35%", width: "40%" }}
-              source={LocalImages.condition}
-            ></Image>
-            <Text
-              style={{
-                fontFamily: "Roboto",
-                fontSize: 20,
-                fontWeight: "bold",
-                color: "#000",
-                top: 2,
-              }}
-            >
-              Unsupported File Type
-            </Text>
-            <Text
-              style={{
-                fontFamily: "Roboto",
-                fontSize: 13,
-                fontWeight: "200",
-                color: "#000",
-                top: 4,
-              }}
-            >
-              The file type is not supported.Supported {"\n"}
-            </Text>
-            <Text
-              style={{
-                fontFamily: "Roboto",
-                fontSize: 12,
-                fontWeight: "200",
-                color: "#000",
-                bottom: 10,
-              }}
-            >
-              types are PDF, JPG, and PNG.
-            </Text>
-
-            <TouchableOpacity
-              style={{
-                top: 10,
-                height: (windowHeight / 80) * 3.5,
-                width: (windowWidth / 80) * 9,
-                borderColor: "#357AB4",
-                borderRadius: 6,
-                borderWidth: 1,
-                justifyContent: "center",
-                backgroundColor: "#357AB4",
-              }}
-              onPress={() => setVisible(!visible)}
-            >
-              <Text
-                style={{
-                  fontFamily: "Roboto",
-                  fontSize: 12,
-                  fontWeight: "bold",
-                  color: "#fff",
-                  textAlign: "center",
-                }}
-              >
-                OK
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        {/* </TouchableWithoutFeedback> */}
-      </Modal>
+        {message}
+      </Text>
+      <TouchableOpacity
+        style={{
+          top: 10,
+          height: (windowHeight / 80) * 3.5,
+          width: (windowWidth / 80) * 9,
+          borderColor: "#357AB4",
+          borderRadius: 6,
+          borderWidth: 1,
+          justifyContent: "center",
+          backgroundColor: "#357AB4",
+        }}
+        onPress={() => setVisible(!visible)}
+      >
+        <Text
+          style={{
+            fontFamily: "Roboto",
+            fontSize: 12,
+            fontWeight: "bold",
+            color: "#fff",
+            textAlign: "center",
+          }}
+        >
+          OK
+        </Text>
+      </TouchableOpacity>
     </View>
+  </View>
+</Modal>
+
+<CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
+    </View>
+
+
   );
 };
 

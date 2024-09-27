@@ -8,7 +8,7 @@ export const isAndroid = Platform.OS === "android";
 export const isEarthId = () => {
   // const outData = await getAppName();
   // console.log("getAsynOperation()", outData);
-  return true;
+  return false;
 };
 
 export const isFeatureNeed = () => {

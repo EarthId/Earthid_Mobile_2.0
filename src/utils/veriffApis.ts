@@ -205,36 +205,61 @@ console.log('hmacSignature:', signature)
     }
   };
 
-
-  export const getSessionDecision = async (sessionId: string) => {
+  export const getSessionDecision  = async (sessionId: string) => {
     try {
-
-      //hmac signature
-      const signature = await generateSignature(sessionId)
-      console.log('hmacSignatureDesignApi:', signature)
-
-      const config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${BASE_URL}/v1/sessions/${sessionId}/decision/fullauto?version=1.0.0`,
+      const signature = await generateSignature(sessionId);
+      const response = await fetch(`${BASE_URL}/v1/sessions/${sessionId}/decision/fullauto?version=1.0.0`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'X-AUTH-CLIENT': publicKey,
           'X-HMAC-SIGNATURE': signature
-        },
-        data: '' // No data to send in a GET request
-      };
-      console.log("Decision config", config)
-      // Add a delay of 1 second (1000 milliseconds)
-    //await new Promise(resolve => setTimeout(resolve, 5000));
-  
-      const response = await axios.request(config);
-      console.log("Decision response", response)
-      return response.data;
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Fetch decision response", data);
+      return data;
     } catch (error) {
-      throw new Error(`Error fetching data from getSessionDecision: ${error}`);
+      console.error("Fetch error is:", error);
+      throw error;
     }
   };
+  
+  // export const getSessionDecision = async (sessionId: string) => {
+  //   try {
+
+  //     //hmac signature
+  //     const signature = await generateSignature(sessionId)
+  //     console.log('hmacSignatureDesignApi:', signature)
+
+  //     const config = {
+  //       method: 'get',
+  //       maxBodyLength: Infinity,
+  //       url: `${BASE_URL}/v1/sessions/${sessionId}/decision/fullauto?version=1.0.0`,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'X-AUTH-CLIENT': publicKey,
+  //         'X-HMAC-SIGNATURE': signature
+  //       },
+  //       data: '' // No data to send in a GET request
+  //     };
+  //     console.log("Decision config", config)
+  //     // Add a delay of 1 second (1000 milliseconds)
+  //   //await new Promise(resolve => setTimeout(resolve, 5000));
+  
+  //     const response = await axios.request(config);
+  //     console.log("Decision response", response)
+  //     return response.data;
+  //   } catch (error) {
+  //     console.log("Error is:", error)
+  //     throw new Error(`Error fetching data from getSessionDecision: ${error}`);
+  //   }
+  // };
 
 
   export const getMediaImage = async (mediaId: string) => {

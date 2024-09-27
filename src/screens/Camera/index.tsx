@@ -42,6 +42,8 @@ import ZkbScreen from "./DisclosureScreen";
 import SelctiveDisclosure from "./ZkbScreen";
 import { addConsent } from "../../utils/consentApis";
 import LinearGradients from "../../components/GradientsPanel/LinearGradient";
+import CustomPopup from "../../components/Loader/customPopup";
+import { Platform } from 'react-native';
 
 const data = [
   { label: " 1", value: "1" },
@@ -117,7 +119,17 @@ const CameraScreen = (props: any) => {
 
   console.log("This is for consent:-------------------------------------------------", isChecked)
 
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
 
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   //const [sharedData, setSharedData] = useState<{ selectedFields: any, documentVc: any } | null>(null);
   // const [selectedFields, setSelectedFields] = useState(null);
@@ -164,9 +176,10 @@ const CameraScreen = (props: any) => {
   const getSDDData = async () => {
     const selectedFields: any = await AsyncStorage.getItem("selectedFields");
     const documentVc: any = await AsyncStorage.getItem("selectedVc");
+    console.log('these are sdd items:', selectedFields)
     const selectedFieldsjson: any = JSON.parse(selectedFields)
     const selectedVcjson: any = JSON.parse(documentVc)
-
+    console.log('these are sdd items paresed data:', selectedFieldsjson)
    const data = {
       sessionKey: barCodeDataDetails?.sessionKey,
       encrypted_object: {
@@ -176,8 +189,8 @@ const CameraScreen = (props: any) => {
         userEmail: userDetails?.responseData?.email,
         userMobileNo: userDetails?.responseData?.phone,
         OrganizationID: userDetails?.responseData?.orgId,
-        selectedFields: selectedFieldsjson.selectedFields,
-  documentVc: selectedVcjson.documentVc, 
+        selectedFields: selectedFieldsjson,
+  documentVc: selectedVcjson, 
   publicKey: keys?.responseData?.result?.publicKey,
         // countryCode: userDetails?.responseData?.countryCode,
         // emailVerified: userDetails?.responseData?.emailVerified,
@@ -332,13 +345,21 @@ console.log('Consent Api response------:', consentApiCall)
               if(result?.data?.certificate?.balance){
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of funds is verified successfully')
+                  showPopup(
+                    "Success",
+                    "Proof of funds is verified successfully",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
               }
               else{
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of funds verification failed')
+                  showPopup(
+                    "Verification Failed",
+                    "Proof of funds verification failed",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
                
               }
@@ -350,13 +371,21 @@ console.log('Consent Api response------:', consentApiCall)
               if(result?.data?.certificate?.dateOfBirth){
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of age is verified successfully')
+                  showPopup(
+                    "Success",
+                    "Proof of age is verified successfully",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
               }
               else{
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of age verification failed')
+                  showPopup(
+                    "Verification Failed",
+                    "Proof of age verification failed",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
                
               }
@@ -530,13 +559,23 @@ const ageProofJSON = JSON.parse(ageProof)
               if(result?.data?.certificate?.balance){
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of funds is verified successfully')
+                 // Alert.alert('Proof of funds is verified successfully')
+                  showPopup(
+                    "Success",
+                    "Proof of funds is verified successfully",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
               }
               else{
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of funds verification failed')
+                //  Alert.alert('Proof of funds verification failed')
+                  showPopup(
+                    "Verification Failed",
+                    "Proof of funds verification failed",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
                
               }
@@ -547,13 +586,23 @@ const ageProofJSON = JSON.parse(ageProof)
               if(result?.data?.certificate?.dateOfBirth){
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of age is verified successfully')
+                 // Alert.alert('Proof of age is verified successfully')
+                  showPopup(
+                    "Success",
+                    "Proof of age is verified successfully",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
               }
               else{
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of age verification failed')
+                //  Alert.alert('Proof of age verification failed')
+                  showPopup(
+                    "Verification Failed",
+                    "Proof of age verification failed",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
                
               }
@@ -731,13 +780,23 @@ const ageProofJSON = JSON.parse(ageProof)
               if(result?.data?.certificate?.balance){
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of funds is verified successfully')
+                 // Alert.alert('Proof of funds is verified successfully')
+                  showPopup(
+                    "Success",
+                    "Proof of funds is verified successfully",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
               }
               else{
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of funds verification failed')
+                 // Alert.alert('Proof of funds verification failed')
+                  showPopup(
+                    "Verification Failed",
+                    "Proof of funds verification failed",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
                
               }
@@ -748,13 +807,23 @@ const ageProofJSON = JSON.parse(ageProof)
               if(result?.data?.certificate?.dateOfBirth){
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of age is verified successfully')
+                 // Alert.alert('Proof of age is verified successfully')
+                  showPopup(
+                    "Success",
+                    "Proof of age is verified successfully",
+                    [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                  );
                 },5000)
               }
               else{
                 setTimeout(()=>{    
                   setisLoading(false)            
-                  Alert.alert('Proof of age verification failed')
+                 // Alert.alert('Proof of age verification failed')
+                 showPopup(
+                  "Verification Failed",
+                  "Proof of age verification failed",
+                  [{ text: "OK", onPress: () => setPopupVisible(false) }]
+                );
                 },5000)
                
               }
@@ -857,18 +926,28 @@ const ageProofJSON = JSON.parse(ageProof)
       if (barCodeData?.data === undefined) {
         setisLoading(false)
         setIsCamerVisible(false);
-        Alert.alert(
-          //This is title
-         "Invalid QR Code",
-           //This is body text
-         "This is not the type of QR we expecting",
-         [
-           {text: 'Go Back', onPress: () => getBack() },
+        showPopup(
+          "Invalid QR Code",
+          "This is not the type of QR we are expecting",
+          [{ text: "Go Back", onPress: () => getBack() }]
+        );
+      //   Alert.alert(
+      //     //This is title
+      //    "Invalid QR Code",
+      //      //This is body text
+      //    "This is not the type of QR we expecting",
+      //    [
+      //      {text: 'Go Back', onPress: () => getBack() },
           
-         ],
-         //on clicking out side, Alert will not dismiss
-       );
-      } else {
+      //    ],
+      //    //on clicking out side, Alert will not dismiss
+      //  );
+      }
+      // else if(!barCodeData.data.requestType){
+      //   console.log('Started vc for student')
+      //   createVcForIccaStudent(barCodeData.data)
+      // }
+       else {
         try {
        
            const stringWithDoubleBackslashes = barCodeData?.data?.replace(/'/g, '\\"');
@@ -908,54 +987,123 @@ const ageProofJSON = JSON.parse(ageProof)
             if(!serviceData.requestType){
               setisLoading(false)
               setIsCamerVisible(false);
-              Alert.alert(
-                //This is title
-               "Invalid QR Code",
-                 //This is body text
-               "This is not the type of QR we expecting",
-               [
-                 {text: 'Go Back', onPress: () => getBack() },
+              showPopup(
+                "Invalid QR Code",
+                "This is not the type of QR we are expecting",
+                [{ text: "Go Back", onPress: () => getBack() }]
+              );
+            //   Alert.alert(
+            //     //This is title
+            //    "Invalid QR Code",
+            //      //This is body text
+            //    "This is not the type of QR we expecting",
+            //    [
+            //      {text: 'Go Back', onPress: () => getBack() },
                 
-               ],
-               //on clicking out side, Alert will not dismiss
-             );
+            //    ],
+            //    //on clicking out side, Alert will not dismiss
+            //  );
             }
           }
           else{
             setIsCamerVisible(false);
             setisLoading(false)
-            Alert.alert(
-              //This is title
-             "Invalid QR Code",
-               //This is body text
-             "This is not the type of QR we expecting",
-             [
-               {text: 'Go Back', onPress: () => getBack() },
+            showPopup(
+              "Invalid QR Code",
+              "This is not the type of QR we are expecting",
+              [{ text: "Go Back", onPress: () => getBack() }]
+            );
+          //   Alert.alert(
+          //     //This is title
+          //    "Invalid QR Code",
+          //      //This is body text
+          //    "This is not the type of QR we expecting",
+          //    [
+          //      {text: 'Go Back', onPress: () => getBack() },
               
-             ],
-             //on clicking out side, Alert will not dismiss
-           );
+          //    ],
+          //    //on clicking out side, Alert will not dismiss
+          //  );
           }
           setIsCamerVisible(false);
         } catch (error) {
           console.log('errorvicky',error)
           setisLoading(false)
           setIsCamerVisible(false);
-          Alert.alert(
-            //This is title
-           "Invalid QR Code",
-             //This is body text
-           "This is not the type of QR we expecting",
-           [
-             {text: 'Go Back', onPress: () => getBack() },
+          showPopup(
+            "Invalid QR Code",
+            "This is not the type of QR we are expecting",
+            [{ text: "Go Back", onPress: () => getBack() }]
+          );
+        //   Alert.alert(
+        //     //This is title
+        //    "Invalid QR Code",
+        //      //This is body text
+        //    "This is not the type of QR we expecting",
+        //    [
+        //      {text: 'Go Back', onPress: () => getBack() },
             
-           ],
-           //on clicking out side, Alert will not dismiss
-         );
+        //    ],
+        //    //on clicking out side, Alert will not dismiss
+        //  );
        }
         }
       
     }
+
+
+    const createVcForIccaStudent=(url: any)=>{
+      //setloading(true)
+      fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        console.log('This is certificate response', data)
+        console.log("thiss","this is log")
+        var dataNew = data.response[0].vc
+        console.log('This is certificate vc', dataNew)
+          var date = dateTime();
+          var documentDetails: IDocumentProps = {
+            id: `ID_VERIFICATION${Math.random()}${"selectedDocument"}${Math.random()}`,
+          name: data.response[0].company,
+          path: "filePath",
+          documentName: data.response[0].company,
+          categoryType: "ID",
+          date: date?.date,
+          time: date?.time,
+          txId: "data?.result",
+          docType: dataNew.type,
+          docExt: ".jpg",
+          processedDoc: "",
+          isVc: true,
+          vc: JSON.stringify({
+            dataNew
+          }),
+          verifiableCredential: dataNew,
+          docName: "",
+          base64: undefined,
+          isLivenessImage: "",
+          signature: undefined,
+          typePDF: undefined
+          };
+    
+          var DocumentList = documentsDetailsList?.responseData
+            ? documentsDetailsList?.responseData
+            : [];
+
+            DocumentList.push(documentDetails);
+            dispatch(saveDocuments(DocumentList));
+            setTimeout(() => {
+             // setloading(false)
+              setIsCamerVisible(true);
+              setloadingforGentSchemaAPI(false);
+              setissuerSchemaDropDown(false);
+              //Alert.alert(data?.verifiableCredential[0]?.message);
+              props.navigation.navigate("Documents");
+            }, 3000);
+
+          });
+        }
+        
 
   
     const getBack =()=>{
@@ -1020,7 +1168,12 @@ const ageProofJSON = JSON.parse(ageProof)
         setisLoading(false)
         setIsCamerVisible(true);
         generateUserSignature();
-        Alert.alert("Login is successful");
+       // Alert.alert("Login is successful");
+       showPopup(
+        "Success",
+        "Login is successful",
+        [{ text: "OK", onPress: () => setPopupVisible(false) }]
+      );
       }
       if (barCodeDataDetails?.requestType === "generateCredentials") {
         setisDocumentModalkyc(false);
@@ -1031,27 +1184,45 @@ const ageProofJSON = JSON.parse(ageProof)
         setisDocumentModalkyc(false);
         setisLoading(false)
         setIsCamerVisible(true);
-        Alert.alert("Selected information has been shared successfully");
+       // Alert.alert("Selected information has been shared successfully");
+        showPopup(
+          "Success",
+          "Selected information has been shared successfully",
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
+        );
       }
       if (barCodeDataDetails?.requestType === "shareCredentials") {
         setisDocumentModalkyc(false);
         setisLoading(false)
         setIsCamerVisible(true);
-        Alert.alert("credential has been shared successfully");
+        //Alert.alert("credential has been shared successfully");
+        showPopup(
+          "Success",
+          "Credential has been shared successfully",
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
+        );
       }
       if (barCodeDataDetails?.requestType?.request === "balance") {
         setisDocumentModalkyc(false);
         setIsCamerVisible(true);
         setisLoading(false)
-        Alert.alert("Proof of funds has been shared successfully");
-        
+       // Alert.alert("Proof of funds has been shared successfully");
+        showPopup(
+          "Success",
+          "Proof of funds has been shared successfully",
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
+        );
       }
       if (barCodeDataDetails?.requestType?.request === "minAge") {
         setisDocumentModalkyc(false);
         setIsCamerVisible(true);
         setisLoading(false)
-        Alert.alert("Proof of age has been shared successfully");
-        
+       // Alert.alert("Proof of age has been shared successfully");
+        showPopup(
+          "Success",
+          "Proof of age has been shared successfully",
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
+        );
       }
       if (barCodeDataDetails?.requestType === "document") {
         setIsCamerVisible(true);
@@ -1233,7 +1404,12 @@ const ageProofJSON = JSON.parse(ageProof)
           setloadingforGentSchemaAPI(false);
           setissuerSchemaDropDown(false);
           //    Alert.alert("KYC token Saved successfully");
-          Alert.alert("Document uploaded successfully");
+         // Alert.alert("Document uploaded successfully");
+          showPopup(
+            "Success",
+            "Document uploaded successfully",
+            [{ text: "OK", onPress: () => setPopupVisible(false) }]
+          );
           props.navigation.navigate("Documents");
         }, 15000);
       })
@@ -1452,6 +1628,25 @@ const ageProofJSON = JSON.parse(ageProof)
     }
   };
 
+  // Determine the required document based on the request type
+const requiredDocument = barCodeDataDetails?.requestType?.request === 'minAge' 
+? 'Proof of age' 
+: barCodeDataDetails?.requestType?.request === 'balance' 
+  ? 'Proof of funds' 
+  : null;
+
+// Initialize the variable for checking if the required document is not present
+let requiredDocumentNotPresent;
+
+// Check if the required document is not present in the wallet
+if (requiredDocument && documentsDetailsList?.responseData?.length > 0) {
+requiredDocumentNotPresent = documentsDetailsList?.responseData?.every(
+  item => !(item.isVc && item?.documentName === requiredDocument)
+);
+}
+
+
+
   return (
     <View style={styles.sectionContainer}>
       <View style={{ position: "absolute", top: 20, left: 20, zIndex: 100 }}>
@@ -1572,7 +1767,9 @@ const ageProofJSON = JSON.parse(ageProof)
 
           onValueChange={(newValue) => setIsChecked(newValue)}
         />
-        <GenericText style={{marginLeft: 10,marginRight: 60, fontSize: 11}}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
+        <GenericText style={{marginLeft: 10,marginRight: 60, fontSize: 11}}>
+        {isEarthId() ? "earthidconsent" : "globalidconsent"}
+</GenericText>
       </View>
 
           <Button
@@ -1628,8 +1825,11 @@ const ageProofJSON = JSON.parse(ageProof)
           </View>
         </View>
       </ModalView>
-      {isDocumentModalkyc && (barCodeDataDetails?.requestType.request === "balance" || barCodeDataDetails?.requestType.request === "minAge") ? 
-      <ZkbScreen 
+      {isDocumentModalkyc && 
+    (barCodeDataDetails?.requestType.request === "balance" || barCodeDataDetails?.requestType.request === "minAge") && 
+    documentsDetailsList?.responseData?.length > 0 &&
+    !requiredDocumentNotPresent ? 
+     <ZkbScreen 
       isLoading={isLoading}
       setisDocumentModalkyc={setisDocumentModalkyc}
        navigateToCamerScreen={navigateToCamerScreen} 
@@ -1643,7 +1843,7 @@ const ageProofJSON = JSON.parse(ageProof)
       
        :
 
-       barCodeDataDetails?.requestType === "selectiveData" ?
+       barCodeDataDetails?.requestType === "selectiveData" && documentsDetailsList?.responseData?.length > 0 ?
        <SelctiveDisclosure      
        isLoading={isLoading}
        setisDocumentModalkyc={setisDocumentModalkyc}
@@ -1662,46 +1862,66 @@ const ageProofJSON = JSON.parse(ageProof)
         
         </SelctiveDisclosure>:
 
+barCodeDataDetails?.requestType === "document" ?
        <ModalView
         left={deviceWidth / 12}
         width={deviceWidth / 1.2}
         isModalVisible={isDocumentModalkyc}
-        height={500}
+        height={520}
       >
           {isLoading ? <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>        
           <ActivityIndicator color={'red'} size='large' />
           </View>:
         <View style={{ flex: 1, paddingHorizontal: 5 }}>
           
-          {documentsDetailsList?.responseData?.length === 0 ||
-            (documentsDetailsList?.responseData === undefined && (
-              <TouchableOpacity onPress={() => navigateToCamerScreen()}>
-                <View style={{ paddingHorizontal: 5, marginTop: 10 }}>
-                  <GenericText
-                    style={{
-                      textAlign: "center",
-                      color: Screens.colors.ScanButton.startColor,
-                      fontSize: 14,
-                      fontWeight: "900",
-                    }}
-                  >
-                    {"+ Add Documents"}
-                  </GenericText>
-                </View>
-              </TouchableOpacity>
-            ))}
-          <GenericText
+          {
+  documentsDetailsList?.responseData?.length === 0 ||
+  documentsDetailsList?.responseData === undefined ? (
+    <TouchableOpacity onPress={() => navigateToCamerScreen()}>
+      <View style={{ paddingHorizontal: 5, marginTop: 10 }}>
+        <GenericText
+          style={{
+            textAlign: "center",
+            color: "#000",
+            fontSize: 14,
+            fontWeight: "900",
+            marginTop: 20,
+          }}
+        >
+          {"+ Add Documents"}
+        </GenericText>
+      </View>
+    </TouchableOpacity>
+  ) : (
+    <View style={{ paddingHorizontal: 5, marginTop: 10 }}>
+      <GenericText
+        style={{
+          textAlign: "center",
+          color: "#000", // Different color for the alternate text
+          fontSize: 14,
+          fontWeight: "900",
+          padding: 5,
+          marginTop: 10,
+        }}
+      >
+        {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
+      </GenericText>
+    </View>
+  )
+}
+
+          {/* <GenericText
             style={{
               textAlign: "center",
               padding: 5,
               color: "#000",
               fontSize: 14,
               fontWeight: "900",
-              marginTop: 20,
+              marginTop: 10,
             }}
           >
             {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
-          </GenericText>
+          </GenericText> */}
           <View style={{ height: 300 }}>
             <ScrollView
               style={{ flexGrow: 1 }}
@@ -1731,7 +1951,7 @@ const ageProofJSON = JSON.parse(ageProof)
                       },
                       index: any
                     ) => {
-                      console.log("item", item);
+                      //console.log("item", item);
                       return (
                         <View
                           style={{ flexDirection: "row", marginVertical: 10, marginLeft: 15 }}
@@ -1822,59 +2042,258 @@ const ageProofJSON = JSON.parse(ageProof)
             />
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10, marginLeft: 10, marginRight: 15  }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10, marginLeft: 20, marginRight: 15  }}>
         <CheckBox
           value={isChecked}
 
           onValueChange={(newValue) => setIsChecked(newValue)}
         />
-        <GenericText style={{marginLeft: 15,marginRight: 15, fontSize: 11}}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
+        <GenericText style={{marginLeft: 5,marginRight: 15, fontSize: 11, paddingRight: 20}}>
+        {isEarthId() ? "earthidconsent" : "globalidconsent"}
+</GenericText>
       </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginVertical: 20,
-              marginHorizontal: 30,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                setisDocumentModalkyc(false);
-                setIsCamerVisible(true);
-              }}
-          >
-              <GenericText
-                style={{ backgroundColor: '#fff',
-                marginHorizontal: 10,
-                paddingHorizontal: 25, 
-                paddingVertical: 10,
-                borderRadius: 50,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderWidth: 1,
-                borderColor: '#D3D3D3',
-                color: "#525252", fontSize: 13, fontWeight: "700" }}
-              >
-                Cancel
-              </GenericText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ opacity: checkDisable() || !isChecked ? 0.5 : 1 }}
-              disabled={ checkDisable() || !isChecked}
-              onPress={
-                createVerifiableCredentials
-              }
-            >
-              <GenericText
-                style={{ color: "white", fontSize: 13,fontWeight: "700", backgroundColor: Screens.colors.primary, paddingHorizontal: 25, paddingVertical: 11, borderRadius: 30 }}
-              >
-                {"authorize"}
-              </GenericText>
-            </TouchableOpacity>
-          </View>
+         
+        <View
+  style={{
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+    marginHorizontal: 30,
+  }}
+>
+  {/* Cancel Button */}
+  <Button
+    onPress={() => {
+      setisDocumentModalkyc(false);
+      setIsCamerVisible(true);
+    }}
+    style={{
+      buttonContainer: {
+        elevation: 5,
+        marginHorizontal: 10,
+        backgroundColor: "#fff",  // White background for Cancel button
+        borderWidth: 1,  // Border for the Cancel button
+        borderColor: '#D3D3D3',  // Light gray border color
+        borderRadius: Platform.OS === 'ios' ? 30 : 30,  // Consistent borderRadius
+        paddingVertical: 13,
+        paddingHorizontal: 15,
+        paddingRight: 25,
+        alignItems: 'center',  // Horizontally center the content
+        justifyContent: 'center',  // Vertically center the conten
+      },
+      text: {
+        color: '#525252',  // Text color for Cancel button
+        fontSize: 13,
+        fontWeight: "700",  // Bold text
+        textAlign: 'center', 
+      },
+      iconStyle: {
+        tintColor: '#525252',
+      },
+    }}
+    title={"Cancel"}
+  />
+
+  {/* Authorize Button */}
+  <Button
+    onPress={createVerifiableCredentials}
+    disabled={checkDisable() || !isChecked}
+    style={{
+      buttonContainer: {
+        elevation: 5,
+        marginHorizontal: 10,
+        backgroundColor: Screens.colors.primary,  // Primary color for Authorize button
+        opacity: checkDisable() || !isChecked ? 0.5 : 1,  // Disabled state opacity
+        borderRadius: Platform.OS === 'ios' ? 30 : 30,  // Consistent borderRadius
+        paddingVertical: 13,
+        paddingHorizontal: 15,
+        paddingRight: 25,
+        alignItems: 'center',  // Horizontally center the content
+        justifyContent: 'center',  // Vertically center the conten
+      },
+      text: {
+        color: Screens.pureWhite,  // White text for Authorize button
+        fontSize: 13,
+        fontWeight: "700",  // Bold text
+        textAlign: 'center', 
+      },
+      iconStyle: {
+        tintColor: Screens.pureWhite,
+      },
+    }}
+    title={"Authorize"}
+  />
+</View>
+          
         </View>}
-      </ModalView>}
+      </ModalView>:
+
+<ModalView
+left={deviceWidth / 12}
+width={deviceWidth / 1.2}
+isModalVisible={isDocumentModalkyc}
+height={520}
+>
+  {isLoading ? <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>        
+  <ActivityIndicator color={'red'} size='large' />
+  </View>:
+<View style={{ flex: 1, paddingHorizontal: 5 }}>
+  
+ 
+<TouchableOpacity onPress={() => navigateToCamerScreen()}>
+<View style={{ paddingHorizontal: 5, marginTop: 10 }}>
+<GenericText
+  style={{
+    textAlign: "center",
+    color: "#000",
+    fontSize: 14,
+    fontWeight: "900",
+    marginTop: 20,
+  }}
+>
+  {"+ Add Documents"}
+</GenericText>
+</View>
+</TouchableOpacity>
+
+
+  {/* <GenericText
+    style={{
+      textAlign: "center",
+      padding: 5,
+      color: "#000",
+      fontSize: 14,
+      fontWeight: "900",
+      marginTop: 10,
+    }}
+  >
+    {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
+  </GenericText> */}
+  <View style={{ height: 300 }}>
+    <ScrollView
+      style={{ flexGrow: 1 }}
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+     
+    </ScrollView>
+
+    <GenericText
+      style={{
+        textAlign: "center",
+        padding: 5,
+        color: "#000",
+        fontSize: 16,
+        fontWeight: "bold",
+      }}
+    >
+      {"Selected Duration"}
+    </GenericText>
+    <Dropdown
+      style={[styles.dropdown]}
+      placeholderStyle={styles.placeholderStyle}
+      selectedTextStyle={styles.selectedTextStyle}
+      inputSearchStyle={styles.inputSearchStyle}
+      iconStyle={styles.iconStyle}
+      data={data}
+      search
+      maxHeight={300}
+      labelField="label"
+      valueField="value"
+      placeholder={"Expiry Time (default 1 day)"}
+      searchPlaceholder="Search..."
+      value={"value"}
+      onChange={(item) => {
+        setValue(item.value);
+      }}
+    />
+  </View>
+
+  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10, marginLeft: 20, marginRight: 15  }}>
+<CheckBox
+  value={isChecked}
+
+  onValueChange={(newValue) => setIsChecked(newValue)}
+/>
+<GenericText style={{marginLeft: 5,marginRight: 15, fontSize: 11, paddingRight: 20}}>
+{isEarthId() ? "earthidconsent" : "globalidconsent"}
+</GenericText>
+</View>
+ 
+<View
+style={{
+flexDirection: "row",
+justifyContent: "space-between",
+marginBottom: 20,
+marginHorizontal: 30,
+}}
+>
+{/* Cancel Button */}
+<Button
+onPress={() => {
+setisDocumentModalkyc(false);
+setIsCamerVisible(true);
+}}
+style={{
+buttonContainer: {
+elevation: 5,
+marginHorizontal: 10,
+backgroundColor: "#fff",  // White background for Cancel button
+borderWidth: 1,  // Border for the Cancel button
+borderColor: '#D3D3D3',  // Light gray border color
+borderRadius: Platform.OS === 'ios' ? 30 : 30,  // Consistent borderRadius
+paddingVertical: 13,
+paddingHorizontal: 15,
+paddingRight: 25,
+alignItems: 'center',  // Horizontally center the content
+justifyContent: 'center',  // Vertically center the conten
+},
+text: {
+color: '#525252',  // Text color for Cancel button
+fontSize: 13,
+fontWeight: "700",  // Bold text
+textAlign: 'center', 
+},
+iconStyle: {
+tintColor: '#525252',
+},
+}}
+title={"Cancel"}
+/>
+
+{/* Authorize Button */}
+<Button
+onPress={createVerifiableCredentials}
+disabled={true}
+style={{
+buttonContainer: {
+elevation: 5,
+marginHorizontal: 10,
+backgroundColor: Screens.colors.primary,  // Primary color for Authorize button
+opacity:  0.5 ,  // Disabled state opacity
+borderRadius: Platform.OS === 'ios' ? 30 : 30,  // Consistent borderRadius
+paddingVertical: 13,
+paddingHorizontal: 15,
+paddingRight: 25,
+alignItems: 'center',  // Horizontally center the content
+justifyContent: 'center',  // Vertically center the conten
+},
+text: {
+color: Screens.pureWhite,  // White text for Authorize button
+fontSize: 13,
+fontWeight: "700",  // Bold text
+textAlign: 'center', 
+},
+iconStyle: {
+tintColor: Screens.pureWhite,
+},
+}}
+title={"Authorize"}
+/>
+</View>
+  
+</View>}
+</ModalView>
+      }
 
 
       <Loader
@@ -1886,6 +2305,13 @@ const ageProofJSON = JSON.parse(ageProof)
         Status="Success !"
         isLoaderVisible={false}
       ></Loader>
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };
@@ -1911,7 +2337,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
-    marginHorizontal: 10
+    marginHorizontal: 20
   },
   icon: {
     marginRight: 5,

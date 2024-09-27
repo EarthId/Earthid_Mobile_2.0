@@ -40,6 +40,8 @@ import { isEarthId } from "../../utils/PlatFormUtils";
 import { IDocumentProps } from "./VerifiDocumentScreen";
 import GLOBALS from "../../utils/globals";
 import { AWS_API_BASE } from "../../constants/URLContstants";
+import CustomPopup from "../../components/Loader/customPopup";
+
 const deviceWidth = Dimensions.get("window").width;
 interface IDocumentScreenProps {
   navigation?: any;
@@ -48,7 +50,7 @@ interface IDocumentScreenProps {
 
 const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const fileUri = route?.params?.fileUri;
-  const fileType =route?.params?.fileType;
+  const fileType = route?.params?.fileType;
   const pic = route?.params?.fileUri;
   const itemData = route?.params?.itemData;
   const { editDoc, selectedItem } = route?.params;
@@ -64,14 +66,15 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const [selectedDocument, setselectedDocument] = useState();
   const [editselectedDocument, EditsetselectedDocument] = useState();
   const [loader, setLoading] = useState(false);
+  const [load, setLoad] = useState(false);
   const [docname, setDocname] = useState(
     fileUri?.route === "gallery"
       ? imageName
       : editDoc === "editDoc"
-      ? selectedItem?.docName
-      : fileUri?.flow === "deeplink"
-      ? fileUri?.docName
-      : null
+        ? selectedItem?.docName
+        : fileUri?.flow === "deeplink"
+          ? fileUri?.docName
+          : null
   );
 
 
@@ -83,10 +86,17 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
 
 
 
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
 
-
-
-
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
 
   const [button, setButton] = useState(false);
@@ -115,7 +125,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
   //   if (category === "ID") {
   //     category = "Identification";
   //   }
-  
+
   //   try {
   //     const response = await fetch("https://" + AWS_API_BASE + "documents/upload", {
   //       method: 'POST',
@@ -132,7 +142,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
   //         awsID: GLOBALS.awsID,
   //       }),
   //     });
-  
+
   //     // if (!response.ok) {
   //     //   throw new Error(`HTTP error! Status: ${response.status}`);
   //     // }
@@ -145,31 +155,66 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
   //     throw error; // re-throw the error if you want to handle it further up the call stack
   //   }
   // };
+
+  const uploadToS3 = async (myData, category, name, type) => {
+    if (category === "ID") { 
+      category = "Identification"; 
+    }
   
-  const uploadToS3= async(myData, category, name, type) => {
-    if (category === "ID") { category = "Identification"; }
-    const response = await fetch("https://" + AWS_API_BASE + "documents/upload", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        base64: myData.base64,
-        category: category,
-        name: name,
-        type: type,
-        credentials: GLOBALS.credentials,
-        awsID: GLOBALS.awsID,
-      }),
-    });
-    console.log('This is info about the document uploaded to s31----------------->',response);
-    const myJson = await response.json();
-    // const httpStatusCode = myJson.$metadata?.httpStatusCode;
-    console.log('This is info about the document uploaded to s31----------------->',myJson);
-    return  response.status ;
-    
-  }
+    try {
+      // Ensure the file name has the correct extension for S3 path but strip it for name in the request
+      const fileNameWithExtension = name.includes('.') ? name : `${name}${type}`;
+      
+      // Remove any extension from the name to use in the request body
+      const nameWithoutExtension = name.includes('.') ? name.substring(0, name.lastIndexOf('.')) : name;
+
+      console.log('Name with extention:', fileNameWithExtension, "Name without extention:", nameWithoutExtension)
+  
+      const response = await fetch("https://" + AWS_API_BASE + "documents/upload", {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          base64: myData.base64,
+          category: category,
+          name: nameWithoutExtension,  // Use the name without the extension
+          type: type,
+          credentials: GLOBALS.credentials,
+          awsID: GLOBALS.awsID,
+          contentDisposition: 'inline'
+        }),
+      });
+  
+      const jsonResponse = await response.json();
+      console.log('This is info about the document uploaded to S3----------------->', jsonResponse);
+  
+      if (response.ok) {
+        // Construct the S3 fullPath with the extension
+        const fullPath = `cognito/${GLOBALS.awsID}/${category}/${fileNameWithExtension}`;
+        console.log('fullPath----------------:', fullPath);
+  
+        return {
+          status: response.status,
+          fullPath: fullPath,  // Include the full path with the file extension
+        };
+      } else {
+        console.error('Failed to upload to S3:', jsonResponse);
+        return {
+          status: response.status,
+          error: jsonResponse.errorMessage || 'Failed to upload document',
+        };
+      }
+    } catch (error) {
+      console.error('Error uploading to S3:', error);
+      throw error;
+    }
+  };
+  
+  
+  
+  
 
   async function editS3Doc(path, category, name) {
     if (category === "ID") { category = "Identification"; }
@@ -194,6 +239,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
   }
 
   const onSubmitAction = async () => {
+    setLoad(true)
     if (docname?.length > 0) {
       setButton(true);
 
@@ -201,96 +247,133 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
         if (fileUri?.type === "application/pdf") {
           var date = dateTime();
           const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
-          const document: any[0] = categoryList[
-            selectedParentIndex
-          ]?.value?.filter((data: any) => data.isSelected);
 
-        // const s3Doc =  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
-        //   console.log('Document uploaded to s3 successfully!!!', s3Doc)
+           const s3Doc =  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
+      
+          if(s3Doc.status==200){
+            console.log('Document uploaded to s3 successfully!!!', s3Doc)
 
-          var documentDetails: IDocumentProps = {
-            id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
-            documentName: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
-            //  name: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
-            path: filePath,
-            date: date?.date,
-            time: date?.time,
-            txId: "e4343434343434443",
-            docType: "pdf",
-            docExt: ".jpg",
-            processedDoc: "",
-            base64: fileUri?.base64,
-            categoryType: categoryList[selectedParentIndex].key,
-            pdf: true,
-            docName: docname,
-            typePDF: fileUri?.typePDF,
-          };
-          var DocumentList = documentsDetailsList?.responseData
-            ? documentsDetailsList?.responseData
-            : [];
-          DocumentList.push(documentDetails);
-          
-          dispatch(saveDocuments(DocumentList));
-          
-          setsuccessResponse(true);
-          setTimeout(() => {
-            setsuccessResponse(false);
-            navigation.navigate("Documents");
-          }, 2000);
-        //  const s3uploadRes=  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
-        //  if(s3uploadRes.httpStatusCode=="200"){
-        //   setsuccessResponse(true);
-        //   setTimeout(() => {
-        //     setsuccessResponse(false);
-        //     navigation.navigate("Documents");
-        //   }, 2000);
-        //  }else{
-        //   Alert.alert("Error", s3uploadRes.errorMessage || "An error occurred while uploading the document.");
-        //  }
-          
-        } else {
-          const { selfAttested } = route.params;
-          if(selfAttested === 'no'){
-            var date = dateTime();
             const document: any[0] = categoryList[
               selectedParentIndex
             ]?.value?.filter((data: any) => data.isSelected);
-
-          // const s3Doc =  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".jpg");
-          //   console.log('Document uploaded to s3 successfully!!!', s3Doc)
-
-            const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
+  
+           
+  
             var documentDetails: IDocumentProps = {
               id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
               documentName: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
               //  name: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
               path: filePath,
+              s3Path: s3Doc.fullPath,
               date: date?.date,
               time: date?.time,
               txId: "e4343434343434443",
-              docType: "jpg",
+              docType: "pdf",
               docExt: ".jpg",
-              fileType:fileType,
               processedDoc: "",
               base64: fileUri?.base64,
-              type: "deeplink",
               categoryType: categoryList[selectedParentIndex].key,
+              pdf: true,
               docName: docname,
+              typePDF: fileUri?.typePDF,
             };
             var DocumentList = documentsDetailsList?.responseData
               ? documentsDetailsList?.responseData
               : [];
             DocumentList.push(documentDetails);
-           // 
+  
             dispatch(saveDocuments(DocumentList));
-            
+  setLoad(false)
             setsuccessResponse(true);
-              setTimeout(() => {
-                setsuccessResponse(false);
-                navigation.navigate("Documents");
-              }, 2000);
+            setTimeout(() => {
+              setsuccessResponse(false);
+              navigation.navigate("Documents");
+            }, 2000);
+         }else{
+          showPopup(
+            "Error",
+            "An error occurred while uploading the document. Please try again",
+            [
+              {
+                text: "OK",
+                onPress: () => setPopupVisible(false),
+              },
+            ]
+          );
+         }
+         
+          //  const s3uploadRes=  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
+          //  if(s3uploadRes.httpStatusCode=="200"){
+          //   setsuccessResponse(true);
+          //   setTimeout(() => {
+          //     setsuccessResponse(false);
+          //     navigation.navigate("Documents");
+          //   }, 2000);
+          //  }else{
+          //   Alert.alert("Error", s3uploadRes.errorMessage || "An error occurred while uploading the document.");
+          //  }
+
+        } else {
+          const { selfAttested } = route.params;
+          if (selfAttested === 'no') {
+            var date = dateTime();
+            const document: any[0] = categoryList[
+              selectedParentIndex
+            ]?.value?.filter((data: any) => data.isSelected);
+
+            const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
+
+            const s3Doc =  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".jpg");
+              
+               if(s3Doc.status==200){
+                console.log('Document uploaded to s3 successfully!!!', s3Doc)
+                var documentDetails: IDocumentProps = {
+                  id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
+                  documentName: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
+                  //  name: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
+                  path: filePath,
+                  s3Path: s3Doc.fullPath,
+                  date: date?.date,
+                  time: date?.time,
+                  txId: "e4343434343434443",
+                  docType: "jpg",
+                  docExt: ".jpg",
+                  fileType: fileType,
+                  processedDoc: "",
+                  base64: fileUri?.base64,
+                  type: "deeplink",
+                  categoryType: categoryList[selectedParentIndex].key,
+                  docName: docname,
+                };
+                var DocumentList = documentsDetailsList?.responseData
+                  ? documentsDetailsList?.responseData
+                  : [];
+                DocumentList.push(documentDetails);
+                // 
+                dispatch(saveDocuments(DocumentList));
+    
+                setsuccessResponse(true);
+                setTimeout(() => {
+                  setsuccessResponse(false);
+                  navigation.navigate("Documents");
+                }, 2000);
+             }else{
+              showPopup(
+                "Error",
+                "An error occurred while uploading the document. Please try again",
+                [
+                  {
+                    text: "OK",
+                    onPress: () => setPopupVisible(false),
+                  },
+                ]
+              );
+             }
+
+           
+         
             // const s3uploadRes= await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".jpg");
-            
+
             // if(s3uploadRes.httpStatusCode=="200"){
             //   setsuccessResponse(true);
             //   setTimeout(() => {
@@ -301,10 +384,10 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
             //   Alert.alert("Error", s3uploadRes.errorMessage || "An error occurred while uploading the document.");
             //  }
           }
-          else{
+          else {
             setIsPrceedForLivenessTest(true);
           }
-        
+
         }
       } else {
         if (fileUri?.type === "application/pdf") {
@@ -312,39 +395,55 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
 
           const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
 
-        //  const s3Doc =  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
-        //   console.log('Document uploaded to s3 successfully!!!', s3Doc)
-
-          var documentDetails: IDocumentProps = {
-            //    name: fileUri?.file?.name,
-            documentName: fileUri?.file?.name,
-            id: `ID_VERIFICATION${Math.random()}${"random"}${Math.random()}`,
-            path: filePath,
-            date: date?.date,
-            time: date?.time,
-            txId: "e4343434343434443",
-            docType: "pdf",
-            docExt: ".jpg",
-            processedDoc: "",
-            base64: fileUri?.base64,
-            categoryType: categoryList[selectedParentIndex].key,
-            pdf: true,
-            docName: docname,
-            isVerifyNeeded: false,
-            typePDF: fileUri?.typePDF,
-          };
-          var DocumentList = documentsDetailsList?.responseData
-            ? documentsDetailsList?.responseData
-            : [];
-          DocumentList.push(documentDetails);
-         // 
-          dispatch(saveDocuments(DocumentList));
-          
-          setsuccessResponse(true);
+           const s3Doc =  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
+           
+          if(s3Doc.status==200){
+            console.log('Document uploaded to s3 successfully!!!', s3Doc)
+            var documentDetails: IDocumentProps = {
+              //    name: fileUri?.file?.name,
+              documentName: fileUri?.file?.name,
+              id: `ID_VERIFICATION${Math.random()}${"random"}${Math.random()}`,
+              path: filePath,
+              s3Path: s3Doc.fullPath,
+              date: date?.date,
+              time: date?.time,
+              txId: "e4343434343434443",
+              docType: "pdf",
+              docExt: ".jpg",
+              processedDoc: "",
+              base64: fileUri?.base64,
+              categoryType: categoryList[selectedParentIndex].key,
+              pdf: true,
+              docName: docname,
+              isVerifyNeeded: false,
+              typePDF: fileUri?.typePDF,
+            };
+            var DocumentList = documentsDetailsList?.responseData
+              ? documentsDetailsList?.responseData
+              : [];
+            DocumentList.push(documentDetails);
+            // 
+            dispatch(saveDocuments(DocumentList));
+  
+            setsuccessResponse(true);
             setTimeout(() => {
               setsuccessResponse(false);
               navigation.navigate("Documents");
             }, 2000);
+         }else{
+          showPopup(
+            "Error",
+            "An error occurred while uploading the document. Please try again",
+            [
+              {
+                text: "OK",
+                onPress: () => setPopupVisible(false),
+              },
+            ]
+          );
+         }
+
+       
           // const s3uploadRes = await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".pdf");
           // if(s3uploadRes.httpStatusCode=="200"){
           //   setsuccessResponse(true);
@@ -358,46 +457,63 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
         } else {
           const { selfAttested } = route.params;
           if (selfAttested === "no") {
-            
+
             var date = dateTime();
             const document: any[0] = categoryList[
               selectedParentIndex
             ]?.value?.filter((data: any) => data.isSelected);
             const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
 
-          // const s3Doc =  await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".jpg");
-          //   console.log('Document uploaded to s3 successfully!!!', s3Doc)
+            const s3Doc = await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".jpg");
 
-
-            var documentDetails: IDocumentProps = {
-              id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
-              documentName: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
-              //  name: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
-              path: filePath,
-              date: date?.date,
-              time: date?.time,
-              txId: "e4343434343434443",
-              docType: "jpg",
-              fileType:fileType,
-              docExt: ".jpg",
-              processedDoc: "",
-              base64: fileUri?.base64,
-              categoryType: categoryList[selectedParentIndex].key,
-              docName: docname,
-              isVerifyNeeded: false,
-            };
-            var DocumentList = documentsDetailsList?.responseData
-              ? documentsDetailsList?.responseData
-              : [];
-            DocumentList.push(documentDetails);
-           // 
-            dispatch(saveDocuments(DocumentList));
-           
-            setsuccessResponse(true);
+            if (s3Doc.status == 200) {
+              console.log('Document uploaded to s3 successfully!!!', s3Doc)
+              var documentDetails: IDocumentProps = {
+                id: `ID_VERIFICATION${Math.random()}${selectedDocument}${Math.random()}`,
+                documentName: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
+                //  name: `${categoryList[selectedParentIndex].key} (${document[0]?.title})`,
+                path: filePath,
+                s3Path: s3Doc.fullPath,
+                date: date?.date,
+                time: date?.time,
+                txId: "e4343434343434443",
+                docType: "jpg",
+                fileType: fileType,
+                docExt: ".jpg",
+                processedDoc: "",
+                base64: fileUri?.base64,
+                categoryType: categoryList[selectedParentIndex].key,
+                docName: docname,
+                isVerifyNeeded: false,
+              };
+              var DocumentList = documentsDetailsList?.responseData
+                ? documentsDetailsList?.responseData
+                : [];
+              DocumentList.push(documentDetails);
+              // 
+              dispatch(saveDocuments(DocumentList));
+  
+              setsuccessResponse(true);
               setTimeout(() => {
                 setsuccessResponse(false);
                 navigation.navigate("Documents");
               }, 2000);
+            }
+
+            else {
+              showPopup(
+                "Error",
+                "An error occurred while uploading the document. Please try again",
+                [
+                  {
+                    text: "OK",
+                    onPress: () => setPopupVisible(false),
+                  },
+                ]
+              );
+            }
+
+        
             // const s3uploadRes = await uploadToS3(fileUri, categoryList[selectedParentIndex].key, docname, ".jpg");
             // if(s3uploadRes=="200"){
             //   setsuccessResponse(true);
@@ -500,21 +616,21 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
         }
       }
     } else {
-      Alert.alert("OOPS!", "Please enter document name", [
-        {
-          text: "Cancel",
-          onPress: () => {
-            console.log("Cancel Pressed");
+      showPopup(
+        "OOPS!",
+        "Please enter document name",
+        [
+          {
+            text: "Cancel",
+            onPress: () => setPopupVisible(false),
+            style: "cancel",
           },
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => {
-            console.log("OK Pressed");
+          {
+            text: "OK",
+            onPress: () => setPopupVisible(false),
           },
-        },
-      ]);
+        ]
+      );
     }
   };
 
@@ -630,7 +746,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
     // setIsPrceedForLivenessTest(true);
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const _renderItem = ({ item, index }: any) => {
     return (
@@ -815,7 +931,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
                     />
                     <View style={{ backgroundColor: Screens.pureWhite }}>
                       <Button
-                         onPress={() => onSubmitAction()}
+                        onPress={() => onSubmitAction()}
                         // onPress={() => onpress()}
                         disabled={button === "true" ? true : false}
                         style={{
@@ -901,7 +1017,7 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
           </View>
         </ModalView>
         <AnimatedLoader
-          isLoaderVisible={isCategoryLoading}
+          isLoaderVisible={isCategoryLoading || load}
           loadingText="Loading..."
         />
         <SuccessPopUp
@@ -909,6 +1025,13 @@ const categoryScreen = ({ navigation, route }: IDocumentScreenProps) => {
           loadingText={"Document uploaded successfully"}
         />
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

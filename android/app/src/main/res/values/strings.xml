@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EarthID</string>
+    <string name="app_name">GlobalID</string>
     <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
 <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
  <string moduleConfig="true" name="CodePushDeploymentKey">00844653-ea43-466d-adc9-5ac0a4eabbeb</string>

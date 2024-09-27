@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -30,8 +30,23 @@ import Header from "../components/Header";
 import { deleteSingleBucket } from "../utils/awsSetup";
 import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
 import TouchID from "react-native-touch-id";
+import CustomPopup from "../components/Loader/customPopup";
 
 const CustomDrawer = (props: any) => {
+ 
+console.log('Drawer open 1')
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const dispatch = useAppDispatch();
   const userDetails = useAppSelector((state) => state.account);
   const {
@@ -145,7 +160,7 @@ const CustomDrawer = (props: any) => {
     // deleteSingleBucket(bucketName);
     await AsyncStorage.removeItem("apiCalled");
     await AsyncStorage.removeItem("signatureKey");
-    Alert.alert("Hiiiii=>,deleteuserData");
+   // Alert.alert("Hiiiii=>,deleteuserData");
 
     setTimeout(() => {
       navigation.dispatch(StackActions.replace("AuthStack"));
@@ -290,7 +305,7 @@ const CustomDrawer = (props: any) => {
       props.navigation.navigate(item.route, { type: item.route });
     }
 
-    console.log("item====>", item);
+   // console.log("item====>", item);
   };
 
   console.log("deletedRespopnse==>", deletedRespopnse);
@@ -315,13 +330,15 @@ const CustomDrawer = (props: any) => {
   // }, [deletedRespopnse, isFocused]);
 
   const _toggleDrawer = () => {
+    console.log('Drawer open 2')
     props.navigation.closeDrawer();
   };
   const deleteUser = () => {
     const deletId = isEarthId()
       ? "Are you sure you want to delete your EarthID? Once deleted you won't be able to recover it later."
       : "Are you sure you want to delete your GlobaliD? Once deleted you won't be able to recover it later.";
-    Alert.alert(
+    
+    showPopup(
       "Delete Identity?",
       deletId,
       [
@@ -330,16 +347,17 @@ const CustomDrawer = (props: any) => {
           onPress: async () => {
             await checkAuth();
           },
-          style: "cancel",
         },
         {
-          text: "No",
-          onPress: async () => {},
+          text: "Cancel",
+          onPress: () => {
+            setPopupVisible(false);
+          },
         },
-      ],
-      { cancelable: false }
+      ]
     );
   };
+  
 
   const _signOutAsync = () => {
     Alert.alert(
@@ -438,6 +456,13 @@ const CustomDrawer = (props: any) => {
         renderItem={_renderItem}
         keyExtractor={_keyExtractor}
       />
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

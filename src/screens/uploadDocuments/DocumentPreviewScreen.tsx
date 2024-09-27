@@ -27,6 +27,7 @@ import Loader from "../../components/Loader/AnimatedLoader";
 import { isEarthId } from "../../utils/PlatFormUtils";
 import GenericText from "../../components/Text";
 import { useIsFocused } from "@react-navigation/native";
+import CustomPopup from "../../components/Loader/customPopup";
 
 const DocumentPreviewScreen = (props: any) => {
   const { fileUri } = props?.route?.params;
@@ -44,6 +45,18 @@ const DocumentPreviewScreen = (props: any) => {
   const pdfRef = useRef(null);
   const isFocused = useIsFocused();
 
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const resources = {
     file:
       Platform.OS === "ios"
@@ -54,11 +67,15 @@ const DocumentPreviewScreen = (props: any) => {
   };
   const resourceType = "base64";
 
-  console.log("error===>", fileUri.imageName);
+  //console.log("this is file uri:", fileUri);
   useEffect(() => {
     if (error) {
       setLoginLoading(false);
-      Alert.alert("Alert", "Document not supported");
+      showPopup(
+        "Alert",
+        "Document not supported",
+        [{ text: "OK", onPress: () => setPopupVisible(false) }]
+      );
     }
   }, [error]);
 
@@ -108,11 +125,10 @@ const DocumentPreviewScreen = (props: any) => {
     NetInfo.fetch().then((state) => {
       console.log("isconnect", state.isConnected);
       if (!state.isConnected) {
-        Alert.alert(
+        showPopup(
           "Network not connected",
           "Please check your internet connection and try again.",
-          [{ text: "OK" }],
-          { cancelable: false }
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
         );
       } else {
         uploadDoc("no");
@@ -124,11 +140,10 @@ const DocumentPreviewScreen = (props: any) => {
     NetInfo.fetch().then((state) => {
       console.log("isconnect", state.isConnected);
       if (!state.isConnected) {
-        Alert.alert(
+        showPopup(
           "Network not connected",
           "Please check your internet connection and try again.",
-          [{ text: "OK" }],
-          { cancelable: false }
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
         );
       } else {
         uploadDoc("yes");
@@ -199,7 +214,11 @@ const DocumentPreviewScreen = (props: any) => {
     }
   }, [data]);
   const handlePressb64 = (type: string) => {
-    Alert.alert('Unsupported file')
+    showPopup(
+      'Unsupported file',
+      'The file is not supported',
+      [{ text: 'OK', onPress: () => setPopupVisible(false) }]
+    );
     // if (Platform.OS === "ios") {
     //   OpenFile.openDocb64(
     //     [
@@ -405,6 +424,13 @@ const DocumentPreviewScreen = (props: any) => {
         textContent={"Loading..."}
         textStyle={styles.spinnerTextStyle}
       />
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

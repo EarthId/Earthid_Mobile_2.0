@@ -16,6 +16,7 @@ import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import { LocalImages } from "../../../../constants/imageUrlConstants";
 import { StackActions } from "@react-navigation/native";
 import GenericText from "../../../../components/Text";
+import CustomPopup from "../../../../components/Loader/customPopup";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -23,6 +24,19 @@ interface IHomeScreenProps {
 }
 
 const PasswordCheck1 = ({ navigation, route }: IHomeScreenProps) => {
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [code, setCode] = useState();
   const [count, setCount] = useState(4);
@@ -44,142 +58,187 @@ const PasswordCheck1 = ({ navigation, route }: IHomeScreenProps) => {
 
   const checkType = async () => {
     const getItem = await AsyncStorage.getItem("passcode");
-
-    if (passcheck == "UpdateFaceId" && passcheck != null) {
+  
+    if (passcheck === "UpdateFaceId" && passcheck !== null) {
       console.log("1", "true");
       if (code?.length > 5) {
         if (getItem === code?.toString()) {
           navigation.navigate("UpdateFaceId", { type: "pass" });
-        } else if (count == 0) {
-          Alert.alert("Oops!", `Too many attempts try again after sometimes`, [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
+        } else if (count === 0) {
+          showPopup(
+            "Oops!",
+            "Too many attempts. Try again after some time.",
+            [
+              {
+                text: "Cancel",
+                onPress: () => setPopupVisible(false),
+                style: "cancel",
+              },
+              { text: "OK", onPress: () => setPopupVisible(false) },
+            ]
+          );
         } else {
           setCount(count - 1);
-          Alert.alert("Invalid Code", `You have left ${count} attempts`, [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
+          showPopup(
+            "Invalid Code",
+            `You have ${count} attempts left.`,
+            [
+              {
+                text: "Cancel",
+                onPress: () => setPopupVisible(false),
+                style: "cancel",
+              },
+              { text: "OK", onPress: () => setPopupVisible(false) },
+            ]
+          );
         }
       } else {
-        Alert.alert("Oops!", "Please enter valid passcode", [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        showPopup(
+          "Oops!",
+          "Please enter a valid passcode.",
+          [
+            {
+              text: "Cancel",
+              onPress: () => setPopupVisible(false),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => setPopupVisible(false) },
+          ]
+        );
       }
-    } else if (passcheck1 == "OldPincode" && passcheck1 != null) {
+    } else if (passcheck1 === "OldPincode" && passcheck1 !== null) {
       console.log("1", "true");
       if (code?.length > 5) {
         if (getItem === code?.toString()) {
           navigation.navigate("OldPincode", { type: "pass" });
-        } else if (count == 0) {
-          Alert.alert("Oops!", `Too many attempts try again after sometimes`, [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
+        } else if (count === 0) {
+          showPopup(
+            "Oops!",
+            "Too many attempts. Try again after some time.",
+            [
+              {
+                text: "Cancel",
+                onPress: () => setPopupVisible(false),
+                style: "cancel",
+              },
+              { text: "OK", onPress: () => setPopupVisible(false) },
+            ]
+          );
         } else {
           setCount(count - 1);
-          Alert.alert("Invalid Code", `You have left ${count} attempts`, [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
+          showPopup(
+            "Invalid Code",
+            `You have ${count} attempts left.`,
+            [
+              {
+                text: "Cancel",
+                onPress: () => setPopupVisible(false),
+                style: "cancel",
+              },
+              { text: "OK", onPress: () => setPopupVisible(false) },
+            ]
+          );
         }
       } else {
-        Alert.alert("Oops!", "Please enter valid passcode", [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        showPopup(
+          "Oops!",
+          "Please enter a valid passcode.",
+          [
+            {
+              text: "Cancel",
+              onPress: () => setPopupVisible(false),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => setPopupVisible(false) },
+          ]
+        );
       }
-    } else if (passcheck2 == "UpdateTouchId" && passcheck2 != null) {
+    } else if (passcheck2 === "UpdateTouchId" && passcheck2 !== null) {
       console.log("1", "true");
       if (code?.length > 5) {
         if (getItem === code?.toString()) {
           navigation.navigate("UpdateTouchId", { type: "pass" });
-        } else if (count == 0) {
-          Alert.alert("Oops!", `Too many attempts try again after sometimes`, [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
+        } else if (count === 0) {
+          showPopup(
+            "Oops!",
+            "Too many attempts. Try again after some time.",
+            [
+              {
+                text: "Cancel",
+                onPress: () => setPopupVisible(false),
+                style: "cancel",
+              },
+              { text: "OK", onPress: () => setPopupVisible(false) },
+            ]
+          );
         } else {
           setCount(count - 1);
-          Alert.alert("Invalid Code", `You have left ${count} attempts`, [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
+          showPopup(
+            "Invalid Code",
+            `You have ${count} attempts left.`,
+            [
+              {
+                text: "Cancel",
+                onPress: () => setPopupVisible(false),
+                style: "cancel",
+              },
+              { text: "OK", onPress: () => setPopupVisible(false) },
+            ]
+          );
         }
       } else {
-        Alert.alert("Oops!", "Please enter valid passcode", [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        showPopup(
+          "Oops!",
+          "Please enter a valid passcode.",
+          [
+            {
+              text: "Cancel",
+              onPress: () => setPopupVisible(false),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => setPopupVisible(false) },
+          ]
+        );
       }
     }
   };
-
+  
   const _navigateAction = async () => {
     const getItem = await AsyncStorage.getItem("passcode");
     if (getItem === code?.toString()) {
       setIsLoading(true);
       navigation.dispatch(StackActions.replace("DrawerNavigator"));
-    } else if (count == 0) {
-      Alert.alert("Oops!", `Too many attempts try again after sometimes`, [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ]);
+    } else if (count === 0) {
+      showPopup(
+        "Oops!",
+        "Too many attempts. Try again after some time.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => setPopupVisible(false),
+            style: "cancel",
+          },
+          { text: "OK", onPress: () => setPopupVisible(false) },
+        ]
+      );
     } else {
       setCount(count - 1);
-      Alert.alert("Invalid Code", `You have left ${count} attempts`, [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ]);
+      showPopup(
+        "Invalid Code",
+        `You have ${count} attempts left.`,
+        [
+          {
+            text: "Cancel",
+            onPress: () => setPopupVisible(false),
+            style: "cancel",
+          },
+          { text: "OK", onPress: () => setPopupVisible(false) },
+        ]
+      );
     }
     console.log("loff", count);
   };
+  
 
   return (
     <View style={styles.sectionContainer}>
@@ -281,6 +340,13 @@ const PasswordCheck1 = ({ navigation, route }: IHomeScreenProps) => {
           ></Button>
         </View>
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

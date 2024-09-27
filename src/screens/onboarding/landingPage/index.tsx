@@ -42,6 +42,7 @@ import { AWS_API_BASE } from "../../../constants/URLContstants";
 
 const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
 const earthIDLogo = require('../../../../resources/images/earthidLogoBlack.png');
+const globalIDLogo = require('../../../../resources/images/logo.png')
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -71,7 +72,7 @@ export interface IDocumentProps {
   typePDF: any;
   verifiableCredential: any;
 }
-
+console.log('globals', GLOBALS)
 const landingPage = ({ navigation }: IHomeScreenProps) => {
   const { t } = useTranslation();
   const navigateAction = async () => {
@@ -245,10 +246,12 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
         awsID: GLOBALS.awsID,
       }),
     });
+    console.log('this is s3 response:', response)
     let myJson = await response.json();
     console.log('Uploaded to s3', myJson)
-    console.log(myJson);
   }
+  
+  
 
 
   const veriffSdkLaunch = async () => {
@@ -265,7 +268,7 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
       var result = await VeriffSdk.launchVeriff({
         sessionUrl: sessionUrl,
         branding: {
-          logo: resolveAssetSource(earthIDLogo), // see alternative options for logo below
+          logo: resolveAssetSource(isEarthId() ? earthIDLogo : globalIDLogo), // see alternative options for logo below
           //background: '#fffff',
           //onBackground: '#ffffff',
          // onBackgroundSecondary: '#000',
@@ -299,6 +302,7 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
   let uploadDocResponseData
   let getDocImages
   let getImage
+  let s3fullPath
   
   if(result.status=="STATUS_DONE"){
     setLoad(true);
@@ -318,7 +322,10 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
    console.log("Document Images", getDocImages)
    console.log("Media Image", getImage)
 
-   await uploadToS3(getImage, "ID", "ID Document", ".jpg");
+  await uploadToS3(getImage, "ID", "ID Document", ".jpg");
+  //const fileNameWithExtension = selectedDocument.includes('.') ? selectedDocument : `${selectedDocument}.jpg`;
+         s3fullPath = `cognito/${GLOBALS.awsID}/ID/ID Document.jpg`;
+         console.log('fullPath----------------:', s3fullPath);
   
    await createPayLoadFromDocumentData(uploadDocResponseData )
   
@@ -403,7 +410,7 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
        //   }, 2000);
        // } else {
          console.log("indexData", "index2");
-  
+         
          var date = dateTime();
          const filePath = RNFetchBlob.fs.dirs.DocumentDir + "/" + "Adhaar";
          var documentDetails: IDocumentProps = {
@@ -411,6 +418,7 @@ const landingPage = ({ navigation }: IHomeScreenProps) => {
            // name: selectedDocument,
            documentName: selectedDocument,
            path: filePath,
+           s3Path: s3fullPath,
            date: date?.date,
            time: date?.time,
            //txId: data?.result,

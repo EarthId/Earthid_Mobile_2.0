@@ -37,8 +37,8 @@ const RegisterOTP = ({ navigation, route }: IHomeScreenProps) => {
     navigation.navigate("ConfirmPincode");
   };
   const dispatch = useAppDispatch();
-  const userDetails = useAppSelector((state) => state.account);
-  const documentsDetailsList = useAppSelector((state) => state.Documents);
+  // const userDetails = useAppSelector((state) => state.account);
+  // const documentsDetailsList = useAppSelector((state) => state.Documents);
   const saveFeaturesForVc = useAppSelector((state) => state.saveFeatures);
   const[signature,setSignature]=useState()
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,10 @@ const RegisterOTP = ({ navigation, route }: IHomeScreenProps) => {
 
   const ApproveOtpResponse = useAppSelector((state) => state.ApproveOtp);
 
-  const { type } = route.params;
+  const { type, getUserResponse, bucketName } = route.params;
+  console.log('This is userDetailsresponse:', getUserResponse)
+  console.log('This is bucketName:', bucketName)
+
   const {
     loading: sendEmailLoading,
     data: emailResponse,
@@ -67,16 +70,18 @@ const RegisterOTP = ({ navigation, route }: IHomeScreenProps) => {
     error: sendPhoneError,
     fetch: sendPhoneOtpAPI,
   } = useFetch();
+
   const [code, setCode] = useState();
   const onPinCodeChange = (code: any) => {
     var format = code.replace(/[^0-9]/g, "");
     setCode(format);
   };
+
   const sendOtp = () => {
     var postData = {
-      email: userDetails?.responseData?.email,
-      earthId: userDetails?.responseData?.earthId,
-      publicKey: userDetails?.responseData?.publicKey,
+      email: getUserResponse?.email,
+      earthId: getUserResponse?.earthId,
+      publicKey: getUserResponse?.publicKey,
     };
     sendEmailOtp(api, postData, "POST");
   };
@@ -84,10 +89,10 @@ const RegisterOTP = ({ navigation, route }: IHomeScreenProps) => {
   const sendPhoneOtp = () => {
 
     var postPhoneData = {
-      phone: userDetails?.responseData?.phone,
-      earthId: userDetails?.responseData?.earthId,
-      publicKey: userDetails?.responseData?.publicKey,
-      countryCode: `${userDetails?.responseData?.countryCode}`,
+      phone: getUserResponse?.phone,
+      earthId: getUserResponse?.earthId,
+      publicKey: getUserResponse?.publicKey,
+      countryCode: `${getUserResponse?.countryCode}`,
     };
     sendPhoneOtpAPI(regQrPhoneOtp, postPhoneData, "POST");
 
@@ -224,16 +229,23 @@ const RegisterOTP = ({ navigation, route }: IHomeScreenProps) => {
     let overallResponseData;
     if (type === "phone") {
       overallResponseData = {
-        ...userDetails.responseData,
+        ...getUserResponse,
         ...{ mobileApproved: true },
       };
     } else {
       overallResponseData = {
-        ...userDetails.responseData,
+        ...getUserResponse,
         ...{ emailApproved: true },
       };
     }
-    navigation.navigate("Security");
+
+     dispatch(byPassUserDetailsRedux(getUserResponse,bucketName)).then(() => {
+      //navigation.navigate("OTPScreen", { type: "phone" });
+     // props.navigation.navigate("RegisterOTP", { type: "phone" });
+      navigation.navigate("Security");
+     
+    });
+    //navigation.navigate("Security");
     // dispatch(byPassUserDetailsRedux(overallResponseData)).then(() => {
     //   if(saveFeaturesForVc?.isVCFeatureEnabled){
     //     getSignature()
@@ -249,8 +261,8 @@ const RegisterOTP = ({ navigation, route }: IHomeScreenProps) => {
 
   const request = {
     otp: code,
-    earthId: userDetails?.responseData?.earthId,
-    publicKey: userDetails?.responseData?.publicKey,
+    earthId: getUserResponse?.earthId,
+    publicKey: getUserResponse?.publicKey,
   };
     dispatch(approveRegQrOTP(request, type));
   };

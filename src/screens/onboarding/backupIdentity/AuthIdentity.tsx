@@ -25,6 +25,7 @@ import GenericText from "../../../components/Text";
 import { useAppSelector } from "../../../hooks/hooks";
 import { LocalImages } from "../../../constants/imageUrlConstants";
 import { isEarthId } from "../../../utils/PlatFormUtils";
+import CustomPopup from "../../../components/Loader/customPopup";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -32,6 +33,19 @@ interface IHomeScreenProps {
 }
 
 const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const [mobileNumber, setmobileNumber] = useState();
   const [isLoading, setIsLoading] = useState(false);
   let [qrBase64, setBase64] = useState("");
@@ -100,18 +114,18 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
   };
 
   const securityModalPopup = () => {
-    Alert.alert(
+    showPopup(
       "Device Permission",
-      "To grant Device id you need to all the app permission from (Setting > App > EarthID > Permission)",
+      "To grant Device ID, you need to allow the app permissions from (Settings > App > EarthID > Permission).",
       [
-        // {
-        //   text: 'Cancel',
-        //   onPress: () => console.log('Cancel'),
-        //   style: 'cancel',
-        // },
-        { text: "OK", onPress: () => BackHandler.exitApp() },
-      ],
-      { cancelable: false }
+        {
+          text: "OK",
+          onPress: () => {
+            setPopupVisible(false);
+            BackHandler.exitApp();
+          },
+        },
+      ]
     );
   };
 
@@ -214,6 +228,13 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
           ></Loader>
         </View>
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

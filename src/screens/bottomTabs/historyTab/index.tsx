@@ -39,6 +39,7 @@ import AWS from "aws-sdk";
 import { deleteAllBuckets } from "../../../utils/awsSetup";
 import GLOBALS from "../../../utils/globals";
 import { AWS_API_BASE } from "../../../constants/URLContstants";
+import CustomPopup from "../../../components/Loader/customPopup";
 
 interface IDocumentScreenProps {
   navigation?: any;
@@ -49,6 +50,19 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const _toggleDrawer = () => {
     navigation.openDrawer();
   };
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const isFoused = useIsFocused();
   let documentsDetailsListData = useAppSelector((state) => state.Documents);
   const [documentsDetailsList, setdocumentsDetailsList] = useState(
@@ -484,9 +498,9 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
 
   const deleteItem = () => {
     console.log("selectedItem?.id", selectedItem);
-    Alert.alert(
+    showPopup(
       "Confirmation! ",
-      "Are you sure you want to delete this document ?",
+      "Are you sure you want to delete this document?",
       [
         {
           text: "Cancel",
@@ -504,7 +518,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
             const key = `images/${imageName}`;
             var s3 = new AWS.S3();
             var params = { Bucket: bucketName, Key: key };
-
+  
             s3.deleteObject(params, function (err, data) {
               if (err) console.log(err, err.stack); // error
               else console.log(); // deleted
@@ -514,14 +528,13 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
               (item) => item.id === selectedItem?.id
             );
             findIndex >= -1 && helpArra?.splice(findIndex, 1);
-            // console.log('helpArra',helpArra)
             dispatch(saveDocuments(helpArra));
           },
         },
-      ],
-      { cancelable: false }
+      ]
     );
   };
+  
 
   function editItem() {
     setisBottomSheetForSideOptionVisible(false);
@@ -543,37 +556,45 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
 
   const getFilteredData = () => {
     console.log("getFilteredData");
-    let data = documentsDetailsList?.responseData.sort(
-      (a: { date: any }, b: { date: any }) => a.date - b.date
-    );
-    //  let data = documentsDetailsList?.responseData?.sort(compareTime);
-
-    //
-
+    let data = documentsDetailsList?.responseData;
+  
+    // Sort the array based on the combined date and time in descending order
+    if (data) {
+      data = [...data].sort((a, b) => {
+        const dateTimeA = new Date(`${a.date.split('/').reverse().join('-')}T${a.time}`);
+        const dateTimeB = new Date(`${b.date.split('/').reverse().join('-')}T${b.time}`);
+        return dateTimeB - dateTimeA; // Descending order
+      });
+    }
+  
+    // // Log just the docName for each item
+    // data.forEach((item) => {
+    //   console.log(item.docName);
+    // });
+  
     if (categoryTypes !== "") {
-      var alter = function (item: any) {
+      var alter = function (item) {
         let splittedValue = item?.categoryType
           ?.trim()
           .split("(")[0]
           ?.toLowerCase();
-
-        return splittedValue?.trim() === categoryTypes?.trim()?.toLowerCase(); //use the argument here.
+  
+        return splittedValue?.trim() === categoryTypes?.trim()?.toLowerCase(); 
       };
-      var filter = documentsDetailsList?.responseData?.filter(alter);
-      return getItemsForSection(filter)
+      var filter = data?.filter(alter);
+      return getItemsForSection(filter);
     }
-
-    if (searchedData.length > 0) {
-      getFilteredData;
-      data = searchedData;
-      return getItemsForSection(data)
-    }
-
-    if (searchedData.length === 0 && searchText != "") {
-      return []; // earlier []
-    }
-    console.log('data',data)
-  return getItemsForSection(data)
+  
+    // if (searchedData.length > 0) {
+    //   data = searchedData;
+    //   return getItemsForSection(data);
+    // }
+  
+    // if (searchedData.length === 0 && searchText != "") {
+    //   return []; 
+    // }
+  
+    return getItemsForSection(data);
   };
 
   const getItemsForSection =(data: any[])=>{
@@ -858,6 +879,13 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
           </View>
         </TouchableOpacity>
       </Modal>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

@@ -25,6 +25,7 @@ import { useFormData } from "../../hooks/use-form-fetch";
 import * as ImagePicker from "react-native-image-picker";
 import { useFetch } from "../../hooks/use-fetch";
 import { uploadRegisterDocument } from "../../utils/earthid_account";
+import CustomPopup from "../../components/Loader/customPopup";
 
 const UploadDocument = (props: any) => {
   const _handleBarCodeRead = (barCodeData: any) => {};
@@ -42,6 +43,19 @@ const UploadDocument = (props: any) => {
   const { fetch: getSuperAdminApiCall } = useFetch();
   const [loginLoading, setLoginLoading] = useState(false);
   const { loading, data, error, fetch } = useFormData();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const _takePicture = async () => {
     let options = {
       mediaType: type,
@@ -73,7 +87,11 @@ const UploadDocument = (props: any) => {
   useEffect(() => {
     if (imageError) {
       setLoginLoading(false);
-      Alert.alert("Alert", "Document not supported");
+      showPopup(
+        "Alert",
+        "Document not supported",
+        [{ text: "OK", onPress: () => setPopupVisible(false) }]
+      );
     }
   }, [imageError]);
 
@@ -176,8 +194,9 @@ const UploadDocument = (props: any) => {
         ImagePicker.ImageLibraryOptions,
         setImageResponse
       );
+      console.log("data openfile picker method passed");
     } catch (err) {
-      console.log("data==>", err);
+      console.log("data openfile picker method", err);
     }
   };
 
@@ -303,6 +322,13 @@ const UploadDocument = (props: any) => {
         textContent={"Loading..."}
         textStyle={styles.spinnerTextStyle}
       />
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

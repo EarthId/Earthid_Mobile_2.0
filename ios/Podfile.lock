@@ -983,7 +983,9 @@ PODS:
     - React-Core
   - react-native-date-picker (4.4.2):
     - React-Core
-  - react-native-document-picker (8.2.2):
+  - react-native-document-picker (9.3.1):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - react-native-html-to-pdf (0.12.0):
     - React-Core
@@ -1193,6 +1195,15 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
+  - RNImageCropPicker (0.41.2):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.41.2)
+    - TOCropViewController (~> 2.7.4)
+  - RNImageCropPicker/QBImagePickerController (0.41.2):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController (~> 2.7.4)
   - RNLocalize (2.2.6):
     - React-Core
   - RNPDF (0.14.0):
@@ -1221,6 +1232,7 @@ PODS:
   - RNSVG (12.5.1):
     - React-Core
   - SocketRocket (0.6.1)
+  - TOCropViewController (2.7.4)
   - TouchID (4.4.1):
     - React
   - VeriffSDK (6.23.0)
@@ -1309,6 +1321,7 @@ DEPENDENCIES:
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNPDF (from `../node_modules/react-native-view-pdf`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
@@ -1345,6 +1358,7 @@ SPEC REPOS:
     - Plaid
     - PromisesObjC
     - SocketRocket
+    - TOCropViewController
     - VeriffSDK
     - ZXingObjC
 
@@ -1500,6 +1514,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
   RNPDF:
@@ -1581,7 +1597,7 @@ SPEC CHECKSUMS:
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: cb0d0a2b76a9d56461ea0ab5782f69e694544840
   react-native-date-picker: 312c387d2ff873c66c5e4cf78ff6827fa91644e2
-  react-native-document-picker: cd4d6b36a5207ad7a9e599ebb9eb0c2e84fa0b87
+  react-native-document-picker: 23b6a82e09199f4f109376e73d88892a8931eeea
   react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
   react-native-image-base64: 2ff9ac788639c87a91361ab6652cc95e871b1e54
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
@@ -1620,6 +1636,7 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 42aadf1282ffa0a88dc38a504a7be145eb010dfa
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: bc2cdb2dc42facdf34992ae364b8a728e19a3686
+  RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
   RNLocalize: d4b8af4e442d4bcca54e68fc687a2129b4d71a81
   RNPDF: 8526c7210ff375c29d2461c51945e2f5480f7b60
   RNPermissions: 294531ede5a64d1528463e88fffef05675842042
@@ -1631,11 +1648,12 @@ SPEC CHECKSUMS:
   RNSnackbar: 3727b42bf6c4314a53c18185b5203e915a4ab020
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
+  TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   VeriffSDK: 5ea1d34c3a1b761b7d4a77660cdf122d2e88fdf2
   Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 80a5f5205cdd05ad5dbb19079bc1aa61dcda3cd9
+PODFILE CHECKSUM: f9e1d380886e09c82aecce58d51cbd56b8b147a8
 
 COCOAPODS: 1.15.2

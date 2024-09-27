@@ -26,6 +26,7 @@ import Loader from "../../components/Loader/AnimatedLoader";
 import { isEarthId } from "../../utils/PlatFormUtils";
 import GenericText from "../../components/Text";
 import { useIsFocused } from "@react-navigation/native";
+import CustomPopup from "../../components/Loader/customPopup";
 
 const DocumentPreviewScreenReg = (props: any) => {
   const { fileUri } = props?.route?.params;
@@ -43,6 +44,18 @@ const DocumentPreviewScreenReg = (props: any) => {
   const [filePath, setFilePath] = useState();
   const pdfRef = useRef(null);
   const isFocused = useIsFocused();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   const resources = {
     file:
@@ -408,6 +421,13 @@ const DocumentPreviewScreenReg = (props: any) => {
         textContent={"Loading..."}
         textStyle={styles.spinnerTextStyle}
       />
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

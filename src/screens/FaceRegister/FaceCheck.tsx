@@ -31,10 +31,24 @@ import { SERVICE } from "../../utils/securityServices";
 import DocumentMask from "../uploadDocuments/DocumentMask";
 import { EARTHID_DEV_BASE } from "../../constants/URLContstants";
 import { useFetch } from "../../hooks/use-fetch";
+import CustomPopup from "../../components/Loader/customPopup";
 
 const rnBiometrics = new ReactNativeBiometrics();
 
 const LivenessCameraScreen = (props: any) => {
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const [maskedColor, setmaskedColor] = useState("#fff");
   const passcodes = AsyncStorage.getItem("passcode");
   const route = useRoute();
@@ -199,17 +213,18 @@ const LivenessCameraScreen = (props: any) => {
 
   const handleFaceID = async () => {
     rnBiometrics.simplePrompt({ promptMessage: 'Authenticate with Biometrics' })
-      .then((resultObject) => {
+      .then(async (resultObject) => {
         const { success } = resultObject;
         if (success) {
-          Alert.alert('Authenticated successfully');
+         // Alert.alert('Authenticated successfully');
+         
           saveSelectionSecurities();
         } else {
-          Alert.alert('Authentication failed');
+          //Alert.alert('Authentication failed');
         }
       })
       .catch((error) => {
-        Alert.alert('Authentication error', error.message);
+        //Alert.alert('Authentication error', error.message);
       });
   };
 
@@ -292,6 +307,13 @@ const LivenessCameraScreen = (props: any) => {
         }}
         title={"Retry"}
       ></Button> */}
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

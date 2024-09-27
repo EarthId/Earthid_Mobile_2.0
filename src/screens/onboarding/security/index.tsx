@@ -21,6 +21,7 @@ import { SnackBar } from "../../../components/SnackBar";
 import TouchID from "react-native-touch-id";
 import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
 import { StackActions } from "@react-navigation/native";
+import CustomPopup from "../../../components/Loader/customPopup";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -32,6 +33,18 @@ const Register = ({ navigation }: IHomeScreenProps) => {
   const [data, setData] = useState();
   const [disableTouchId, setDisableTouchId] = useState(true);
   const rnBiometrics = new ReactNativeBiometrics();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   useEffect(() => {
     setMetrics();
@@ -152,7 +165,18 @@ console.log('sec=======>',securityReducer)
         setDisableTouchId(false);
       }
     } catch (e) {
-      Alert.alert("TouchID is not supported!");
+      showPopup(
+        "TouchID Not Supported",
+        "TouchID is not supported on this device.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setPopupVisible(false);
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -282,13 +306,22 @@ console.log('sec=======>',securityReducer)
 
                             if (biometryType === BiometryTypes.FaceID) {
                               saveSelectionSecuritiess(biometryType);
-                            } else if (biometryType === BiometryTypes.TouchID) {
+                            }
+                             else if (biometryType === BiometryTypes.TouchID) {
+                              // saveSelectionSecurities(
+                              //   ESecurityTypes.FINGER,
+                              //   false,
+                              //   "FingerPrintInstructionScreen"
+                              // );
+                              AsyncStorage.setItem("fingerprint", biometryType)
                               saveSelectionSecurities(
-                                ESecurityTypes.FINGER,
-                                false,
-                                "FingerPrintInstructionScreen"
+                                ESecurityTypes.PASSCORD,
+                        false,
+                        "SetPin",
+                        false
                               );
-                            }else if (biometryType === BiometryTypes.Biometrics) {
+                            }
+                            else if (biometryType === BiometryTypes.Biometrics) {
                               AsyncStorage.setItem("biometrics", biometryType)
                               saveSelectionSecurities(
                                 ESecurityTypes.PASSCORD,
@@ -438,6 +471,13 @@ console.log('sec=======>',securityReducer)
           </View>
         </View>
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

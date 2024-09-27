@@ -19,8 +19,22 @@ import TouchID from "react-native-touch-id";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { SaveSecurityConfiguration } from "../../redux/actions/LocalSavingActions";
 import { ESecurityTypes } from "../../typings/enums/Security";
+import CustomPopup from "../../components/Loader/customPopup";
 
 const FingerPrintInstructionScreen = (props: any) => {
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const securityReducer: any = useAppSelector((state) => state.security);
@@ -195,6 +209,13 @@ const FingerPrintInstructionScreen = (props: any) => {
         Status={"status"}
         isLoaderVisible={isLoading}
       ></Loader>
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

@@ -20,9 +20,15 @@ import {
   saveDocuments,
 } from "../../../redux/actions/authenticationAction";
 import { useNavigation } from "@react-navigation/native";
+import CustomPopup from "../../../components/Loader/customPopup";
+import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AnimatedLoader from "../../../components/Loader/AnimatedLoader";
 
 
 const Accounts = (props) => {
+  const userDetails = useAppSelector((state) => state.account);
+  const keys = useAppSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const dispatch = useAppDispatch();
@@ -32,9 +38,87 @@ const Accounts = (props) => {
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const { accounts } = props.route.params;
   const navigation = useNavigation();
+  const [load, setLoad] = useState(false);
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
 console.log('This is accounts:', accounts)
-  const createVerifiableCred = (balance) => {
+console.log('This is userDetails:', userDetails)
+
+ const ssiBaseUrl = "https://ssi-test.myearth.id/api"
+          const authorizationKey = "01a41742-aa8e-4dd6-8c71-d577ac7d463c"
+
+const generateBankProof = async (account, balance) => {
+  try {
+
+      //const signature = await createUserIdSignature(profileData);
+      const data = {"schemaName": "UserBankAccountSchema:1",
+      "isEncrypted": true,
+      "dependantVerifiableCredential": [
+      ],
+      "credentialSubject": {
+        "earthId":userDetails?.responseData?.earthId,
+        "account": account,
+        "balance": balance
+      }
+    };
+
+      const config = {
+          method: 'post',
+          url: `${ssiBaseUrl}/issuer/verifiableCredential`,
+          headers: {
+              'X-API-KEY': authorizationKey,
+              did: keys.responseData.newUserDid,
+              publicKey: keys.responseData.generateKeyPair.publicKey,
+              'Content-Type': 'application/json',
+          },
+          data: JSON.stringify(data),
+      };
+console.log('BankProofVC', config)
+      const response = await axios.request(config);
+      console.log('BankProofVC response', response.data.data.verifiableCredential)
+      //const verifiableCredential = response.data.data.verifiableCredential;
+    
+      return response.data.data.verifiableCredential;
+
+  } catch (error) {
+      console.log(error);
+      throw error;
+  }
+};
+
+  const createVerifiableCred = async (balance) => {
+    setLoad(true)
+    console.log('Balance is this---', balance);
+
+    let bankProofVC;
+    if (balance !== null && Array.isArray(balance)) {
+      // Iterate over each object in the balance array
+      for (let item of balance) {
+        // Access the Amount object within each item
+        const amountObject = item.Amount;
+        
+        // Assuming generateBankProof requires two arguments from the Amount object
+        if (amountObject) {
+          bankProofVC = await generateBankProof(amountObject, amountObject.Amount);
+          
+          // Store the bank proof VC for each item in the balance array
+          await AsyncStorage.setItem("bankProofVC", JSON.stringify(bankProofVC));
+        }
+      }
+    }
+
+    console.log('Balance vc ia---', bankProofVC);
     var date = dateTime();
     setLoading(true);
     var documentDetails: IDocumentProps = {
@@ -51,8 +135,8 @@ console.log('This is accounts:', accounts)
       docExt: ".jpg",
       processedDoc: "",
       isVc: true,
-      vc: JSON.stringify(balance),
-      verifiableCredential: balance,
+      vc: bankProofVC,
+      verifiableCredential: bankProofVC,
       docName: "",
       base64: undefined,
     };
@@ -61,13 +145,17 @@ console.log('This is accounts:', accounts)
       ? documentsDetailsList?.responseData
       : [];
     DocumentList.push(documentDetails);
-
+    setLoad(false)
     dispatch(saveDocuments(DocumentList)).then(() => {
       setTimeout(() => {
         setLoading(false);
-        Alert.alert("Proof of funds successfully generated");
+        showPopup(
+          "Success",
+          "Proof of funds successfully generated.",
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
+        );
         props.navigation.navigate("Documents");
-      }, 1000);
+      }, 2000);
     });
   };
 
@@ -171,6 +259,17 @@ console.log('This is accounts:', accounts)
         renderItem={renderItem}
       />
       )}
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
+     <AnimatedLoader
+        isLoaderVisible={load}
+        loadingText={"Generating Proof"}
+      />
     </View>
   );
 };

@@ -21,6 +21,7 @@ import { deleteSingleBucket } from "../../../../utils/awsSetup";
 import { isEarthId } from "../../../../utils/PlatFormUtils";
 import { EARTHID_DEV_BASE } from "../../../../constants/URLContstants";
 import { useFetch } from "../../../../hooks/use-fetch";
+import CustomPopup from "../../../../components/Loader/customPopup";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -39,6 +40,18 @@ const PasswordCheck = ({ navigation }: IHomeScreenProps) => {
     error,
     fetch: deleteFetch,
   } = useFetch();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   const deleteuserData = async () => {
     const paramsUrl = `${EARTHID_DEV_BASE}/user/deleteUser?earthId=${userDetails?.responseData?.earthId}&publicKey=${userDetails?.responseData?.publicKey}`;
@@ -79,10 +92,10 @@ const PasswordCheck = ({ navigation }: IHomeScreenProps) => {
 
   const _navigateAction = async () => {
     const getItem = await AsyncStorage.getItem("passcode");
-
+  
     console.log("code====>", code);
     console.log("type@@@@@@@@@@@@@@@@@@@@@@@@@@@@==>", types);
-
+  
     if (code?.length > 5) {
       if (getItem === code?.toString()) {
         setIsLoading(true);
@@ -98,38 +111,51 @@ const PasswordCheck = ({ navigation }: IHomeScreenProps) => {
         } else {
           deleteuserData();
         }
-      } else if (count == 0) {
-        Alert.alert("Oops!", `Too many attempts try again after sometimes`, [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+      } else if (count === 0) {
+        showPopup(
+          "Oops!",
+          "Too many attempts. Try again after some time.",
+          [
+            {
+              text: "Cancel",
+              onPress: () => setPopupVisible(false),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => setPopupVisible(false) },
+          ]
+        );
       } else {
         setCount(count - 1);
-        Alert.alert("Invalid Code", `You have left ${count} attempts`, [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        showPopup(
+          "Invalid Code",
+          `You have ${count} attempts left.`,
+          [
+            {
+              text: "Cancel",
+              onPress: () => setPopupVisible(false),
+              style: "cancel",
+            },
+            { text: "OK", onPress: () => setPopupVisible(false) },
+          ]
+        );
       }
     } else {
-      Alert.alert("Oops!", "Please enter valid passcode", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ]);
+      showPopup(
+        "Oops!",
+        "Please enter a valid passcode.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => setPopupVisible(false),
+            style: "cancel",
+          },
+          { text: "OK", onPress: () => setPopupVisible(false) },
+        ]
+      );
     }
     console.log("loff", count);
   };
+  
 
   return (
     <View style={styles.sectionContainer}>
@@ -232,6 +258,13 @@ const PasswordCheck = ({ navigation }: IHomeScreenProps) => {
           ></Button>
         </View>
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

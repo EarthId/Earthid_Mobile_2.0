@@ -111,7 +111,7 @@ const DrawerNavigator = () => {
         drawerStyle: {
           width: Dimensions.get("screen").width,
         },
-        drawerPosition: "right",
+        drawerPosition: "left",
       }}
     >
       <Drawer.Screen

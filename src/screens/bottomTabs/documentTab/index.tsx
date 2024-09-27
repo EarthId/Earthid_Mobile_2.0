@@ -49,9 +49,12 @@ import RNFetchBlob from "rn-fetch-blob";
 import AnimatedLoader from "../../../components/Loader/AnimatedLoader";
 import SuccessPopUp from "../../../components/Loader";
 import ErrorPopUp from "../../../components/Loader/errorPopup";
+import CustomPopup from "../../../components/Loader/customPopup";
+import { isEarthId } from "../../../utils/PlatFormUtils";
 
 const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
 const earthIDLogo = require('../../../../resources/images/earthidLogoBlack.png');
+const globalIDLogo = require('../../../../resources/images/logo.png')
 
 
 
@@ -113,8 +116,15 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
   const [load, setLoad] = useState(false);
   const [successResponse, setsuccessResponse] = useState(false);
   const [errorResponse, seterrorResponse] = useState(false);
-
+  const [reload, setReload] = useState(false);
   const [sdkStatus, setsdkStatus] = useState(false);
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+const [popupContent, setPopupContent] = useState({
+  title: '',
+  message: '',
+  buttons: []
+});
 
   const userDetails = useAppSelector((state) => state.account);
   const keys = useAppSelector((state) => state.user);
@@ -210,7 +220,7 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
       // console.log(getFilteredData());
     }
     getAllDocs();
-  }, []);
+  }, [reload]);
 
 //   useEffect(() => {
 //     const { fileUri, category, docname, docType } = route.params;
@@ -245,26 +255,76 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
 
   const uploadToS3 = async (base64: any, category: any, name: any, type: any) => {
     if (category === "ID") { category = "Identification"; }
-    const response = await fetch("https://" + AWS_API_BASE + "documents/upload", {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        base64: base64,
-        category: category,
-        name: name,
-        type: type,
-        credentials: GLOBALS.credentials,
-        awsID: GLOBALS.awsID,
-      }),
-    });
-    console.log('Uploaded to s3-------------------------', response)
-    let myJson = await response.json();
-    console.log('Uploaded to s3-------------------------', myJson)
-    //console.log(myJson);
-  }
+  
+    try {
+      const response = await fetch("https://" + AWS_API_BASE + "documents/upload", {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          base64: base64,
+          category: category,
+          name: name,
+          type: type,
+          credentials: GLOBALS.credentials,
+          awsID: GLOBALS.awsID,
+        }),
+      });
+  
+      if (!response.ok) {
+        // If the response is not OK (status code outside 200-299), throw an error
+        throw new Error(`Failed to upload to S3. Status Code: ${response.status}`);
+      }
+  
+      let myJson = await response.json();
+      console.log('Uploaded to s3', myJson);
+  
+      // You can add any further success handling code here if needed
+  
+    } catch (error) {
+      // Catch and handle any errors during fetch or response processing
+      console.error('Error uploading to S3:', error);
+      showPopup('Upload Error', 'An error occurred while uploading document. Please try again later.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate("Documents"),
+          }
+        ]
+      );
+      // Optionally, return an error object or value if needed
+      return {
+        status: 'error',
+        message: error.message,
+      };
+    }
+  };
+  
+  // const uploadToS3 = async (base64: any, category: any, name: any, type: any) => {
+  //   if (category === "ID") { category = "Identification"; }
+  //   const response = await fetch("https://" + AWS_API_BASE + "documents/upload", {
+  //     method: 'POST',
+  //     headers: {
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       base64: base64,
+  //       category: category,
+  //       name: name,
+  //       type: type,
+  //       credentials: GLOBALS.credentials,
+  //       awsID: GLOBALS.awsID,
+  //       contentDisposition: 'inline'
+  //     }),
+  //   });
+  //   console.log('this is s3 response:', response)
+  //   let myJson = await response.json();
+  //   console.log('Uploaded to s3', myJson)
+  // }
+  
 
   const editS3Doc= async (path, category, name) => {
     if (category === "ID") { category = "Identification"; }
@@ -357,7 +417,10 @@ const DocumentScreen = ({ navigation, route }: IDocumentScreenProps) => {
     return timeA - timeB;
   }
 
-
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   const _renderItem = ({ item, index }: any) => {
    
@@ -387,7 +450,7 @@ const s3DocFullPath =  await getFullPath(item.docName)
             titleIcon={item?.isVc ? LocalImages.vcImage : null}
             leftAvatar={LocalImages.documentsImage}
             absoluteCircleInnerImage={LocalImages.upImage}
-            rightIconSrc={  item?.isVc?null: LocalImages.menuImage}
+            rightIconSrc={  LocalImages.menuImage}
             rightIconOnPress={() => _rightIconOnPress(item)}
             title={
               //item.name
@@ -450,7 +513,7 @@ const s3DocFullPath =  await getFullPath(item.docName)
 
   const handleUploadImage = async () => {
     setisBottomSheetForSideOptionVisible(false);
-   navigation.navigate("ShareQr", { selectedItem: selectedItem, s3DocFullPath });
+   navigation.navigate("ShareQr", { selectedItem: selectedItem, s3DocFullPath: selectedItem.s3Path });
   };
 
   const RowOption = ({ icon, title, rowAction }: any) => (
@@ -620,25 +683,18 @@ const s3DocFullPath =  await getFullPath(item.docName)
     }, 1000);
   };
 
+
   const deleteItem = () => {
-    console.log("selectedItem?.id", selectedItem);
-    Alert.alert(
-      "Confirmation! ",
-      "Are you sure you want to delete this document ?",
+    showPopup(
+      "Confirmation!",
+      "Are you sure you want to delete this document?",
       [
         {
-          text: "Cancel",
-          onPress: () => (
-            console.log("Cancel Pressed!"),
-            setisBottomSheetForSideOptionVisible(false)
-          ),
-        },
-        {
-          text: "OK",
+          text: "Yes",
           onPress: async () => {
             let data = new FormData();
             data.append("path", selectedItem.fullPath);
-
+  
             const response = await fetch("https://" + AWS_API_BASE + "documents/delete", {
               method: "DELETE",
               headers: {
@@ -646,37 +702,92 @@ const s3DocFullPath =  await getFullPath(item.docName)
               },
               body: JSON.stringify({
                 credentials: GLOBALS.credentials,
-                path: selectedItem.fullPath,
+                path: selectedItem.s3Path || selectedItem.fullPath,
               }),
             });
             let json = await response.json();
             console.log(json);
-
-
+  
             setisBottomSheetForSideOptionVisible(false);
-            const imageName: any =
-              selectedItem?.docName + "." + selectedItem?.docType;
+            const imageName: any = selectedItem?.docName + "." + selectedItem?.docType;
             const key = `images/${imageName}`;
-            // var s3 = new AWS.S3();
-            // var params = { Bucket: bucketName, Key: key };
-
-            // s3.deleteObject(params, function (err, data) {
-            //   if (err) console.log(err, err.stack); // error
-            //   else console.log(); // deleted
-            // });
+  
             const helpArra = [...documentsDetailsList?.responseData];
-            const findIndex = helpArra?.findIndex(
-              (item) => item.id === selectedItem?.id
-            );
+            const findIndex = helpArra?.findIndex((item) => item.id === selectedItem?.id);
             findIndex >= -1 && helpArra?.splice(findIndex, 1);
-            // console.log('helpArra',helpArra)
+  
             dispatch(saveDocuments(helpArra));
           },
         },
-      ],
-      { cancelable: false }
+        {
+          text: "Cancel",
+          onPress: () => {
+            console.log("Cancel Pressed!");
+            setisBottomSheetForSideOptionVisible(false);
+          },
+          style: "cancel",
+        }
+      ]
     );
   };
+  
+  // const deleteItem = () => {
+  //   console.log("selectedItem?.id", selectedItem);
+  //   Alert.alert(
+  //     "Confirmation! ",
+  //     "Are you sure you want to delete this document ?",
+  //     [
+  //       {
+  //         text: "Cancel",
+  //         onPress: () => (
+  //           console.log("Cancel Pressed!"),
+  //           setisBottomSheetForSideOptionVisible(false)
+  //         ),
+  //       },
+  //       {
+  //         text: "OK",
+  //         onPress: async () => {
+  //           let data = new FormData();
+  //           data.append("path", selectedItem.fullPath);
+
+  //           const response = await fetch("https://" + AWS_API_BASE + "documents/delete", {
+  //             method: "DELETE",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //             body: JSON.stringify({
+  //               credentials: GLOBALS.credentials,
+  //               path: selectedItem.fullPath,
+  //             }),
+  //           });
+  //           let json = await response.json();
+  //           console.log(json);
+
+
+  //           setisBottomSheetForSideOptionVisible(false);
+  //           const imageName: any =
+  //             selectedItem?.docName + "." + selectedItem?.docType;
+  //           const key = `images/${imageName}`;
+  //           // var s3 = new AWS.S3();
+  //           // var params = { Bucket: bucketName, Key: key };
+
+  //           // s3.deleteObject(params, function (err, data) {
+  //           //   if (err) console.log(err, err.stack); // error
+  //           //   else console.log(); // deleted
+  //           // });
+  //           const helpArra = [...documentsDetailsList?.responseData];
+  //           const findIndex = helpArra?.findIndex(
+  //             (item) => item.id === selectedItem?.id
+  //           );
+  //           findIndex >= -1 && helpArra?.splice(findIndex, 1);
+  //           // console.log('helpArra',helpArra)
+  //           dispatch(saveDocuments(helpArra));
+  //         },
+  //       },
+  //     ],
+  //     { cancelable: false }
+  //   );
+  // };
 
   function editItem() {
     setisBottomSheetForSideOptionVisible(false);
@@ -693,41 +804,62 @@ const s3DocFullPath =  await getFullPath(item.docName)
 
   const onPressNavigateTo = async () => {
 
-    await alertUploadDoc()
+    //await alertUploadDoc()
+    navigation.navigate("uploadDocumentsScreen")
 
       }
 
 
       const alertUploadDoc = async () => {
-      
-     
-        Alert.alert(
+        showPopup(
           "Please select the type of document you wish to add:",
-    
-    "For a government-issued photo ID, click 'Photo ID.'\n\n" +
-    "For a self-attested document, click 'Self-attested.'",
+          "For a government-issued photo ID, click 'Photo ID.' For a self-attested document, click 'Self-attested.'",
           [
             {
-              text: "Self-attested",
+              text: 'Photo ID',
               onPress: () => {
-                navigation.navigate("uploadDocumentsScreen");
+                console.log("Document Data-----------------------------------");
+                veriffSdkLaunch();
               },
-              style: "cancel",
             },
             {
-              text: "Photo ID",
-              onPress: () => {
+              text: 'Self-attested',
+              onPress: () => navigation.navigate("uploadDocumentsScreen"),
+            }
+          ]
+        );
+      };
+      
+  //     const alertUploadDoc = async () => {
+      
+  //       setPopupVisible(true);
+  // //       Alert.alert(
+  // //         "Please select the type of document you wish to add:",
+    
+  // //   "For a government-issued photo ID, click 'Photo ID.'\n\n" +
+  // //   "For a self-attested document, click 'Self-attested.'",
+  // //         [
+  // //           {
+  // //             text: "Self-attested",
+  // //             onPress: () => {
+  // //               navigation.navigate("uploadDocumentsScreen");
+  // //             },
+  // //             style: "cancel",
+  // //           },
+  // //           {
+  // //             text: "Photo ID",
+  // //             onPress: () => {
      
 
-   console.log("Document Data-----------------------------------")
-  veriffSdkLaunch()
+  // //  console.log("Document Data-----------------------------------")
+  // // veriffSdkLaunch()
                 
-              },
-            },
-          ],
-          { cancelable: true }
-        );
-      }
+  // //             },
+  // //           },
+  // //         ],
+  // //         { cancelable: true }
+  // //       );
+  //     }
 
 
       const veriffSdkLaunch = async () => {
@@ -746,7 +878,7 @@ const s3DocFullPath =  await getFullPath(item.docName)
               var result = await VeriffSdk.launchVeriff({
                 sessionUrl: sessionUrl,
                 branding: {
-                  logo: resolveAssetSource(earthIDLogo), // see alternative options for logo below
+                  logo: resolveAssetSource(isEarthId() ? earthIDLogo : globalIDLogo), // see alternative options for logo below
                   //background: '#fffff',
                   //onBackground: '#ffffff',
                  // onBackgroundSecondary: '#000',
@@ -774,9 +906,9 @@ const s3DocFullPath =  await getFullPath(item.docName)
                 },
               });
             
-              
+            //  await new Promise(resolve => setTimeout(resolve, 2000));
           console.log('Response of sdk:', result )
-
+          
           // setsdkStatus(false)
           // const sdkStatusString2 = sdkStatus? 'true':'false'
           // console.log('SdkStatus from document screen2:', sdkStatus, sdkStatusString2)
@@ -785,8 +917,9 @@ const s3DocFullPath =  await getFullPath(item.docName)
 
           let uploadDocResponseData
           let getDocImages
-          let getImage:any
-          let uploadDocVcResponse:any
+          let getImage
+          let uploadDocVcResponse
+          let s3fullPath
           
           if(result.status=="STATUS_DONE"){
             setLoad(true);
@@ -808,7 +941,8 @@ const s3DocFullPath =  await getFullPath(item.docName)
   
   
   await uploadToS3(getImage, "ID", "ID Document", ".jpg");
-  
+  s3fullPath = `cognito/${GLOBALS.awsID}/Identification/ID Document.jpg`;
+  console.log('fullPath----------------:', s3fullPath);
   
   // Extracting data from the person object
   const personData: { [key: string]: string } = {};
@@ -917,6 +1051,7 @@ const s3DocFullPath =  await getFullPath(item.docName)
           // name: selectedDocument,
           documentName: selectedDocument,
           path: filePath,
+          s3Path: s3fullPath,
           date: date?.date,
           time: date?.time,
           //txId: data?.result,
@@ -988,13 +1123,14 @@ const s3DocFullPath =  await getFullPath(item.docName)
           const item = await AsyncStorage.getItem("flow");
           
             // generateVc()
-           // navigation.navigate("RegisterScreen");
+           // navigation.navigate("Documents");
             
           
         }, 2000);
       //}
     }, 2000);
     setLoad(false);
+    setReload(!reload)
   }else{
     seterrorResponse(true)
     throw new Error('An error occurred during image validation');
@@ -1178,43 +1314,50 @@ const s3DocFullPath =  await getFullPath(item.docName)
 
   const getFilteredData = () => {
     console.log("getFilteredData");
-   // console.log(documentsDetailsList);
-   // let data = documentsDetailsList;
-    let data = documentsDetailsList?.responseData.sort(
-      (a: { date: any }, b: { date: any }) => a.date - b.date
-    );
-    // let data = documentsDetailsList?.responseData.sort(
-    //   (a: { date: any }, b: { date: any }) => a.date - b.date
-    // );
-    //  let data = documentsDetailsList?.responseData?.sort(compareTime);
-
-    //
-
+    let data = documentsDetailsList?.responseData;
+  
+    // Sort the array based on the combined date and time in descending order
+    if (data) {
+      data = [...data].sort((a, b) => {
+        const dateTimeA = new Date(`${a.date.split('/').reverse().join('-')}T${a.time}`);
+        const dateTimeB = new Date(`${b.date.split('/').reverse().join('-')}T${b.time}`);
+        return dateTimeB - dateTimeA; // Descending order
+      });
+    }
+  
+    // Log just the docName for each item
+    data.forEach((item) => {
+      console.log(item.docName);
+    });
+  
     if (categoryTypes !== "") {
-      var alter = function (item: any) {
+      var alter = function (item) {
         let splittedValue = item?.categoryType
           ?.trim()
           .split("(")[0]
           ?.toLowerCase();
-
-        return splittedValue?.trim() === categoryTypes?.trim()?.toLowerCase(); //use the argument here.
+  
+        return splittedValue?.trim() === categoryTypes?.trim()?.toLowerCase(); 
       };
-      var filter = documentsDetailsList?.responseData?.filter(alter);
+      var filter = data?.filter(alter);
       return getItemsForSection(filter);
     }
-
+  
     if (searchedData.length > 0) {
-      getFilteredData;
       data = searchedData;
       return getItemsForSection(data);
     }
-
+  
     if (searchedData.length === 0 && searchText != "") {
-      return []; // earlier []
+      return []; 
     }
-    // console.log("data", data);
+  
     return getItemsForSection(data);
   };
+  
+  
+  
+  
 
   const getItemsForSection = (data: any[]) => {
     const idDocuments = data?.filter(
@@ -1434,11 +1577,13 @@ const s3DocFullPath =  await getFullPath(item.docName)
                 title={"edit"}
                 icon={LocalImages.editIcon}
               />
-              <RowOption
-                rowAction={() => qrCodeModal()}
-                title={"QR Code"}
-                icon={LocalImages.qrcodeImage}
-              />
+                {(selectedItem?.isVc === false || selectedItem?.isVc == null) && (
+      <RowOption
+        rowAction={() => qrCodeModal()}
+        title={"QR Code"}
+        icon={LocalImages.qrcodeImage}
+      />
+    )}
               <RowOption
                 rowAction={() => shareItem()}
                 title={"share"}
@@ -1531,6 +1676,15 @@ const s3DocFullPath =  await getFullPath(item.docName)
   loadingText={"An error occurred. Please try again."}
   onHide={hideErrorPopup}
 />
+
+<CustomPopup
+        isVisible={isPopupVisible}
+        title={popupContent.title}
+        message={popupContent.message}
+        buttons={popupContent.buttons}
+        onClose={() => setPopupVisible(false)}
+      />
+
     </View>
   );
 };

@@ -18,6 +18,7 @@ import { LocalImages } from "../../../../../constants/imageUrlConstants";
 import Loader from "../../../../../components/Loader";
 import GenericText from "../../../../../components/Text";
 import { isEarthId } from "../../../../../utils/PlatFormUtils";
+import CustomPopup from "../../../../../components/Loader/customPopup";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -25,6 +26,18 @@ interface IHomeScreenProps {
 }
 
 const Register = ({ navigation, route }: IHomeScreenProps) => {
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [code, setCode] = useState();
   const [isError, setisError] = useState(false);
@@ -50,14 +63,27 @@ const Register = ({ navigation, route }: IHomeScreenProps) => {
         setisError(true);
       }
     } else {
-      Alert.alert("Oops!", "Please enter valid passcode", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ]);
+      showPopup(
+        "Oops!",
+        "Please enter valid passcode",
+        [
+          {
+            text: "Cancel",
+            onPress: () => {
+              console.log("Cancel Pressed");
+              setPopupVisible(false);
+            },
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              console.log("OK Pressed");
+              setPopupVisible(false);
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -189,6 +215,13 @@ const Register = ({ navigation, route }: IHomeScreenProps) => {
           ></Loader>
         </View>
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

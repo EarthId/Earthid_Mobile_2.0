@@ -31,6 +31,7 @@ import { useNavigation } from "@react-navigation/native";
 import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
 
 import { OPEN_BANK_BASE_URL, OPEN_BANK_KEYS_MASTERCARD, OPEN_BANK_KEYS_WOCCU, OPEN_BANK_BASE2_URL } from "../../../constants/URLContstants";
+import CustomPopup from "../../../components/Loader/customPopup";
 
 const Payment = (props) => {
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,18 @@ const Payment = (props) => {
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const [accounts, setAccounts] = useState([]);
   const navigation = useNavigation();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   const rnBiometrics = new ReactNativeBiometrics();
   
@@ -75,7 +88,11 @@ const Payment = (props) => {
     dispatch(saveDocuments(DocumentList)).then(() => {
       setTimeout(() => {
         setLoading(false);
-        Alert.alert("Proof of funds is successfully generated");
+        showPopup(
+          "Success",
+          "Proof of funds successfully generated.",
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
+        );
         props.navigation.navigate("Documents");
       }, 1000);
     });
@@ -416,6 +433,13 @@ const Payment = (props) => {
           </TouchableOpacity>
         </View>
       )}
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

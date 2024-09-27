@@ -29,6 +29,77 @@ const CustomizeQr = ({ navigation }: IDocumentScreenProps) => {
   console.log("isToggleData",isToggle?.index?.CHECKED);
 
   const toggleValue :boolean = isToggle?.index?.CHECKED
+
+  useEffect(() => {
+    if (userDetails) {
+      SCREENS.HOMESCREEN.CategoryCustomiseList = [
+        {
+          TITLE: "username",
+          VALUE: userDetails.firstName + userDetails.lastName,
+          URI: LocalImages.SOCIAL_MEDIA_.webImage,
+          DOMAIN: "name",
+          CHECKED: true,
+        },
+        {
+          TITLE: "mobileno",
+          VALUE: "+91 7373834595",
+          URI: LocalImages.SOCIAL_MEDIA_.webImage,
+          DOMAIN: "mobile",
+          CHECKED: true,
+        },
+        {
+          TITLE: "email",
+          VALUE: "vicky@yopmail.com",
+          URI: LocalImages.SOCIAL_MEDIA_.webImage,
+          DOMAIN: "email",
+          CHECKED: true,
+        },
+        {
+          TITLE: "Website",
+          URI: LocalImages.SOCIAL_MEDIA_.webImage,
+          VALUE: "https://yourdomain.com",
+          DOMAIN: "https://yourdomain.com",
+          CHECKED: true,
+        },
+        {
+          TITLE: "Facebook",
+          URI: LocalImages.SOCIAL_MEDIA_.facebookImage,
+          VALUE: "https://yourdomain.com",
+          DOMAIN: "https://facebook.com/yourdomain",
+          CHECKED: true,
+        },
+        {
+          TITLE: "Instagram",
+          URI: LocalImages.SOCIAL_MEDIA_.instagramImage,
+          VALUE: "https://yourdomain.com",
+          DOMAIN: "https://instagram.com/yourdomain",
+          CHECKED: true,
+        },
+        {
+          TITLE: "LinkedIn",
+          URI: LocalImages.SOCIAL_MEDIA_.linkdInImage,
+          VALUE: "https://yourdomain.com",
+          DOMAIN: "https://linkedin.com/yourdomain",
+          CHECKED: true,
+        },
+        {
+          TITLE: "Telegram",
+          URI: LocalImages.SOCIAL_MEDIA_.telegramImage,
+          VALUE: "https://yourdomain.com",
+          DOMAIN: "https://telegram.com/yourdomain",
+          CHECKED: true,
+        },
+        {
+          TITLE: "Twitter",
+          URI: LocalImages.SOCIAL_MEDIA_.twitterImage,
+          VALUE: "https://yourdomain.com",
+          DOMAIN: "https://twitter.com/yourdomain",
+          CHECKED: true,
+        },
+      ];
+    }
+  }, [userDetails]);
+
   
   useEffect(()=>{
     console.log('profileDetails',profileDetails)
@@ -73,7 +144,7 @@ const CustomizeQr = ({ navigation }: IDocumentScreenProps) => {
     setisBottomSheetForSideOptionVisible(true);
   };
 
-  const onToggelchange = (toggle: any, item: any, itemIndex: any) => {
+  const onToggelchange = async (toggle: any, item: any, itemIndex: any) => {
     medialList.map((item: { CHECKED?: any; }, index: any) => {
       if (index === itemIndex) {
         item.CHECKED = !item.CHECKED;
@@ -83,7 +154,8 @@ const CustomizeQr = ({ navigation }: IDocumentScreenProps) => {
 
       return item;
     });
-    setcategoriCustomize([...medialList]);
+    setcategoriCustomize([...medialList]); 
+    console.log("this is saved qr data:", [...medialList])
     dispatch(savingCustomQrData([...medialList]));
     dispatch(saveProfileDetails([...medialList])).then(() => {
     })

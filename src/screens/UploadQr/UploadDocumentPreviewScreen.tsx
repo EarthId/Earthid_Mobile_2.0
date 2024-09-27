@@ -16,10 +16,22 @@ import { _s3responseHandler, byPassUserDetailsRedux } from "../../redux/actions/
 import DocumentPicker from "react-native-document-picker";
 import { SnackBar } from "../../components/SnackBar";
 import { isEarthId } from "../../utils/PlatFormUtils";
+import CustomPopup from "../../components/Loader/customPopup";
 
 
 
 const UploadDocumentPreviewScreen = (props: any) => {
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
   const { fileUri, type } = props.route.params;
   const { value } = props.route.params;
   const userDetails = useAppSelector((state) => state.account);
@@ -28,7 +40,7 @@ const UploadDocumentPreviewScreen = (props: any) => {
   const [message, Setmessage] = useState("ooo");
   const [datas, SetData] = useState(null);
   const [source, setSource] = useState({});
-
+  const { navigation } = props;
   const dispatch = useAppDispatch();
   const {
     loading: getUserLoading,
@@ -55,20 +67,18 @@ const UploadDocumentPreviewScreen = (props: any) => {
           getUser(url, {}, "GET");
         }
         catch (error) {
-          Alert.alert(
-            `${isEarthId()?"EarthId":"GlobaliD"} does'nt exist,please Upload with some valid QR Identity`,
-            '',
+          showPopup(
+            `${isEarthId() ? "EarthId" : "GlobaliD"} doesn't exist`,
+            'Please upload with some valid QR Identity',
             [
               {
                 text: "Back",
                 onPress: async () => {
-                  props.navigation.goBack(null)
+                  props.navigation.goBack(null);
+                  setPopupVisible(false);
                 },
-                style: "cancel",
-              },
-           
-            ],
-            { cancelable: false }
+              }
+            ]
           );
           
         }
@@ -76,20 +86,18 @@ const UploadDocumentPreviewScreen = (props: any) => {
  
       })
       .catch((error) => {
-        Alert.alert(
-          `${isEarthId()?"EarthId":"GlobaliD"} does'nt exist,please Upload with some valid QR Identity`,
-          '',
+        showPopup(
+          `${isEarthId() ? "EarthId" : "GlobaliD"} doesn't exist`,
+          'Please upload with some valid QR Identity',
           [
             {
               text: "Back",
               onPress: async () => {
-                props.navigation.goBack(null)
+                props.navigation.goBack(null);
+                setPopupVisible(false);
               },
-              style: "cancel",
-            },
-         
-          ],
-          { cancelable: false }
+            }
+          ]
         );
         // handle errors
       });
@@ -137,10 +145,11 @@ const UploadDocumentPreviewScreen = (props: any) => {
       indicationMessage: "The QR code is successfully uploaded",
     });
 
-    dispatch(byPassUserDetailsRedux(getUserResponse,bucketName)).then(() => {
-      props.navigation.navigate("Security");
-     
-    });
+   navigation.navigate("RegisterOTP", { type: "phone", getUserResponse: getUserResponse, bucketName: bucketName });
+    // dispatch(byPassUserDetailsRedux(getUserResponse,bucketName)).then(() => {
+      
+    //  // navigation.navigate("RegisterOTP", { type: "phone" })
+    // });
   }
 
   return (
@@ -215,6 +224,13 @@ const UploadDocumentPreviewScreen = (props: any) => {
         isLoaderVisible={successResponse}
         loadingText={"qrupload"}
       />
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

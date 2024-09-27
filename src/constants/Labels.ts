@@ -1,7 +1,10 @@
 import { isEarthId } from "../utils/PlatFormUtils";
 import { LocalImages } from "./imageUrlConstants";
 
+
 export const SCREENS = {
+
+ 
   HOMESCREEN: {
     avatarName: "Robert Downey",
     appName: isEarthId() ? "EarthID" : "GlobaliD",
@@ -91,86 +94,86 @@ export const SCREENS = {
         COLOR: "#D7EFFB",
       },
     ],
-    CategoryCustomiseList: [
-      {
-        TITLE: "username",
-        VALUE: "Roberty Dowry",
-        URI: LocalImages.SOCIAL_MEDIA_.webImage,
-        DOMAIN: "name",
-        CHECKED: true,
-      },
-      // {
-      //   TITLE: "dob",
-      //   VALUE: "25/12/1965",
-      //   URI: LocalImages.SOCIAL_MEDIA_.webImage,
-      //   DOMAIN: "https://yourdomain.com",
-      //   CHECKED: true,
-      // },
-      {
-        TITLE: "mobileno",
-        VALUE: "+91 7373834595",
-        URI: LocalImages.SOCIAL_MEDIA_.webImage,
-        DOMAIN: "mobile",
-        CHECKED: true,
-      },
-      {
-        TITLE: "email",
-        VALUE: "vicky@yopmail.com",
-        URI: LocalImages.SOCIAL_MEDIA_.webImage,
-        DOMAIN: "email",
-        CHECKED: true,
-      },
+    // CategoryCustomiseList: [
+    //   {
+    //     TITLE: "username",
+    //     VALUE: "Roberty Dowry",
+    //     URI: LocalImages.SOCIAL_MEDIA_.webImage,
+    //     DOMAIN: "name",
+    //     CHECKED: true,
+    //   },
+    //   // {
+    //   //   TITLE: "dob",
+    //   //   VALUE: "25/12/1965",
+    //   //   URI: LocalImages.SOCIAL_MEDIA_.webImage,
+    //   //   DOMAIN: "https://yourdomain.com",
+    //   //   CHECKED: true,
+    //   // },
+    //   {
+    //     TITLE: "mobileno",
+    //     VALUE: "+91 7373834595",
+    //     URI: LocalImages.SOCIAL_MEDIA_.webImage,
+    //     DOMAIN: "mobile",
+    //     CHECKED: true,
+    //   },
+    //   {
+    //     TITLE: "email",
+    //     VALUE: "vicky@yopmail.com",
+    //     URI: LocalImages.SOCIAL_MEDIA_.webImage,
+    //     DOMAIN: "email",
+    //     CHECKED: true,
+    //   },
 
-      {
-        TITLE: "Website",
-        URI: LocalImages.SOCIAL_MEDIA_.webImage,
-        VALUE: "https://yourdomain.com",
-        DOMAIN: "https://yourdomain.com",
-        CHECKED: true,
-      },
-      {
-        TITLE: "Facebook",
-        URI: LocalImages.SOCIAL_MEDIA_.facebookImage,
-        VALUE: "https://yourdomain.com",
-        DOMAIN: "https://facebook.com/yourdomain",
-        CHECKED: true,
-      },
-      // {
-      //   TITLE: "twitter",
-      //   URI: LocalImages.SOCIAL_MEDIA_.twitterImage,
-      //   DOMAIN: "https://yourdomain.com",
-      //   VALUE: "https://twitter.com/yourdomain",
-      //   CHECKED: true,
-      // },
-      {
-        TITLE: "Instagram",
-        URI: LocalImages.SOCIAL_MEDIA_.instagramImage,
-        VALUE: "https://yourdomain.com",
-        DOMAIN: "https://instagram.com/yourdomain",
-        CHECKED: true,
-      },
-      {
-        TITLE: "LinkedIn",
-        URI: LocalImages.SOCIAL_MEDIA_.linkdInImage,
-        VALUE: "https://yourdomain.com",
-        DOMAIN: "https://linkedin.com/yourdomain",
-        CHECKED: true,
-      },
-      {
-        TITLE: "Telegram",
-        URI: LocalImages.SOCIAL_MEDIA_.telegramImage,
-        VALUE: "https://yourdomain.com",
-        DOMAIN: "https://telegram.com/yourdomain",
-        CHECKED: true,
-      },
-      {
-        TITLE: "Twitter",
-        URI: LocalImages.SOCIAL_MEDIA_.twitterImage,
-        VALUE: "https://yourdomain.com",
-        DOMAIN: "https://twitter.com/yourdomain",
-        CHECKED: true,
-      },
-    ],
+    //   {
+    //     TITLE: "Website",
+    //     URI: LocalImages.SOCIAL_MEDIA_.webImage,
+    //     VALUE: "https://yourdomain.com",
+    //     DOMAIN: "https://yourdomain.com",
+    //     CHECKED: true,
+    //   },
+    //   {
+    //     TITLE: "Facebook",
+    //     URI: LocalImages.SOCIAL_MEDIA_.facebookImage,
+    //     VALUE: "https://yourdomain.com",
+    //     DOMAIN: "https://facebook.com/yourdomain",
+    //     CHECKED: true,
+    //   },
+    //   // {
+    //   //   TITLE: "twitter",
+    //   //   URI: LocalImages.SOCIAL_MEDIA_.twitterImage,
+    //   //   DOMAIN: "https://yourdomain.com",
+    //   //   VALUE: "https://twitter.com/yourdomain",
+    //   //   CHECKED: true,
+    //   // },
+    //   {
+    //     TITLE: "Instagram",
+    //     URI: LocalImages.SOCIAL_MEDIA_.instagramImage,
+    //     VALUE: "https://yourdomain.com",
+    //     DOMAIN: "https://instagram.com/yourdomain",
+    //     CHECKED: true,
+    //   },
+    //   {
+    //     TITLE: "LinkedIn",
+    //     URI: LocalImages.SOCIAL_MEDIA_.linkdInImage,
+    //     VALUE: "https://yourdomain.com",
+    //     DOMAIN: "https://linkedin.com/yourdomain",
+    //     CHECKED: true,
+    //   },
+    //   {
+    //     TITLE: "Telegram",
+    //     URI: LocalImages.SOCIAL_MEDIA_.telegramImage,
+    //     VALUE: "https://yourdomain.com",
+    //     DOMAIN: "https://telegram.com/yourdomain",
+    //     CHECKED: true,
+    //   },
+    //   {
+    //     TITLE: "Twitter",
+    //     URI: LocalImages.SOCIAL_MEDIA_.twitterImage,
+    //     VALUE: "https://yourdomain.com",
+    //     DOMAIN: "https://twitter.com/yourdomain",
+    //     CHECKED: true,
+    //   },
+    // ],
 
     documentsDetailsList: [
       {

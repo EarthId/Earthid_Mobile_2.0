@@ -1,18 +1,7 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React, { useEffect ,useRef,useState} from "react";
-import { SafeAreaView, StyleSheet, View ,Alert,LogBox, TouchableHighlight, TouchableWithoutFeedback, PanResponder, BackHandler, Linking, AppState} from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { SafeAreaView, StyleSheet, View, BackHandler, Linking, AppState } from "react-native";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/lib/integration/react";
-//@ts-ignore
 import LanguageContextProvider from "./src/components/LanguageContext/LanguageContextProvider";
 import RootNavigator from "./src/navigations/RootNavigator";
 import VersionCheck from 'react-native-version-check';
@@ -20,42 +9,31 @@ import { persistor, store } from "./src/redux/store";
 import { Buffer } from "buffer";
 import { isEarthId } from "./src/utils/PlatFormUtils";
 import { Screens } from "./src/themes";
-import { EventRegister } from "react-native-event-listeners";
-
-LogBox.ignoreLogs(['Warning: ...']); //Hide warnings
-
-LogBox.ignoreAllLogs();//Hide all warning notifications on front-end
+import CustomPopup from "./src/components/Loader/customPopup";
 
 global.Buffer = Buffer;
-type SharedItem = {
-  mimeType: string;
-  data: string;
-  extraData: any;
-};
-
 
 const App = () => {
-  const [isIdle, setIsIdle] = useState(false);
-  let timer: string | number | NodeJS.Timeout | undefined 
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const appState = useRef(AppState.currentState);
-  // const resetIdleTimer = () => {
-  //   clearTimeout(timer);
-  //   timer = setTimeout(handleIdle, 60000*10);
-  // };
-  // const handleIdle = () => {  
-  //   EventRegister.emit("t");
-  // };
 
   useEffect(() => {
-    checkUpdateNeeded()
+    checkUpdateNeeded();
     const subscription = AppState.addEventListener('change', nextAppState => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
         checkUpdateNeeded();
       }
-
       appState.current = nextAppState;
       console.log('AppState', appState.current);
     });
@@ -68,39 +46,44 @@ const App = () => {
   const checkUpdateNeeded = async () => {
     let updateNeeded = await VersionCheck.needUpdate();
     if (updateNeeded && updateNeeded.isNeeded) {
-      Alert.alert(
+      showPopup(
         'Please update',
-        'you will have to update your app to the latest version to continue using.', // <- this part is optional, you can pass an empty string
+        'You will have to update your app to the latest version to continue using.',
         [
-          {text: 'Update', onPress: () =>  {
-            BackHandler.exitApp();
-            Linking.openURL(updateNeeded?.storeUrl)
-          }},
-        ],
-        {cancelable: false},
+          {
+            text: 'Update',
+            onPress: () => {
+              BackHandler.exitApp();
+              Linking.openURL(updateNeeded?.storeUrl);
+            },
+          }
+        ]
       );
-    
     }
-}
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    // onPanResponderGrant: resetIdleTimer,
-  });
+  };
+
   return (
- 
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-      <View  style={{flex:1}}  >
-        <SafeAreaView style={styles.container}>
-          <LanguageContextProvider>    
-            <RootNavigator />
-          </LanguageContextProvider>
-        </SafeAreaView>
+        <View style={{ flex: 1 }}>
+          <SafeAreaView style={styles.container}>
+            <LanguageContextProvider>
+              <RootNavigator />
+            </LanguageContextProvider>
+          </SafeAreaView>
+          <CustomPopup
+            isVisible={isPopupVisible}
+            title={popupContent.title}
+            message={popupContent.message}
+            buttons={popupContent.buttons}
+            onClose={() => setPopupVisible(false)}
+          />
         </View>
       </PersistGate>
     </Provider>
-  )
-}
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -111,5 +94,3 @@ const styles = StyleSheet.create({
 });
 
 export default App;
-
-

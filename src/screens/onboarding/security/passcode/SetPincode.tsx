@@ -133,7 +133,7 @@ const Register = ({ navigation,route }: IHomeScreenProps) => {
             title={"createpasscord"}
           ></Button>
 
-{isHide && <Button
+{/* {isHide && <Button
             onPress={actionToNavigate}
             style={{
               buttonContainer: {
@@ -149,7 +149,7 @@ const Register = ({ navigation,route }: IHomeScreenProps) => {
             }}
             title={"SKIP PASSCODE"}
           ></Button>
-}
+} */}
         </View>
      
         </View>

@@ -24,7 +24,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'EarthId' do
+target 'GlobalId' do
   config = use_native_modules!
   $RNFirebaseAsStaticFramework = true
   pod 'ZXingObjC', '~> 3.1'
@@ -40,7 +40,7 @@ target 'EarthId' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'EarthIdTests' do
+  target 'GlobalIdTests' do
     inherit! :complete
     # Pods for testing
   end

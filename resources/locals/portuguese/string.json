@@ -162,5 +162,7 @@
   "employment":"Emprego",
   "norecentactivity":"Nenhuma atividade recente",
   "finance":"Finança",
-  "more":"Mais"
+  "more":"Mais",
+  "earthidconsent": "Eu concordo com os Termos e Condições da EarthID e dou meu consentimento para que a EarthID use meus dados para esta transação.",
+  "globalidconsent": "Eu concordo com os Termos e Condições da GlobalID e dou meu consentimento para que a GlobalID use meus dados para esta transação."
 }

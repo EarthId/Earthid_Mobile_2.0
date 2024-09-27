@@ -53,6 +53,7 @@ import { RouteProp } from "@react-navigation/native";
 import axios from "axios";
 import CheckBox from "@react-native-community/checkbox";
 import { addConsent } from "../../../utils/consentApis";
+import CustomPopup from "../../../components/Loader/customPopup";
 
 interface IRegister {
   navigation: any;
@@ -79,6 +80,18 @@ const Register = ({ navigation, route }: IRegister) => {
   const [isValidMobileNumber, setValidMobileNumber] = useState<boolean>(false);
   const [isMobileEmpty, setMobileEmpty] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   console.log("This is for consent:-------------------------------------------------", isChecked)
   //console.log("These are userDetails:-------------------------------------------------", userDetails)
@@ -443,9 +456,17 @@ await AsyncStorage.setItem("ageProofVC", JSON.stringify(ageProofVC));
       });
     } else {
       console.log("userDetails?.errorMesssage", userDetails?.errorMesssage);
-      Alert.alert(
+      showPopup(
         "Warning",
-        "Your EarthID already exists. Please recover it using your QR code generated during the registration process. If you have lost your QR code, please create a new EarthID using different username, email and phone number."
+        "Your EarthID already exists. Please recover it using your QR code generated during the registration process. If you have lost your QR code, please create a new EarthID using a different username, email, and phone number.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setPopupVisible(false);
+            },
+          },
+        ]
       );
     }
   }
@@ -462,7 +483,9 @@ await AsyncStorage.setItem("ageProofVC", JSON.stringify(ageProofVC));
 
           onValueChange={(newValue) => setIsChecked(newValue)}
         />
-        <GenericText style={{marginLeft: 10,marginRight: 35, fontSize: 11}}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
+        <GenericText style={{marginLeft: 10,marginRight: 35, fontSize: 11}}>
+        {isEarthId() ? "earthidconsent" : "globalidconsent"}
+</GenericText>
       </View>
       <Button
         disabled={!isChecked || !isValidMobileNumber || islastNameError || isfirstNameError || isemailError || firstName==='' || email==='' || lastName === '' }
@@ -942,6 +965,13 @@ await AsyncStorage.setItem("ageProofVC", JSON.stringify(ageProofVC));
           }}
         />
       </View>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </KeyboardAvoidingScrollView>
   );
 };

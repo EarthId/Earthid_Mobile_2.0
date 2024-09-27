@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00E356F31AD99517003FC87E /* EarthIdTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* EarthIdTests.m */; };
+		00E356F31AD99517003FC87E /* GlobalIdTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* GlobalIdTests.m */; };
 		0C14E1C52992DBD4003ABF7D /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0C14E1C32992DBD4003ABF7D /* MainInterface.storyboard */; };
 		0C14E1C92992DBD4003ABF7D /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0C14E1BF2992DBD4003ABF7D /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0C14E1D02992DCA4003ABF7D /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C14E1CF2992DCA4003ABF7D /* ShareViewController.swift */; };
@@ -15,13 +15,13 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		4A3999E282E5520A1FB37516 /* libPods-EarthId-EarthIdTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A65FCF171384A83A4FCF0932 /* libPods-EarthId-EarthIdTests.a */; };
+		4A3999E282E5520A1FB37516 /* libPods-GlobalId-GlobalIdTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A65FCF171384A83A4FCF0932 /* libPods-GlobalId-GlobalIdTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		BDC906C82BD90867009E7EF3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */; };
 		BDC906D22BD916AD009E7EF3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */; };
 		BDC906D32BD916BB009E7EF3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */; };
 		C12577C13A4FCDAF508623E5 /* libPods-ShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13412299CB66D03336AED2C4 /* libPods-ShareExtension.a */; };
-		D8B6F6A148E2365247F491E2 /* libPods-EarthId.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B1022279AD446FB4C7182939 /* libPods-EarthId.a */; };
+		D8B6F6A148E2365247F491E2 /* libPods-GlobalId.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B1022279AD446FB4C7182939 /* libPods-GlobalId.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,7 +30,7 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-			remoteInfo = EarthId;
+			remoteInfo = GlobalId;
 		};
 		0C14E1C72992DBD4003ABF7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -70,10 +70,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		00E356EE1AD99517003FC87E /* EarthIdTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarthIdTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* GlobalIdTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GlobalIdTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		00E356F21AD99517003FC87E /* EarthIdTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EarthIdTests.m; sourceTree = "<group>"; };
-		0C14E1BA2992CAF5003ABF7D /* EarthId.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = EarthId.entitlements; path = EarthId/EarthId.entitlements; sourceTree = "<group>"; };
+		00E356F21AD99517003FC87E /* GlobalIdTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalIdTests.m; sourceTree = "<group>"; };
+		0C14E1BA2992CAF5003ABF7D /* GlobalId.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = GlobalId.entitlements; path = GlobalId/GlobalId.entitlements; sourceTree = "<group>"; };
 		0C14E1BF2992DBD4003ABF7D /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C14E1C42992DBD4003ABF7D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		0C14E1C62992DBD4003ABF7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -82,26 +82,26 @@
 		0CCC7FB6299D745900CD7CCA /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
 		0CCC7FB8299E68FF00CD7CCA /* ReactShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReactShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ReactShareViewController.swift"; sourceTree = "<group>"; };
 		0CCC7FBB299E6D8F00CD7CCA /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
-		0EB8DE8351547CC69A218E7D /* Pods-EarthId-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-EarthId-ShareExtension/Pods-EarthId-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		0EB8DE8351547CC69A218E7D /* Pods-GlobalId-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalId-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-GlobalId-ShareExtension/Pods-GlobalId-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		124C2B4DB74416950E2D7CA7 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		13412299CB66D03336AED2C4 /* libPods-ShareExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ShareExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07F961A680F5B00A75B9A /* EarthId.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EarthId.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = EarthId/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = EarthId/AppDelegate.mm; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = EarthId/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = EarthId/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = EarthId/main.m; sourceTree = "<group>"; };
-		1EBF1673F9CD63D1F881200C /* Pods-EarthId.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId.debug.xcconfig"; path = "Target Support Files/Pods-EarthId/Pods-EarthId.debug.xcconfig"; sourceTree = "<group>"; };
-		7867C59CD05346F57775ECB1 /* Pods-EarthId-EarthIdTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-EarthIdTests.debug.xcconfig"; path = "Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests.debug.xcconfig"; sourceTree = "<group>"; };
-		79FDDF8DDE542A5D7B21F554 /* Pods-EarthId.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId.release.xcconfig"; path = "Target Support Files/Pods-EarthId/Pods-EarthId.release.xcconfig"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = EarthId/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		A65FCF171384A83A4FCF0932 /* libPods-EarthId-EarthIdTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EarthId-EarthIdTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* GlobalId.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GlobalId.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = GlobalId/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = GlobalId/AppDelegate.mm; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = GlobalId/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GlobalId/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = GlobalId/main.m; sourceTree = "<group>"; };
+		1EBF1673F9CD63D1F881200C /* Pods-GlobalId.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalId.debug.xcconfig"; path = "Target Support Files/Pods-GlobalId/Pods-GlobalId.debug.xcconfig"; sourceTree = "<group>"; };
+		7867C59CD05346F57775ECB1 /* Pods-GlobalId-GlobalIdTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalId-GlobalIdTests.debug.xcconfig"; path = "Target Support Files/Pods-GlobalId-GlobalIdTests/Pods-GlobalId-GlobalIdTests.debug.xcconfig"; sourceTree = "<group>"; };
+		79FDDF8DDE542A5D7B21F554 /* Pods-GlobalId.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalId.release.xcconfig"; path = "Target Support Files/Pods-GlobalId/Pods-GlobalId.release.xcconfig"; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GlobalId/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A65FCF171384A83A4FCF0932 /* libPods-GlobalId-GlobalIdTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GlobalId-GlobalIdTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF7E544DFA40B0602C4D7D3F /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
-		B1022279AD446FB4C7182939 /* libPods-EarthId.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EarthId.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1022279AD446FB4C7182939 /* libPods-GlobalId.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GlobalId.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD02C38329D44925005B4A0E /* RNCNetInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCNetInfo.xcodeproj; path = "../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.xcodeproj"; sourceTree = "<group>"; };
 		BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		C626F3FDF6A09DFE8F630258 /* Pods-EarthId-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-EarthId-ShareExtension/Pods-EarthId-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
-		D9C9C2333F1B187323C27149 /* Pods-EarthId-EarthIdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarthId-EarthIdTests.release.xcconfig"; path = "Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests.release.xcconfig"; sourceTree = "<group>"; };
+		C626F3FDF6A09DFE8F630258 /* Pods-GlobalId-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalId-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-GlobalId-ShareExtension/Pods-GlobalId-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
+		D9C9C2333F1B187323C27149 /* Pods-GlobalId-GlobalIdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalId-GlobalIdTests.release.xcconfig"; path = "Target Support Files/Pods-GlobalId-GlobalIdTests/Pods-GlobalId-GlobalIdTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -110,7 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A3999E282E5520A1FB37516 /* libPods-EarthId-EarthIdTests.a in Frameworks */,
+				4A3999E282E5520A1FB37516 /* libPods-GlobalId-GlobalIdTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,20 +126,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D8B6F6A148E2365247F491E2 /* libPods-EarthId.a in Frameworks */,
+				D8B6F6A148E2365247F491E2 /* libPods-GlobalId.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00E356EF1AD99517003FC87E /* EarthIdTests */ = {
+		00E356EF1AD99517003FC87E /* GlobalIdTests */ = {
 			isa = PBXGroup;
 			children = (
-				00E356F21AD99517003FC87E /* EarthIdTests.m */,
+				00E356F21AD99517003FC87E /* GlobalIdTests.m */,
 				00E356F01AD99517003FC87E /* Supporting Files */,
 			);
-			path = EarthIdTests;
+			path = GlobalIdTests;
 			sourceTree = "<group>";
 		};
 		00E356F01AD99517003FC87E /* Supporting Files */ = {
@@ -164,10 +164,10 @@
 			path = ShareExtension;
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* EarthId */ = {
+		13B07FAE1A68108700A75B9A /* GlobalId */ = {
 			isa = PBXGroup;
 			children = (
-				0C14E1BA2992CAF5003ABF7D /* EarthId.entitlements */,
+				0C14E1BA2992CAF5003ABF7D /* GlobalId.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -176,15 +176,15 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				BDC906C72BD90867009E7EF3 /* PrivacyInfo.xcprivacy */,
 			);
-			name = EarthId;
+			name = GlobalId;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				B1022279AD446FB4C7182939 /* libPods-EarthId.a */,
-				A65FCF171384A83A4FCF0932 /* libPods-EarthId-EarthIdTests.a */,
+				B1022279AD446FB4C7182939 /* libPods-GlobalId.a */,
+				A65FCF171384A83A4FCF0932 /* libPods-GlobalId-GlobalIdTests.a */,
 				13412299CB66D03336AED2C4 /* libPods-ShareExtension.a */,
 			);
 			name = Frameworks;
@@ -201,9 +201,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* EarthId */,
+				13B07FAE1A68108700A75B9A /* GlobalId */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* EarthIdTests */,
+				00E356EF1AD99517003FC87E /* GlobalIdTests */,
 				0C14E1C02992DBD4003ABF7D /* ShareExtension */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -217,8 +217,8 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* EarthId.app */,
-				00E356EE1AD99517003FC87E /* EarthIdTests.xctest */,
+				13B07F961A680F5B00A75B9A /* GlobalId.app */,
+				00E356EE1AD99517003FC87E /* GlobalIdTests.xctest */,
 				0C14E1BF2992DBD4003ABF7D /* ShareExtension.appex */,
 			);
 			name = Products;
@@ -227,14 +227,14 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				1EBF1673F9CD63D1F881200C /* Pods-EarthId.debug.xcconfig */,
-				79FDDF8DDE542A5D7B21F554 /* Pods-EarthId.release.xcconfig */,
-				7867C59CD05346F57775ECB1 /* Pods-EarthId-EarthIdTests.debug.xcconfig */,
-				D9C9C2333F1B187323C27149 /* Pods-EarthId-EarthIdTests.release.xcconfig */,
+				1EBF1673F9CD63D1F881200C /* Pods-GlobalId.debug.xcconfig */,
+				79FDDF8DDE542A5D7B21F554 /* Pods-GlobalId.release.xcconfig */,
+				7867C59CD05346F57775ECB1 /* Pods-GlobalId-GlobalIdTests.debug.xcconfig */,
+				D9C9C2333F1B187323C27149 /* Pods-GlobalId-GlobalIdTests.release.xcconfig */,
 				AF7E544DFA40B0602C4D7D3F /* Pods-ShareExtension.debug.xcconfig */,
 				124C2B4DB74416950E2D7CA7 /* Pods-ShareExtension.release.xcconfig */,
-				0EB8DE8351547CC69A218E7D /* Pods-EarthId-ShareExtension.debug.xcconfig */,
-				C626F3FDF6A09DFE8F630258 /* Pods-EarthId-ShareExtension.release.xcconfig */,
+				0EB8DE8351547CC69A218E7D /* Pods-GlobalId-ShareExtension.debug.xcconfig */,
+				C626F3FDF6A09DFE8F630258 /* Pods-GlobalId-ShareExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -251,9 +251,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* EarthIdTests */ = {
+		00E356ED1AD99517003FC87E /* GlobalIdTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "EarthIdTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "GlobalIdTests" */;
 			buildPhases = (
 				DE80C3B562CC65C923616637 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -267,9 +267,9 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = EarthIdTests;
-			productName = EarthIdTests;
-			productReference = 00E356EE1AD99517003FC87E /* EarthIdTests.xctest */;
+			name = GlobalIdTests;
+			productName = GlobalIdTests;
+			productReference = 00E356EE1AD99517003FC87E /* GlobalIdTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		0C14E1BE2992DBD4003ABF7D /* ShareExtension */ = {
@@ -292,9 +292,9 @@
 			productReference = 0C14E1BF2992DBD4003ABF7D /* ShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		13B07F861A680F5B00A75B9A /* EarthId */ = {
+		13B07F861A680F5B00A75B9A /* GlobalId */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "EarthId" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "GlobalId" */;
 			buildPhases = (
 				2065F623B0C278CA8AB2B8E4 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -311,9 +311,9 @@
 			dependencies = (
 				0C14E1C82992DBD4003ABF7D /* PBXTargetDependency */,
 			);
-			name = EarthId;
-			productName = EarthId;
-			productReference = 13B07F961A680F5B00A75B9A /* EarthId.app */;
+			name = GlobalId;
+			productName = GlobalId;
+			productReference = 13B07F961A680F5B00A75B9A /* GlobalId.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -338,7 +338,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "EarthId" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "GlobalId" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -357,8 +357,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* EarthId */,
-				00E356ED1AD99517003FC87E /* EarthIdTests */,
+				13B07F861A680F5B00A75B9A /* GlobalId */,
+				00E356ED1AD99517003FC87E /* GlobalIdTests */,
 				0C14E1BE2992DBD4003ABF7D /* ShareExtension */,
 			);
 		};
@@ -459,7 +459,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-EarthId-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-GlobalId-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -489,15 +489,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalId-GlobalIdTests/Pods-GlobalId-GlobalIdTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalId-GlobalIdTests/Pods-GlobalId-GlobalIdTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GlobalId-GlobalIdTests/Pods-GlobalId-GlobalIdTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		CCD543FC96252E5F08F183B6 /* [CP] Copy Pods Resources */ = {
@@ -506,15 +506,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalId/Pods-GlobalId-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalId/Pods-GlobalId-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GlobalId/Pods-GlobalId-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D215B4B079E828DE2D41BFBA /* [CP] Copy Pods Resources */ = {
@@ -523,15 +523,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalId-GlobalIdTests/Pods-GlobalId-GlobalIdTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalId-GlobalIdTests/Pods-GlobalId-GlobalIdTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId-EarthIdTests/Pods-EarthId-EarthIdTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GlobalId-GlobalIdTests/Pods-GlobalId-GlobalIdTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DDDC1F14B16AF5D04431A74E /* [CP] Embed Pods Frameworks */ = {
@@ -540,15 +540,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalId/Pods-GlobalId-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalId/Pods-GlobalId-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EarthId/Pods-EarthId-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GlobalId/Pods-GlobalId-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DE80C3B562CC65C923616637 /* [CP] Check Pods Manifest.lock */ = {
@@ -566,7 +566,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-EarthId-EarthIdTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-GlobalId-GlobalIdTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -621,7 +621,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00E356F31AD99517003FC87E /* EarthIdTests.m in Sources */,
+				00E356F31AD99517003FC87E /* GlobalIdTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -648,7 +648,7 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* EarthId */;
+			target = 13B07F861A680F5B00A75B9A /* GlobalId */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 		0C14E1C82992DBD4003ABF7D /* PBXTargetDependency */ = {
@@ -672,7 +672,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7867C59CD05346F57775ECB1 /* Pods-EarthId-EarthIdTests.debug.xcconfig */;
+			baseConfigurationReference = 7867C59CD05346F57775ECB1 /* Pods-GlobalId-GlobalIdTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 3D5QUAXZH3;
@@ -680,7 +680,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = EarthIdTests/Info.plist;
+				INFOPLIST_FILE = GlobalIdTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -694,18 +694,18 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EarthId.app/EarthId";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GlobalId.app/GlobalId";
 			};
 			name = Debug;
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D9C9C2333F1B187323C27149 /* Pods-EarthId-EarthIdTests.release.xcconfig */;
+			baseConfigurationReference = D9C9C2333F1B187323C27149 /* Pods-GlobalId-GlobalIdTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = 3D5QUAXZH3;
-				INFOPLIST_FILE = EarthIdTests/Info.plist;
+				INFOPLIST_FILE = GlobalIdTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -719,7 +719,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EarthId.app/EarthId";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GlobalId.app/GlobalId";
 			};
 			name = Release;
 		};
@@ -740,7 +740,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 3D5QUAXZH3;
+				DEVELOPMENT_TEAM = 7M7YH3F5XK;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -756,7 +756,7 @@
 				MARKETING_VERSION = 2.9.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-new.ShareExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = com.globalidiq.main.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -787,7 +787,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 3D5QUAXZH3;
+				DEVELOPMENT_TEAM = 7M7YH3F5XK;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -802,7 +802,7 @@
 				);
 				MARKETING_VERSION = 2.9.5;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-new.ShareExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = com.globalidiq.main.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -817,35 +817,35 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1EBF1673F9CD63D1F881200C /* Pods-EarthId.debug.xcconfig */;
+			baseConfigurationReference = 1EBF1673F9CD63D1F881200C /* Pods-GlobalId.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = EarthId/EarthId.entitlements;
+				CODE_SIGN_ENTITLEMENTS = GlobalId/GlobalId.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3D5QUAXZH3;
+				DEVELOPMENT_TEAM = 7M7YH3F5XK;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				INFOPLIST_FILE = EarthId/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = EarthID1.0;
+				INFOPLIST_FILE = GlobalId/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GlobalIdNew;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.6.7;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-new";
-				PRODUCT_NAME = EarthId;
+				PRODUCT_BUNDLE_IDENTIFIER = com.globalidiq.main;
+				PRODUCT_NAME = GlobalId;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -855,34 +855,34 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79FDDF8DDE542A5D7B21F554 /* Pods-EarthId.release.xcconfig */;
+			baseConfigurationReference = 79FDDF8DDE542A5D7B21F554 /* Pods-GlobalId.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = EarthId/EarthId.entitlements;
+				CODE_SIGN_ENTITLEMENTS = GlobalId/GlobalId.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3D5QUAXZH3;
+				DEVELOPMENT_TEAM = 7M7YH3F5XK;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				INFOPLIST_FILE = EarthId/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = EarthID1.0;
+				INFOPLIST_FILE = GlobalId/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GlobalIdNew;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.6.7;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-new";
-				PRODUCT_NAME = EarthId;
+				PRODUCT_BUNDLE_IDENTIFIER = com.globalidiq.main;
+				PRODUCT_NAME = GlobalId;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1057,7 +1057,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "EarthIdTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "GlobalIdTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -1075,7 +1075,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "EarthId" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "GlobalId" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -1084,7 +1084,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "EarthId" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "GlobalId" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

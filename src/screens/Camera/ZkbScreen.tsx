@@ -13,65 +13,63 @@ import {
 } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Screens } from "../../themes";
-import QrCodeMask from "react-native-qrcode-mask";
 import GenericText from "../../components/Text";
-const { height, width } = Dimensions.get("window");
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { isEarthId } from "../../utils/PlatFormUtils";
+import { useAppSelector } from "../../hooks/hooks";
 import CheckBox from "@react-native-community/checkbox";
-import { Dropdown } from "react-native-element-dropdown";
-import { Colors } from "react-native/Libraries/NewAppScreen";
-import { LocalImages } from "../../constants/imageUrlConstants";
-import { SCREENS } from "../../constants/Labels";
-import LinearGradients from "../../components/GradientsPanel/LinearGradient";
 import { Switch } from "react-native-gesture-handler";
-import { addConsent } from "../../utils/consentApis";
+import { LocalImages } from "../../constants/imageUrlConstants";
+import LinearGradients from "../../components/GradientsPanel/LinearGradient";
+import CustomPopup from "../../components/Loader/customPopup";
+import { isEarthId } from "../../utils/PlatFormUtils";
+import GLOBALS from "../../utils/globals";
+import { AWS_API_BASE } from "../../constants/URLContstants";
+
+const { height, width } = Dimensions.get("window");
 
 export const QrScannerMaskedWidget = ({
   createVerifiableCredentials,
   barCodeDataDetails,
   isLoading,
   onDataShare,
-  navigation, // Add navigation prop
+  navigation,
 }: any) => {
   const documentsDetailsList = useAppSelector((state) => state?.Documents);
-  const [showVisibleDOB, setshowVisibleDOB] = useState(false);
   const [expandedItem, setExpandedItem] = useState(null);
-  const [parentCheckbox, setParentCheckbox] = useState(false);
+  const [parentCheckboxes, setParentCheckboxes] = useState({});
   const [childCheckboxes, setChildCheckboxes] = useState({});
-
-  const [documentVc, setDocumentVc] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
+  const [parentDocument, setParentDocument] = useState({});
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [s3PathTemp, setS3PathTemp] = useState(null); 
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
 
-  const userDetails = useAppSelector((state) => state.account);
-
-  console.log("This is for consent:-------------------------------------------------", isChecked)
-
-
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       const storedDocumentVc = await retrieveDocumentVcFromStorage();
-      if (storedDocumentVc === null) {
-        Alert.alert(
+      if (documentsDetailsList.responseData === null) {
+        showPopup(
           "No Documents",
           "Please add the required documents",
           [
             {
               text: "OK",
-              onPress: () => navigation.navigate("Documents"),
+              onPress: () => {
+                setPopupVisible(false);
+                navigation.navigate("Documents");
+              }
             },
-          ],
-          { cancelable: false }
+          ]
         );
-      } else{
-        console.log('Stored Document VC', storedDocumentVc)
-        //console.log('This is documentDetailsList---------------------------------', documentsDetailsList)
-  //const storedDocumentVc = documentsDetailsList.responseData[documentsDetailsList.responseData.length - 2]?.vc
-  console.log('Stored Document VC', storedDocumentVc)
-        setDocumentVc(storedDocumentVc);
       }
-     
     };
 
     fetchData();
@@ -87,58 +85,152 @@ export const QrScannerMaskedWidget = ({
     }
   };
 
+
   const sendDataToParent = async () => {
-    const selectedFields: { name: string; value: any; }[] = []; // Initialize selectedFields as an array
-  
-    // Iterate over the child checkboxes and populate selectedFields
+    console.log("Calling sendDataToParent--------");
+   // console.log("Selected Parent Document:", parentDocument);
+    console.log("Selected child boxes:", childCheckboxes);
+    const selectedFields = [];
+
+    // Ensure we are referencing the correct selected parent document
+  if (parentDocument && Object.keys(parentDocument).length > 0) {
     Object.keys(childCheckboxes).forEach((fieldName) => {
       if (childCheckboxes[fieldName]) {
-        selectedFields.push({
-          name: fieldName,
-          value: documentVc.credentialSubject[0][fieldName]
-        });
+        let fieldValue;
+
+        // Check if the field is part of the credentialSubject or s3Path
+        if (fieldName === 's3Path') {
+          fieldValue = s3PathTemp; // Handle s3Path if present
+        } else {
+          fieldValue = parentDocument.credentialSubject?.[0]?.[fieldName]; // Handle credentialSubject fields
+        }
+
+        if (fieldValue) {
+          selectedFields.push({
+            name: fieldName,
+            value: fieldValue,
+          });
+        }
       }
     });
-  console.log('These are the selected fields', selectedFields)
-    // Call the onDataShare function passed from the parent component
-    if(selectedFields && documentVc){
-      await AsyncStorage.setItem("selectedFields", JSON.stringify({ selectedFields }));
-      await AsyncStorage.setItem("selectedVc", JSON.stringify({ documentVc }));
-      onDataShare(selectedFields, documentVc);
-      await addConsentCall()
+
+     // console.log("Selected Parent Document:", parentDocument);
+      console.log("Selected Fields:", selectedFields);
+
+      // If selected fields and parent document are available, proceed to share
+      if (selectedFields.length > 0) {
+        await AsyncStorage.setItem("selectedFields", JSON.stringify(selectedFields));
+        await AsyncStorage.setItem("selectedVc", JSON.stringify(parentDocument));
+        onDataShare(selectedFields, parentDocument);
+      } else {
+        console.log("No fields selected");
+      }
+    } else {
+      console.log("No parent document selected");
     }
-    
   };
 
-  const handleParentCheckboxChange = () => {
-    setParentCheckbox(!parentCheckbox);
+  const handleParentCheckboxChange = (docId, parentStatus) => {
+    const updatedParentCheckboxes = {};
+
+    if (!parentStatus) {
+      updatedParentCheckboxes[docId] = true;
+      const selectedParent = documentsDetailsList.responseData.find((doc) => doc.id === docId);
+      setParentDocument(selectedParent?.verifiableCredential || selectedParent?.vc || selectedParent); // Ensure correct document is set
+    } else {
+      updatedParentCheckboxes[docId] = false;
+      setParentDocument({}); // Reset if deselected
+    }
+
+    setParentCheckboxes(updatedParentCheckboxes);
+    const document = documentsDetailsList.responseData.find((doc) => doc.id === docId);
     const updatedChildCheckboxes = {};
-    Object.keys(childCheckboxes).forEach(key => {
-      updatedChildCheckboxes[key] = !parentCheckbox;
-    });
+    console.log("Selected parent document :");
+
+    if (document && (document.vc || document.verifiableCredential)) {
+      const credentialSubject = document.vc?.credentialSubject || document.verifiableCredential?.credentialSubject;
+
+      if (credentialSubject && credentialSubject[0]) {
+        Object.keys(credentialSubject[0]).forEach((fieldName) => {
+          updatedChildCheckboxes[fieldName] = !parentStatus;
+        });
+      }
+    }else{
+      updatedChildCheckboxes["s3Path"] = !parentStatus;
+    }
+
+
+  
+console.log("updated child checkboxes:", updatedChildCheckboxes)
     setChildCheckboxes(updatedChildCheckboxes);
   };
 
-  const handleChildCheckboxChange = (fieldName: string) => {
+  const handleChildCheckboxChange = async(fieldName, parentId) => {
     const updatedChildCheckboxes = { ...childCheckboxes };
     updatedChildCheckboxes[fieldName] = !updatedChildCheckboxes[fieldName];
     setChildCheckboxes(updatedChildCheckboxes);
 
-    if (Object.values(updatedChildCheckboxes).every((checkbox) => checkbox)) {
-      setParentCheckbox(true);
-    } else if (Object.values(updatedChildCheckboxes).every((checkbox) => !checkbox)) {
-      setParentCheckbox(false);
+    // Ensure parent document is updated correctly when a child is selected
+    const isAnyChildSelected = Object.values(updatedChildCheckboxes).some((checked) => checked);
+
+    // Find the correct parent document
+    const parentDocument = documentsDetailsList.responseData.find((doc) => doc.id === parentId);
+    console.log("Selected parent document via child:");
+
+    if (isAnyChildSelected) {
+      // Set parent document to either verifiableCredential or vc
+      setParentDocument(parentDocument.verifiableCredential || parentDocument.vc || parentDocument);
+      setParentCheckboxes({ [parentId]: true });
+    } else {
+      setParentDocument({});
+      setParentCheckboxes({ [parentId]: false });
     }
+
+    let s3PathTemp
+    if(parentDocument.s3Path){
+      s3PathTemp = await getQRCode(parentDocument.s3Path)
+      setS3PathTemp(s3PathTemp); // Store s3PathTemp in state
+    console.log('This is temp s3path:', s3PathTemp);
+    }
+    // Log the selected child field and its value
+    const selectedChild = {
+      name: fieldName,
+      value: parentDocument?.verifiableCredential?.credentialSubject?.[0]?.[fieldName] || parentDocument?.vc?.credentialSubject?.[0]?.[fieldName] || s3PathTemp,  // or condition for field value, with `credentialSubject` check
+    };
+
+    console.log("Selected child field:", selectedChild);
+    console.log("Selected parent document via child:");
   };
 
-  const renderItem = ({ item, index }) => {
+  async function getQRCode(s3DocPath) {
+  
+   
+    console.log('This qr code s3doc path:  ', s3DocPath)
+    const response = await fetch("https://" + AWS_API_BASE + "documents/geturl", {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      credentials: GLOBALS.credentials,
+      path: s3DocPath,
+    }),
+  });
+  //console.log('Seleceted item full path:', selectedItem)
+  console.log('This qr code api response:  ', response)
+  let myJson = await response.json();
+  console.log("this is myjson of doc qr code:",myJson);
+  
+  return myJson.url
+  }
+
+  const renderItem = ({ item }) => {
+    const docId = item.id;
+    const parentStatus = parentCheckboxes[docId];
     return (
-      <TouchableOpacity
-        onPress={() => (setExpandedItem(item.id), handleParentCheckboxChange())}
-      >
-        <View
-          style={{ padding: 3, marginBottom: 15}}
-        >
+      <TouchableOpacity onPress={() => setExpandedItem(docId)}>
+        <View style={{ padding: 3, marginBottom: 15 }}>
           <View
             style={{
               height: 90,
@@ -169,413 +261,246 @@ export const QrScannerMaskedWidget = ({
                   <Image
                     source={LocalImages.CATEGORIES.educationImage}
                     style={{ width: 13, height: 13, resizeMode: "contain" }}
-                  ></Image>
+                  />
                 </View>
               </View>
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginLeft: 10,
-                }}
-              >
-                <Text style={{ fontSize: 14 }}>{documentVc?.credentialSubject[0].type}</Text>
+              <View style={{ justifyContent: "center", alignItems: "center", marginLeft: 10 }}>
+                <Text style={{ fontSize: 14 }}>{item.docName || item.documentName}</Text>
               </View>
             </View>
-  
+
             <Switch
-  trackColor={{ false: "#767577", true: "#81b0ff" }}
-  thumbColor={parentCheckbox ? "#007AFF" : "#f4f3f4"} // Change the thumb color to blue when active
-  ios_backgroundColor="#3e3e3e"
-  onValueChange={handleParentCheckboxChange}
-  value={parentCheckbox}
-/>
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={parentStatus ? "#007AFF" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={() => handleParentCheckboxChange(docId, parentStatus)}
+              value={parentStatus}
+            />
           </View>
 
-          {expandedItem === item.id && (
+          {expandedItem === docId && (
   <View style={{ marginTop: 8 }}>
-  {documentVc && documentVc.credentialSubject[0] && Object.keys(documentVc.credentialSubject[0]).map((fieldName, fieldIndex) => {
-    // Check if the field value is not null
-    if (documentVc.credentialSubject[0][fieldName] !== null) {
-      return (
-        <View
-          key={fieldIndex}
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            padding: 10,
-            borderWidth: 0.6,
-            margin: 3,
-            borderColor: "#0000001A",
-            borderRadius: 5
-          }}
-        >
-          {/* <Text>{fieldName}: {documentVc.credentialSubject[0][fieldName]}</Text> */}
-          <Text style={
-            {
-              marginTop: 7
-            }
-          }>{fieldName}</Text>
-<Switch
-  trackColor={{ false: "#767577", true: "#81b0ff" }}
-  thumbColor={childCheckboxes[fieldName] ? "#007AFF" : "#f4f3f4"} // Change the thumb color to blue when active
-  ios_backgroundColor="#3e3e3e"
-  onValueChange={() => handleChildCheckboxChange(fieldName)}
-  value={childCheckboxes[fieldName]}
-/>
-        </View>
-      );
-    } else {
-      // Return null if field value is null
-      return null;
-    }
-  })}
-</View>
+    {/* Check if credentialSubject or s3Path exists */}
+    {item.verifiableCredential?.credentialSubject?.[0] || item.vc?.credentialSubject?.[0] ? (
+      // Map through the fields in credentialSubject
+      Object.keys(
+        item.verifiableCredential?.credentialSubject?.[0] || item.vc?.credentialSubject?.[0]
+      ).map((fieldName, fieldIndex) => {
+        const fieldValue =
+          item.verifiableCredential?.credentialSubject?.[0]?.[fieldName] ||
+          item.vc?.credentialSubject?.[0]?.[fieldName];
+
+        if (fieldValue !== null) {
+          return (
+            <View
+              key={fieldIndex}
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                padding: 10,
+                borderWidth: 0.6,
+                margin: 3,
+                borderColor: "#0000001A",
+                borderRadius: 5,
+              }}
+            >
+              <Text style={{ marginTop: 7 }}>{fieldName}</Text>
+              <Switch
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                thumbColor={childCheckboxes[fieldName] ? "#007AFF" : "#f4f3f4"}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={() => handleChildCheckboxChange(fieldName, docId)}
+                value={childCheckboxes[fieldName]}
+              />
+            </View>
+          );
+        } else {
+          return null;
+        }
+      })
+    ) : item.s3Path ? (
+      // Render a special block for s3Path
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: 10,
+          borderWidth: 0.6,
+          margin: 3,
+          borderColor: "#0000001A",
+          borderRadius: 5,
+        }}
+      >
+        <Text style={{ marginTop: 7 }}>Url</Text>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={childCheckboxes['s3Path'] ? "#007AFF" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={() => handleChildCheckboxChange('s3Path', docId)}
+          value={childCheckboxes['s3Path']}
+        />
+      </View>
+    ) : (
+      <></> // Render nothing if neither credentialSubject nor s3Path exists
+    )}
+  </View>
 )}
+
         </View>
       </TouchableOpacity>
     );
   };
 
-  const getDropDownList = () => {
-    let datas = [];
-    datas = documentsDetailsList?.responseData;
-    if (barCodeDataDetails?.requestType?.request === "minAge") {
-      datas = datas?.filter(
-        (item: { isVc: any }) =>
-          item.isVc && item?.documentName === "Proof of age"
-      );
-      return datas;
-    } else if (barCodeDataDetails?.requestType?.request === "balance") {
-      datas = datas?.filter((item: { isVc: any }) => {
-        console.log("times", item?.documentName);
-        return item.isVc && item?.documentName === "Proof of funds";
-      });
-      return datas;
-    }
-    return datas;
-  };
-
-  const checkDisable = () => {
-    return getDropDownList()?.length > 0;
-  };
-
-
-  const addConsentCall = async () => {
-    try{
-      console.log('These are userDetails===============================', userDetails)
-   const apiData = {
-    
-      "earthId": userDetails.responseData.earthId,
-      "flowName": "Selective Data Disclosure",
-      "description": "Sharing selective fields from a document",
-      "relyingParty": "EarthID",
-      "timeDuration": 1,
-      "isConsentActive": true,
-      "purpose": "Sharing of information for selective disclosure"
-  
-   }
-const consentApiCall = await addConsent(apiData)
-console.log('Consent Api response------:', consentApiCall)
-    }catch (error) {
-      throw new Error(`Error adding consent: ${error}`);
-    }
-  } 
-
-
-  const navigateToBack = () => {
-    navigation.goBack(); // Use the navigation prop to go back
-  }
   return (
-   <View style={styles.sectionContainer}>
-    <ScrollView contentContainerStyle={styles.sectionContainer}>
- <View 
-    style={{flexGrow: 1,
-      backgroundColor:'#fff'
-      }}
-    //style={styles.sectionContainer}
-    >
+    <View style={styles.sectionContainer}>
+      <ScrollView contentContainerStyle={styles.sectionContainer}>
+        <View style={{ flexGrow: 1, backgroundColor: '#fff' }}>
+          <View style={styles.linearStyle}>
+            <LinearGradients
+              endColor={Screens.colors.header.endColor}
+              startColor={Screens.colors.header.startColor}
+              style={styles.linearStyle}
+              horizontalGradient={false}
+            />
+          </View>
 
-      
-      <View style={styles.linearStyle}>
-      <LinearGradients
-        endColor={Screens.colors.header.endColor}
-       // middleColor={Screens.colors.header.middleColor}
-        startColor={Screens.colors.header.startColor}
-        style={styles.linearStyle}
-        horizontalGradient={false}
-      >
-         </LinearGradients>
-         </View>     
+          <View style={styles.category}>
+            <View style={{ marginEnd: 5, alignItems: 'flex-end' }}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Image
+                  resizeMode="contain"
+                  style={{ width: 15, height: 15, tintColor: "#000" }}
+                  source={LocalImages.closeImage}
+                />
+              </TouchableOpacity>
+            </View>
 
-        <View style={styles.category}>
-            
-       
-        <View style={{ marginEnd: 5, alignItems: 'flex-end' }}>
-    <TouchableOpacity
-      onPress={() => {
-        navigateToBack();
-      }}
-    >
-      <Image
-        resizeMode="contain"
-        style={{ width: 15, height: 15, tintColor: "#000" }}
-        source={LocalImages.closeImage}
-      />
-    </TouchableOpacity>
-  </View>
-
-
-  {isLoading ? <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>        
-          <ActivityIndicator color={'red'} size='large' />
-          </View>:
-        <View style={{ flex: 1, paddingHorizontal: 5 }}>
-
-  <GenericText
-    style={{
-      //padding: 5,
-      color: "#000",
-      fontSize: 18,
-      fontWeight: 600,
-      paddingBottom: 5,
-      paddingLeft: 9,
-      paddingRight: 9,
-
-    }}
-  >
-    {"Select which details to share?"}
-  </GenericText>
- 
-
-            <GenericText
-              style={{
-                padding: 5,
-                color: "#000",
-                fontSize: 16,
-                paddingBottom: 15,
-              paddingLeft: 9,
-    paddingRight: 9,
-              }}
-            >
-              {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
-            </GenericText>
-            {/* <ScrollView
-    style={{ flexGrow: 1 }}
-    contentContainerStyle={{ flexGrow: 1 }}
-  > */}
-            {/* {isLoading ? (
-            
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                 alignItems: "center",
-                }}
-              >
-                <ActivityIndicator color={"red"} size="large" />
+            {isLoading ? (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator color={'red'} size='large' />
               </View>
-          
             ) : (
-              <View style={{ flex: 1, paddingHorizontal: 5 }}></View>
-            )} */}
-  
-            <View style={{ marginTop: 10 }}>
-              <FlatList
-                data={documentVc ? [documentVc] : []}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-              />
-            </View>
-{/* </ScrollView> */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:10, marginBottom: 20  }}>
-        <CheckBox
-          value={isChecked}
+              <View style={{ flex: 1, paddingHorizontal: 5 }}>
+                <GenericText style={styles.textTitle}>{"Select which details to share?"}</GenericText>
+                <GenericText style={styles.textSubtitle}>
+                  {isEarthId() ? "earthidwanttoaccess" : "globalidwanttoaccess"}
+                </GenericText>
 
-          onValueChange={(newValue) => setIsChecked(newValue)}
-        />
-        <GenericText style={{marginLeft: 10,marginRight: 35,  fontSize: 11}}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
-      </View>
+                <View style={{ marginTop: 10 }}>
+                  <FlatList
+                    data={documentsDetailsList.responseData}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                </View>
 
-</View>}
-  
-            <View style={{  marginBottom: 5 }}>
-              {!isLoading && (
-                <TouchableOpacity
-                  style={{
-                    opacity: isChecked ? 1 : 0.5,
-                   // backgroundColor:'#2AA2DE',
-                   backgroundColor: Screens.colors.primary,
-                    marginHorizontal:10,
-                    padding:15 ,
-                    borderRadius:50,
-                    justifyContent:'center',
-                    alignItems:'center'
-                  }}
-                  disabled={!checkDisable()|| !isChecked}
-                  onPress={() => {
-                    sendDataToParent(); // Call sendDataToParent when share button is clicked
-                    createVerifiableCredentials(); // Optionally, call createVerifiableCredentials
-                  }}
-                >
-                  <GenericText
-                    style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}
-                  >
-                    {"SHARE"}
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: 20 }}>
+                  <CheckBox
+                    value={isChecked}
+                    onValueChange={(newValue) => setIsChecked(newValue)}
+                  />
+                  <GenericText style={{ marginLeft: 10, marginRight: 35, fontSize: 11 }}>
+                    {isEarthId() ? "earthidconsent" : "globalidconsent"}
                   </GenericText>
-                </TouchableOpacity>
-              )}
-            </View>
-            <View style={{marginTop: 5}}>
+                </View>
+              </View>
+            )}
+
+<View style={{ marginBottom: 5 }}>
   {!isLoading && (
     <TouchableOpacity
       style={{
-        //opacity: !checkDisable() ? 0.5 : 1,
-        backgroundColor: '#fff',
+        opacity: parentDocument && Object.keys(parentDocument).length > 0 && isChecked ? 1 : 0.5,
+        backgroundColor: '#2AA2DE',
         marginHorizontal: 10,
         padding: 15,
         borderRadius: 50,
         justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#D3D3D3',
+        alignItems: 'center'
       }}
-      //disabled={!checkDisable()}
+      // Disable button if parentDocument is null/empty or nothing is selected
+      disabled={!parentDocument || Object.keys(parentDocument).length === 0 || !isChecked}
       onPress={() => {
-        navigateToBack();
+        sendDataToParent();
+        createVerifiableCredentials();
       }}
     >
-      <GenericText
-        style={{ color: "#525252", fontSize: 13, fontWeight: "700" }}
-      >
-        {"NO THANKS"}
+      <GenericText style={{ color: "#fff", fontSize: 16, fontWeight: "700" }}>
+        {"SHARE"}
       </GenericText>
     </TouchableOpacity>
   )}
 </View>
+
+
+            <View style={{ marginTop: 5 }}>
+              {!isLoading && (
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: '#fff',
+                    marginHorizontal: 10,
+                    padding: 15,
+                    borderRadius: 50,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: '#D3D3D3',
+                  }}
+                  onPress={() => navigation.goBack()}
+                >
+                  <GenericText style={{ color: "#525252", fontSize: 13, fontWeight: "700" }}>
+                    {"NO THANKS"}
+                  </GenericText>
+                </TouchableOpacity>
+              )}
             </View>
-         
-          
-      </View>
+          </View>
+        </View>
       </ScrollView>
-   </View>
-   
-     
-    );
-  };
+      <CustomPopup
+        isVisible={isPopupVisible}
+        title={popupContent.title}
+        message={popupContent.message}
+        buttons={popupContent.buttons}
+        onClose={() => setPopupVisible(false)}
+      />
+    </View>
+  );
+};
 
+const styles = StyleSheet.create({
+  sectionContainer: {
+    flexGrow: 1,
+    backgroundColor: Screens.colors.background,
+    zIndex: 1000,
+  },
+  title: {
+    color: Screens.grayShadeColor,
+  },
+  subtitle: {
+    color: Screens.black,
+    paddingLeft: 20,
+    fontWeight: "bold",
+    fontSize: 15,
+    opacity: 1,
+  },
+  linearStyle: {
+    height: 350,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    elevation: 4,
+  },
+  category: {
+    backgroundColor: Screens.pureWhite,
+    padding: 10,
+    marginTop: -320,
+    marginHorizontal: 15,
+    elevation: 5,
+    borderRadius: 10,
+    flex: 1,
+    justifyContent: "space-between",
+    marginBottom: 100,
+  },
+});
 
-  const styles = StyleSheet.create({
-
-    sectionContainer: {
-      flexGrow: 1,
-      backgroundColor: Screens.colors.background,
-      zIndex:1000
-    },
-    title: {
-      color: Screens.grayShadeColor,
-    },
-    subtitle: {
-      color: Screens.black,
-      paddingLeft: 20,
-      fontWeight: "bold",
-      fontSize: 15,
-      opacity: 1,
-    },
-    containerForSocialMedia: {
-      marginTop: 10,
-      marginHorizontal: 10,
-      borderColor: Screens.grayShadeColor,
-      borderWidth: 0.5,
-      borderRadius: 10,
-      justifyContent: "center",
-    },
-    logoContainer: {
-      width: 100,
-      height: 100,
-    },
-    textContainer: {
-      justifyContent: "flex-start",
-      alignItems: "flex-start",
-    },
-    linearStyle: {
-      height: 350,
-      borderBottomLeftRadius: 30,
-      borderBottomRightRadius: 30,
-      elevation: 4,
-    },
-    categoryHeaderText: {
-      marginHorizontal: 20,
-      marginVertical: 10,
-  
-      color: Screens.headingtextColor,
-    },
-  
-    flatPanel: {
-      marginHorizontal: 25,
-      height: 80,
-      borderRadius: 15,
-      backgroundColor: Screens.colors.background,
-      elevation: 15,
-      marginTop: -40,
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 20,
-    },
-    logoContainers: {
-      width: 30,
-      height: 30,
-      tintColor: Screens.grayShadeColor,
-    },
-    alignCenter: { justifyContent: "center", alignItems: "center" },
-    label: {
-      fontWeight: "bold",
-      color: Screens.black,
-    },
-    category: {
-      backgroundColor: Screens.pureWhite,
-      padding: 10,
-      marginTop: -320,
-      marginHorizontal: 15,
-      elevation: 5,
-      borderRadius: 10,
-      flex: 1,
-      justifyContent: "space-between",
-      marginBottom: 100
-    },
-    avatarContainer: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-      marginHorizontal: 8,
-      flexDirection: "row",
-      backgroundColor: Screens.lightGray,
-    },
-    avatarImageContainer: {
-      width: 25,
-      height: 30,
-      marginTop: 5,
-    },
-    avatarTextContainer: {
-      fontSize: 13,
-      fontWeight: "500",
-    },
-    cardContainer: {
-      flex: 1,
-      paddingVertical: 9,
-      title: {
-        color: Screens.grayShadeColor,
-      },
-    },
-    textInputContainer: {
-      borderRadius: 10,
-      borderColor: Screens.colors.primary,
-      borderWidth: 2,
-      marginLeft: 10,
-      marginTop: -2,
-    },
-  });
-  
-  export default QrScannerMaskedWidget;
-  
-
+export default QrScannerMaskedWidget;

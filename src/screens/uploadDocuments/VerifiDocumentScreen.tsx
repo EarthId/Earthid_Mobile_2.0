@@ -37,6 +37,7 @@ export interface IDocumentProps {
   id: string;
   name: string;
   path: string;
+  s3Path: string;
   date: string;
   time: string;
   txId: string;

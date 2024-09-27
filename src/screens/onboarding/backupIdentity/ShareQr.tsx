@@ -45,6 +45,7 @@ import GLOBALS from "../../../utils/globals";
 import { AWS_API_BASE } from "../../../constants/URLContstants";
 import { set } from "lodash";
 import QRCode from 'react-native-qrcode-svg';
+import CustomPopup from "../../../components/Loader/customPopup";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -63,12 +64,25 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
   const viewShot: any = useRef();
   //const { s3DocFullPath } = props?.route?.params;
 
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const isFocused = useIsFocused();
   useEffect(() => {
     async function getQRCode() {
       setActivityLoad(true);
       const selectedItem = route.params.selectedItem;
       const s3DocPath = route.params.s3DocFullPath
+      console.log('This qr code s3doc path:  ', s3DocPath)
       const response = await fetch("https://" + AWS_API_BASE + "documents/geturl", {
       method: 'POST',
       headers: {
@@ -78,9 +92,10 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
       body: JSON.stringify({
         credentials: GLOBALS.credentials,
         path: s3DocPath,
+        responseContentDisposition: 'inline'
       }),
     });
-    //console.log('Seleceted item full path:', selectedItem)
+    console.log('Seleceted item full path:', selectedItem)
     console.log('This qr code api response:  ', response)
     let myJson = await response.json();
     console.log("this is myjson of doc qr code:",myJson);
@@ -367,18 +382,18 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
   };
 
   const securityModalPopup = () => {
-    Alert.alert(
+    showPopup(
       "Device Permission",
-      "To grant Device id you need to all the app permission from (Setting > App > EarthID > Permission)",
+      "To grant Device ID, you need to allow the app permissions from (Settings > App > EarthID > Permission).",
       [
-        // {
-        //   text: 'Cancel',
-        //   onPress: () => console.log('Cancel'),
-        //   style: 'cancel',
-        // },
-        { text: "OK", onPress: () => BackHandler.exitApp() },
-      ],
-      { cancelable: false }
+        {
+          text: "OK",
+          onPress: () => {
+            setPopupVisible(false);
+            BackHandler.exitApp();
+          },
+        },
+      ]
     );
   };
 
@@ -476,6 +491,13 @@ const AuthBackupIdentity = ({ navigation, route }: IHomeScreenProps) => {
           ></Button>
         </View>
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

@@ -38,7 +38,7 @@ const language = (props: any) => {
   );
 
   const _navigateAction = (item: any) => {
-    console.log("item", item);
+   // console.log("item", item);
     props.navigation.navigate(item.route);
   };
   const _renderItem = ({ item }: { item: any }) => (

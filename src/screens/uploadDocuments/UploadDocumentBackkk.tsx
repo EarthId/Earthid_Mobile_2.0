@@ -24,8 +24,21 @@ import { useFormData } from "../../hooks/use-form-fetch";
 import * as ImagePicker from "react-native-image-picker";
 import { useFetch } from "../../hooks/use-fetch";
 import { uploadRegisterDocument } from "../../utils/earthid_account";
+import CustomPopup from "../../components/Loader/customPopup";
 
 const UploadDocumentBack = (props: any) => {
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const {fileUri} = props.route.params
   const _handleBarCodeRead = (barCodeData: any) => {};
   const { colors } = useTheme();
@@ -306,6 +319,13 @@ const UploadDocumentBack = (props: any) => {
         textContent={"Loading..."}
         textStyle={styles.spinnerTextStyle}
       />
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

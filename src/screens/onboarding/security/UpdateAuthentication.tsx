@@ -21,11 +21,24 @@ import { AppLanguage } from "../../../typings/enums/AppLanguage";
 import { alertBox } from "../../../utils/earthid_account";
 import Header from "../../../components/Header";
 import TouchID from "react-native-touch-id";
+import CustomPopup from "../../../components/Loader/customPopup";
 
 const UpdateAuthentication = (props: any) => {
   const dispatch = useAppDispatch();
   const [languageVisible, setLanguageVisible] = useState(false);
   const [disableTouchId, setDisableTouchId] = useState(true);
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   // const retrieveData = async (item: any) => {
   //   try {
@@ -55,14 +68,13 @@ const UpdateAuthentication = (props: any) => {
     else {
       if(item.card=="UpdateFaceId"){
         console.log("UpdateFaceId==>","UpdateFaceId");
-        Alert.alert(
-          'Biometric Authentication',
-          'Please Update Face ID in your device settings and try again.',
+        showPopup(
+          "Biometric Authentication",
+          "Please update Face ID in your device settings and try again.",
           [
-            { text: 'OK', onPress: () => console.log('OK pressed') },
-            { text: 'Open Settings', onPress: openSettings },
-          ],
-          { cancelable: false }
+            { text: "OK", onPress: () => setPopupVisible(false) },
+            { text: "Open Settings", onPress: openSettings },
+          ]
         );
     
       props.navigation.navigate("PasswordCheck1",{passingType:"UpdateFaceId"})
@@ -70,14 +82,13 @@ const UpdateAuthentication = (props: any) => {
         console.log("OldPincode==>","OldPincode");
         props.navigation.navigate("PasswordCheck1",{passingType1:"OldPincode"})
       }else if(item.card=="UpdateTouchId"){
-        Alert.alert(
-          'Biometric Authentication',
-          'Please Update Touch ID in your device settings and try again.',
+        showPopup(
+          "Biometric Authentication",
+          "Please update Touch ID in your device settings and try again.",
           [
-            { text: 'OK', onPress: () => console.log('OK pressed') },
-            { text: 'Open Settings', onPress: openSettings },
-          ],
-          { cancelable: false }
+            { text: "OK", onPress: () => setPopupVisible(false) },
+            { text: "Open Settings", onPress: openSettings },
+          ]
         );
       }
     //  props.navigation.navigate(item.card,{type:"pass"});
@@ -100,7 +111,18 @@ const UpdateAuthentication = (props: any) => {
         setDisableTouchId(false);
       }
     } catch (e) {
-      Alert.alert("TouchID is not supported!");
+      showPopup(
+        "TouchID Not Supported",
+        "TouchID is not supported on this device.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setPopupVisible(false);
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -199,6 +221,13 @@ const UpdateAuthentication = (props: any) => {
         renderItem={_renderItem}
         keyExtractor={_keyExtractor}
       />
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

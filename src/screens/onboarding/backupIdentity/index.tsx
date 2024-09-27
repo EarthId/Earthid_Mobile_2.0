@@ -33,6 +33,7 @@ import {
 import { LocalImages } from "../../../constants/imageUrlConstants";
 import { useFetch } from "../../../hooks/use-fetch";
 import { isEarthId } from "../../../utils/PlatFormUtils";
+import CustomPopup from "../../../components/Loader/customPopup";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -48,6 +49,18 @@ const Register = ({ navigation,route }: IHomeScreenProps) => {
   const viewShot: any = useRef();
   const { loading: getUserLoading } = useFetch();
   const dispatch = useAppDispatch();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   const keys = useAppSelector((state) => state.user);
   const UserDid  = keys?.responseData?.newUserDid  
@@ -104,18 +117,18 @@ const Register = ({ navigation,route }: IHomeScreenProps) => {
   };
 
   const securityModalPopup = () => {
-    Alert.alert(
+    showPopup(
       "Device Permission",
-      "To grant Device id you need to all the app permission from (Setting > App > EarthID > Permission)",
+      "To grant Device ID, you need to allow the app permissions from (Settings > App > EarthID > Permission).",
       [
-        // {
-        //   text: 'Cancel',
-        //   onPress: () => console.log('Cancel'),
-        //   style: 'cancel',
-        // },
-        { text: "OK", onPress: () => BackHandler.exitApp() },
-      ],
-      { cancelable: false }
+        {
+          text: "OK",
+          onPress: () => {
+            setPopupVisible(false);
+            BackHandler.exitApp();
+          },
+        },
+      ]
     );
   };
 
@@ -259,6 +272,13 @@ const Register = ({ navigation,route }: IHomeScreenProps) => {
           </View>
         )}
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

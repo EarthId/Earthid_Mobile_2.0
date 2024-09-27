@@ -30,6 +30,7 @@ import { encodeBase64 } from "react-native-image-base64";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { saveDocuments } from "../../redux/actions/authenticationAction";
 import { dateTime } from "../../utils/encryption";
+import CustomPopup from "../../components/Loader/customPopup";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 const UploadScreenBackk = (props: any) => {
@@ -49,6 +50,18 @@ const UploadScreenBackk = (props: any) => {
   const [isLoading, setisLoading] = useState(false);
   const documentsDetailsList = useAppSelector((state) => state.Documents);
   const dispatch = useAppDispatch();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   const _takePicture = async () => {
     const options = { quality: 0.1, base64: true };
@@ -411,7 +424,11 @@ console.log('UploadDocData', data)
         transparent={true}
         visible={visible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
+          showPopup(
+            "Modal Closed",
+            "Modal has been closed.",
+            [{ text: "OK", onPress: () => setPopupVisible(false) }]
+          );
           setVisible(!visible);
         }}
       >
@@ -488,6 +505,13 @@ console.log('UploadDocData', data)
         </View>
         {/* </TouchableWithoutFeedback> */}
       </Modal>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

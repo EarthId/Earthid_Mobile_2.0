@@ -16,9 +16,22 @@ import { Screens } from "../../../../themes/index";
 import Loader from "../../../../components/Loader";
 import { StackActions } from "@react-navigation/native";
 import TouchID from "react-native-touch-id";
+import CustomPopup from "../../../../components/Loader/customPopup";
 
 const FingerPrintInstructionScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   const optionalConfigObject = {
     title: "Authentication Required", // Android
@@ -53,7 +66,19 @@ const FingerPrintInstructionScreen = (props: any) => {
       .catch((error:any) => {
         // Failure code
         console.log(error,"Not Support");
-        Alert.alert("TouchID is not supported!")
+        showPopup(
+          "No TouchID",
+          "TouchID is not supported!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                console.log("OK Pressed");
+                setPopupVisible(false);
+              },
+            },
+          ]
+        );
       });
   };
 
@@ -129,6 +154,13 @@ const FingerPrintInstructionScreen = (props: any) => {
         Status="Success !"
         isLoaderVisible={isLoading}
       ></Loader>
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

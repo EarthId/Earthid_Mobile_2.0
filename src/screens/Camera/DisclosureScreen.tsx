@@ -14,6 +14,7 @@ import { SCREENS } from "../../constants/Labels";
 import LinearGradients from "../../components/GradientsPanel/LinearGradient";
 import { Text } from 'react-native';
 import { addConsent } from "../../utils/consentApis";
+import CustomPopup from "../../components/Loader/customPopup";
 const data = [
   { label: " 1", value: "1" },
   { label: " 2", value: "2" },
@@ -41,7 +42,17 @@ export const QrScannerMaskedWidget = ({ createVerifiableCredentials,
 
   const userDetails = useAppSelector((state) => state.account);
 
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
 
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
 
   useEffect(() => {
     const datas = documentsDetailsList?.responseData ?? [];
@@ -51,16 +62,18 @@ export const QrScannerMaskedWidget = ({ createVerifiableCredentials,
     const requiredDocumentNotPresent = datas.every(item => !(item.isVc && item?.documentName === requiredDocument));
 
     if (datas.length === 0 || requiredDocumentNotPresent) {
-      Alert.alert(
+      showPopup(
         "No Documents",
         "Please add the required documents",
         [
           {
             text: "OK",
-            onPress: () => navigation.navigate("Documents"),
-          },
-        ],
-        { cancelable: false }
+            onPress: () => {
+              setPopupVisible(false);
+              navigation.navigate("Documents");
+            }
+          }
+        ]
       );
     }
   }, [documentsDetailsList, barCodeDataDetails]);
@@ -262,7 +275,7 @@ export const QrScannerMaskedWidget = ({ createVerifiableCredentials,
                         },
                         index: any
                       ) => {
-                        console.log("item", item);
+                       // console.log("item", item);
                         return (
                           <View style={{ borderRadius: 5, borderWidth: 1, borderColor: '#9D9D9D', paddingHorizontal: 10, marginTop: 10 }}>
                             <View
@@ -415,7 +428,10 @@ export const QrScannerMaskedWidget = ({ createVerifiableCredentials,
 
                 onValueChange={(newValue) => setIsChecked(newValue)}
               />
-              <GenericText style={{ marginLeft: 10, marginRight: 35, fontSize: 11 }}>I agree to EarthID's Terms & Conditions and provide my consent for EarthID to use my data for this transaction.</GenericText>
+              <GenericText style={{ marginLeft: 10, marginRight: 35, fontSize: 11 }}>
+              {isEarthId() ? "earthidconsent" : "globalidconsent"}
+
+                </GenericText>
             </View>
           </View>}
 
@@ -488,6 +504,13 @@ export const QrScannerMaskedWidget = ({ createVerifiableCredentials,
           )}
         </View>
       </View>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

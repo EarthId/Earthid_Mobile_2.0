@@ -50,7 +50,9 @@ import GLOBAL from "../../../utils/globals";
 import GLOBALS from "../../../utils/globals";
 import { AWS_API_BASE } from "../../../constants/URLContstants";
 import ReactNativeBiometrics from "react-native-biometrics";
+import CustomPopup from "../../../components/Loader/customPopup";
 
+//import { useIsFocused } from "@react-navigation/native"; // Import this hook
 
 
 interface IHomeScreenProps {
@@ -82,7 +84,22 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
   // setTimeout(() => {
   //   console.log(AWS_ACCESS_KEY, AWS_SECRET_KEY);
   // }, 2000);
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
   const userDetails = useAppSelector((state) => state.account);
+  let documentsDetailsListData = useAppSelector((state) => state.Documents);
+  const [documentsDetailsList, setdocumentsDetailsList] = useState(
+    documentsDetailsListData
+  );
   const getHistoryReducer = useAppSelector((state) => state.getHistoryReducer);
   const profilePicture = useAppSelector((state) => state.savedPic);
   const securityReducer: any = useAppSelector((state) => state.security);
@@ -120,42 +137,74 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
   console.log(userDetails?.responseData?.publicKey, "publickey");
   //let idleTimer: string | number | NodeJS.Timeout | undefined;
   //recent activity
-  let documentsDetailsListData = useAppSelector((state) => state.Documents);
-  const [documentsDetailsList, setdocumentsDetailsList] = useState(
-    documentsDetailsListData
-  );
+ 
   const [s3documentsDetailsList, sets3documentsDetailsList] = useState<any[]>([]);
   const [s3DocFullPath, sets3DocFullPath] = useState([]);
   const recentData = documentsDetailsList?.responseData;
   const data = documentsDetailsList?.responseData;
 
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [lastBackgroundTime, setLastBackgroundTime] = useState<Date | null>(null);
   const [aState, setAppState] = useState(AppState.currentState);
-  
+
+  //const isFocused = useIsFocused();
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     // This will run every time the screen is focused
+  //     console.log("HomeScreen focused");
+
+  //     // Call your data fetching or any side effect you want to run
+  //     async function fetchData() {
+  //       await getCredentials();
+  //       await getAllDocs();
+  //       await getImage();
+  //     }
+
+  //     fetchData();
+      
+  //     return () => {
+  //       console.log("HomeScreen unfocused");
+  //       // Optionally clean up any resources or listeners here
+  //     };
+  //   }, [])
+  // );
+
   useEffect(() => {
+    setdocumentsDetailsList(documentsDetailsListData);
+  }, [documentsDetailsListData?.responseData]);
+  
+   useEffect(() => {
     const handleAppStateChange = async (nextAppState) => {
       const sdkStatus = await AsyncStorage.getItem("sdkStatus");
       console.log("SDKStatus in HomeScreen is: ", sdkStatus);
-
       console.log("Next AppState is: ", nextAppState);
+
       if (aState.match(/inactive|background/) && nextAppState === "active") {
-        if(sdkStatus=="true"){
-          console.log('SDK is launched')
+        const currentTime = new Date();
+        const timeDiff = lastBackgroundTime ? currentTime.getTime() - lastBackgroundTime.getTime() : 0;
+
+        if (sdkStatus === "true") {
+          console.log("SDK is launched");
           await AsyncStorage.setItem("sdkStatus", "false");
-        }else{
-          checkAuth();
+        } else if (timeDiff > 50000) {
+          await checkAuth();
         }
-        
+      } else if (nextAppState.match(/inactive|background/)) {
+        setLastBackgroundTime(new Date());
       }
+
+      setAppState(nextAppState);
       setLanguage();
       ShareMenu.getInitialShare(handleShare);
-      setAppState(nextAppState);
     };
 
     const appStateListener = AppState.addEventListener("change", handleAppStateChange);
+
     return () => {
-      appStateListener?.remove();
+      appStateListener.remove();
     };
-  }, [aState]);
+  }, [aState, lastBackgroundTime]);
 
   useEffect(() => {
     async function getCredentials() {
@@ -183,6 +232,7 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
     }
     getCredentials();
   }, []);
+
 
 
   useEffect(() => {
@@ -341,7 +391,9 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
     const Biometrics = await AsyncStorage.getItem("biometrics")
     console.log("FaceID===>", FaceID);
     if (fingerPrint && passcode) {
-      aunthenticateBioMetricInfo();
+     // aunthenticateBioMetricInfo();
+     handleBiometrics()
+      navigation.dispatch(StackActions.replace("PasswordCheck"));
     } else if (FaceID && passcode) {
       navigation.dispatch(StackActions.replace("FaceCheck"));
     } else if (Biometrics) {
@@ -360,18 +412,24 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
       .then((resultObject) => {
         const { success } = resultObject;
         if (success) {
-          //Alert.alert('Authenticated successfully');
-          console.log('Authentication successful')
-          //saveSelectionSecurities();
+          console.log('Authentication successful');
         } else {
-          console.log('Authentication failed')
-          //Alert.alert('Authentication failed');
+          showPopup(
+            'Authentication Failed',
+            'Authentication failed.',
+            [{ text: "OK", onPress: () => setPopupVisible(false) }] // Provide default button
+          );
         }
       })
       .catch((error) => {
-        Alert.alert('Authentication error', error.message);
+        showPopup(
+          'Authentication Error',
+          error.message,
+          [{ text: "OK", onPress: () => setPopupVisible(false) }] // Provide default button
+        );
       });
   };
+  
 
   //Handletimer
   // const handleIdle = () => {
@@ -475,15 +533,17 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
         mimeType === "image/png"
       ) {
         const imagePath = data;
+        console.log("imagePath====>", imagePath);
         const base64 = await RNFS.readFile(imagePath, "base64");
+        console.log("data====>", base64);
         const fileUri = {
           base64: base64,
           type: mimeType,
-          uri: base64,
+          uri: imagePath,
           flow: "deeplink",
           docName: imageName,
           file: {
-            uri: base64,
+            uri: imagePath,
           },
         };
         navigation.navigate("DocumentPreviewScreen", { fileUri: fileUri });
@@ -628,11 +688,10 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
     NetInfo.fetch().then((state) => {
       console.log("isconnect", state.isConnected);
       if (!state.isConnected) {
-        Alert.alert(
+        showPopup(
           "Network not connected",
           "Please check your internet connection and try again.",
-          [{ text: "OK" }],
-          { cancelable: false }
+          [{ text: "OK" }]
         );
       }
     });
@@ -775,16 +834,45 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
 
   const getFilteredData = () => {
     console.log("getFilteredData");
-    let data =[]
-     data = documentsDetailsList?.responseData?.sort(
-      (a: { date: any }, b: { date: any }) => a.date - b.date
-    );
-    //  let data = documentsDetailsList?.responseData?.sort(compareTime);
-
-    //
-
-   // console.log('data',data)
-  return getItemsForSection(data)
+    let data = documentsDetailsList?.responseData;
+  
+    // Sort the array based on the combined date and time in descending order
+    if (data) {
+      data = [...data].sort((a, b) => {
+        const dateTimeA = new Date(`${a.date.split('/').reverse().join('-')}T${a.time}`);
+        const dateTimeB = new Date(`${b.date.split('/').reverse().join('-')}T${b.time}`);
+        return dateTimeB - dateTimeA; // Descending order
+      });
+    }
+  
+    // // Log just the docName for each item
+    // data.forEach((item) => {
+    //   console.log(item.docName);
+    // });
+  
+    if (categoryTypes !== "") {
+      var alter = function (item) {
+        let splittedValue = item?.categoryType
+          ?.trim()
+          .split("(")[0]
+          ?.toLowerCase();
+  
+        return splittedValue?.trim() === categoryTypes?.trim()?.toLowerCase(); 
+      };
+      var filter = data?.filter(alter);
+      return getItemsForSection(filter);
+    }
+  
+    // if (searchedData.length > 0) {
+    //   data = searchedData;
+    //   return getItemsForSection(data);
+    // }
+  
+    // if (searchedData.length === 0 && searchText != "") {
+    //   return []; 
+    // }
+  
+    return getItemsForSection(data);
   };
 
 
@@ -1025,6 +1113,13 @@ const HomeScreen = ({ navigation, route }: IHomeScreenProps) => {
           textStyle={styles.spinnerTextStyle}
         />
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

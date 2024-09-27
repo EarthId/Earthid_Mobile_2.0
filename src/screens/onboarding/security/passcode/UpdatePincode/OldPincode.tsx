@@ -19,6 +19,7 @@ import { LocalImages } from "../../../../../constants/imageUrlConstants";
 import GenericText from "../../../../../components/Text";
 import { isEarthId } from "../../../../../utils/PlatFormUtils";
 import NetInfo from "@react-native-community/netinfo";
+import CustomPopup from "../../../../../components/Loader/customPopup";
 
 interface IHomeScreenProps {
   navigation?: any;
@@ -26,12 +27,26 @@ interface IHomeScreenProps {
 }
 
 const Register = ({ navigation, route }: IHomeScreenProps) => {
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const [code, setCode] = useState();
   const [count, setCount] = useState(4);
   const onPinCodeChange = (code: any) => {
     var format = code.replace(/[^0-9]/g, "");
     setCode(format);
   };
+  
   const _navigateAction = async () => {
     let oldPin = await AsyncStorage.getItem("passcode");
 
@@ -39,31 +54,39 @@ const Register = ({ navigation, route }: IHomeScreenProps) => {
       if (oldPin) {
         if (oldPin === code) {
           navigation.navigate("UpdateNewPin", { setCode: code, type: "new" });
-        } else if (count == 0) {
-          Alert.alert("Oops, Too many attempts!");
+        } else if (count === 0) {
+          showPopup("Oops", "Too many attempts!", [{ text: "OK", onPress: () => setPopupVisible(false) }]);
         } else {
           setCount(count - 1);
-          Alert.alert("Invalid Code", `You have left ${count} attempt`, [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
+          showPopup(
+            "Invalid Code",
+            `You have ${count} attempts left.`,
+            [
+              {
+                text: "Cancel",
+                onPress: () => setPopupVisible(false),
+                style: "cancel",
+              },
+              { text: "OK", onPress: () => setPopupVisible(false) },
+            ]
+          );
         }
       } else {
         navigation.navigate("UpdateNewPin", { setCode: code, type: "new" });
       }
     } else {
-      Alert.alert("Oops!", "Please enter valid passcode", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ]);
+      showPopup(
+        "Oops!",
+        "Please enter a valid passcode.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => setPopupVisible(false),
+            style: "cancel",
+          },
+          { text: "OK", onPress: () => setPopupVisible(false) },
+        ]
+      );
     }
   };
 
@@ -80,11 +103,10 @@ const Register = ({ navigation, route }: IHomeScreenProps) => {
     NetInfo.fetch().then((state) => {
       console.log("isconnect", state.isConnected);
       if (!state.isConnected) {
-        Alert.alert(
+        showPopup(
           "Network not connected",
           "Please check your internet connection and try again.",
-          [{ text: "OK" }],
-          { cancelable: false }
+          [{ text: "OK", onPress: () => setPopupVisible(false) }]
         );
       }
     });
@@ -211,6 +233,13 @@ const Register = ({ navigation, route }: IHomeScreenProps) => {
           ></Button>
         </View>
       </ScrollView>
+      <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

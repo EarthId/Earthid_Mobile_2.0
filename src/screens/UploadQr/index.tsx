@@ -28,9 +28,23 @@ import { useAppDispatch } from "../../hooks/hooks";
 import { byPassUserDetailsRedux } from "../../redux/actions/authenticationAction";
 import * as ImagePicker from "react-native-image-picker";
 import { isEarthId } from "../../utils/PlatFormUtils";
+import CustomPopup from "../../components/Loader/customPopup";
 
 
 const UploadQr = (props: any) => {
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const { colors } = useTheme();
   const camRef: any = useRef();
   const { navigation } = props;
@@ -58,25 +72,26 @@ const UploadQr = (props: any) => {
 
   useEffect(()=>{
     if(getUserError){
-      Alert.alert(
-        `${isEarthId()?"EarthId":"GlobaliD"} does'nt exist,please Re-try with some valid QR Identity`,
-        '',
+      showPopup(
+        `${isEarthId() ? "EarthId" : "GlobaliD"} doesn't exist`,
+        'Please re-try with some valid QR Identity',
         [
           {
             text: "Back",
             onPress: async () => {
-              props.navigation.goBack(null)
+              props.navigation.goBack(null);
+              setPopupVisible(false);
             },
             style: "cancel",
           },
           {
             text: "Retry",
             onPress: async () => {
-              setBarCodeScanned(false)
+              setBarCodeScanned(false);
+              setPopupVisible(false);
             },
           },
-        ],
-        { cancelable: false }
+        ]
       );
    
     }
@@ -87,13 +102,13 @@ const UploadQr = (props: any) => {
     const bucketName = `idv-sessions-${getUserResponse.username.toLowerCase()}`;
     console.log('This is userdetailsresponse:', getUserResponse)
 
-    dispatch(byPassUserDetailsRedux(getUserResponse,bucketName)).then(() => {
-      //navigation.navigate("OTPScreen", { type: "phone" });
-     // props.navigation.navigate("RegisterOTP", { type: "phone" });
-      //props.navigation.navigate("Security");
+    // dispatch(byPassUserDetailsRedux(getUserResponse,bucketName)).then(() => {
+    //   //navigation.navigate("OTPScreen", { type: "phone" });
+    //  // props.navigation.navigate("RegisterOTP", { type: "phone" });
+    //   //props.navigation.navigate("Security");
      
-    });
-    navigation.navigate("RegisterOTP", { type: "phone" });
+    // });
+    navigation.navigate("RegisterOTP", { type: "phone", getUserResponse: getUserResponse, bucketName: bucketName });
   }
 
   const requestPermission = async () => {
@@ -181,25 +196,26 @@ console.log("this is the retrieved data from qr code:", decryptedJsonObject)
         detectedBarCodes(decryptedJsonObject);
       }
       catch (error) {
-        Alert.alert(
-          `${isEarthId()?"EarthId":"GlobaliD"} does'nt exist,please Re-try with some valid QR Identity`,
-          '',
+        showPopup(
+          `${isEarthId() ? "EarthId" : "GlobaliD"} doesn't exist`,
+          'Please re-try with some valid QR Identity',
           [
             {
               text: "Back",
               onPress: async () => {
-                props.navigation.goBack(null)
+                props.navigation.goBack(null);
+                setPopupVisible(false);
               },
               style: "cancel",
             },
             {
               text: "Retry",
               onPress: async () => {
-                setBarCodeScanned(false)
+                setBarCodeScanned(false);
+                setPopupVisible(false);
               },
             },
-          ],
-          { cancelable: false }
+          ]
         );
       }
  
@@ -288,6 +304,13 @@ console.log("this is the retrieved data from qr code:", decryptedJsonObject)
           <ActivityIndicator color={Screens.colors.primary} size="large" />
         </View>
       )}
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };

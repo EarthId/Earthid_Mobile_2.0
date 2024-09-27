@@ -28,13 +28,30 @@ import Header from "../../../components/Header";
 import LinearGradients from "../../../components/GradientsPanel/LinearGradient";
 import Button from "../../../components/Button";
 import { useIsFocused } from "@react-navigation/native";
+import CustomPopup from "../../../components/Loader/customPopup";
+import GLOBALS from "../../../utils/globals";
+import { AWS_API_BASE } from "../../../constants/URLContstants";
+
 
 const DocumentPreviewScreen = (props: any) => {
   const dispatch = useAppDispatch();
+
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: '',
+    message: '',
+    buttons: []
+  });
+
+  const showPopup = (title, message, buttons) => {
+    setPopupContent({ title, message, buttons });
+    setPopupVisible(true);
+  };
+
   const { fileUri, type } = props.route.params;
   const { documentDetails } = props?.route?.params;
-  const { s3DocFullPath } = props?.route?.params;
-   console.log("documentDetails36============>", documentDetails);
+  //const { s3DocFullPath } = props?.route?.params;
+   //console.log("documentDetails36============>", documentDetails);
   const pdfRef = useRef(null);
   const HistoryParams = props?.route?.params?.history;
   let documentsDetailsList = useAppSelector((state) => state.Documents);
@@ -54,6 +71,8 @@ const DocumentPreviewScreen = (props: any) => {
   // console.log("documentDetails?.base64", documentDetails?.docName);
   // console.log("documentDetails?.base64", documentDetails?.isLivenessImage);
   // console.log("documentDetailsCheck", documentDetails);
+   const s3DocFullPath = documentDetails.s3Path
+   console.log("s3DocPath", s3DocFullPath);
   const resources = {
     file:
       Platform.OS === "ios"
@@ -62,7 +81,7 @@ const DocumentPreviewScreen = (props: any) => {
     url: documentDetails?.base64,
     base64: documentDetails?.base64,
   };
-  console.log("selectedItem?.base64===>123",`data:image/jpeg;base64,${documentDetails?.base64}`);
+  //console.log("selectedItem?.base64===>123",`data:image/jpeg;base64,${documentDetails?.base64}`);
   const resourceType = "base64";
   const shareItem = async () => {
 
@@ -85,24 +104,24 @@ const DocumentPreviewScreen = (props: any) => {
     }
   };
 
-  function deleteAlert() {
-    Alert.alert(
-      "Confirmation!",
-      "Are you sure to delete this document?",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => deleteItem(),
-        },
-      ],
-      { cancelable: false }
-    );
-  }
+function deleteAlert() {
+  showPopup(
+    "Confirmation!",
+    "Are you sure to delete this document?",
+    [
+      
+      {
+        text: "Yes",
+        onPress: () => deleteItem(),
+      },
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+      },
+    ]
+  );
+}
+
 
   // const deleteItem = () => {
   //   setisBottomSheetForSideOptionVisible(false);
@@ -126,7 +145,16 @@ const DocumentPreviewScreen = (props: any) => {
   // };
 
   const handlePressb64 = (type: string) => {
-    Alert.alert('Unsupported file')
+    showPopup(
+      "Unsupported file",
+      "This file type is not supported for preview.",
+      [
+        {
+          text: "OK",
+          onPress: () => setPopupVisible(false),
+        },
+      ]
+    );
     // if (Platform.OS === "ios") {
     //   OpenFile.openDocb64(
     //     [
@@ -168,40 +196,62 @@ const DocumentPreviewScreen = (props: any) => {
 
   const deleteItem = () => {
     console.log("selectedItem?.id", selectedItem);
-    Alert.alert(
+    showPopup(
       "Confirmation! ",
       "Are you sure you want to delete this document ?",
       [
         {
-          text: "Cancel",
-          onPress: () => (
-            console.log("Cancel Pressed!"),
-            setisBottomSheetForSideOptionVisible(false)
-          ),
-        },
-        {
-          text: "OK",
-          onPress: () => {
+          text: "Yes",
+          onPress: async () => {
             setisBottomSheetForSideOptionVisible(false);
-            const newData = documentsDetailsList?.responseData;
-            const findIndex = newData?.findIndex(
-              (item: { id: any; }) => item.id === selectedItem?.id
-            );
-            findIndex >= -1 && newData?.splice(findIndex, 1);
-            // console.log('helpArra',helpArra)
-            dispatch(saveDocuments(newData));
-
-            {
-              HistoryParams
-                ? props?.navigation.goBack()
-                : props.navigation.navigate("Home");
+  
+            // Make the AWS API call to delete the document
+            try {
+              const response = await fetch("https://" + AWS_API_BASE + "documents/delete", {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  credentials: GLOBALS.credentials,
+                  path: selectedItem.s3Path || selectedItem.fullPath,
+                }),
+              });
+  
+              let json = await response.json();
+              console.log("Delete API response: ", json);
+  
+              // Proceed to update the local state after the API call
+              const newData = documentsDetailsList?.responseData;
+              const findIndex = newData?.findIndex((item) => item.id === selectedItem?.id);
+              if (findIndex >= 0) {
+                newData.splice(findIndex, 1);
+                dispatch(saveDocuments(newData));
+              }
+  
+              // Navigate back to the appropriate screen
+              {
+                HistoryParams
+                  ? props?.navigation.goBack()
+                  : props.navigation.navigate("Home");
+              }
+            } catch (error) {
+              console.error("Error deleting document:", error);
             }
           },
         },
-      ],
-      { cancelable: false }
+        {
+          text: "Cancel",
+          onPress: () => {
+            console.log("Cancel Pressed!");
+            setisBottomSheetForSideOptionVisible(false);
+          },
+        },
+      ]
     );
   };
+  
+  
 
   const qrCodeModal = () => {
     handleUploadImage();
@@ -334,11 +384,13 @@ const DocumentPreviewScreen = (props: any) => {
             title={"edit"}
             icon={LocalImages.editIcon}
           />
-          <RowOption
-            rowAction={() => qrCodeModal()}
-            title={"QR Code"}
-            icon={LocalImages.qrcodeImage}
-          />
+          {(selectedItem?.isVc === false || selectedItem?.isVc == null) && (
+      <RowOption
+        rowAction={() => qrCodeModal()}
+        title={"QR Code"}
+        icon={LocalImages.qrcodeImage}
+      />
+    )}
           <RowOption
             rowAction={() => shareItem()}
             title={"share"}
@@ -433,7 +485,7 @@ const DocumentPreviewScreen = (props: any) => {
       const fileExtension = fileName.split('.').pop().toLowerCase();
 
       console.log("File Extension:", fileExtension);
-      console.log("Document Details:", documentDetails);
+     // console.log("Document Details:", documentDetails);
 
       if (documentDetails?.type === "deeplink") {
         return `data:image/jpeg;base64,${documentDetails?.base64}`;
@@ -512,6 +564,13 @@ const DocumentPreviewScreen = (props: any) => {
         isLoaderVisible={successResponse}
         loadingText={"Document Validated !"}
       />
+       <CustomPopup
+      isVisible={isPopupVisible}
+      title={popupContent.title}
+      message={popupContent.message}
+      buttons={popupContent.buttons}
+      onClose={() => setPopupVisible(false)}
+    />
     </View>
   );
 };
