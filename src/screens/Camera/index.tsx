@@ -771,7 +771,9 @@ const ageProofJSON = JSON.parse(ageProof)
         });
     
         const result = await response.json();
+        console.log('setZkpSignature1')
         console.log('setZkpSignature',result)
+        console.log('request is',success?.request)
         if(result){
           if(success?.request === 'balance'){
             documentsDetailsList?.responseData?.filter((item: { amount: any; })=>item?.amount)[0]?.amount
@@ -860,7 +862,7 @@ const ageProofJSON = JSON.parse(ageProof)
         setisLoading(false)
         console.error('Error fetching data:', error);
       }
-      console.log("result:::::", result);
+      //console.log("result:::::", result);
       
 
       // Set the data in the state

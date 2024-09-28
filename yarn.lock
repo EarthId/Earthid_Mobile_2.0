@@ -2395,12 +2395,10 @@
   resolved "https://registry.npmjs.org/@ungap/structured-clone/-/structured-clone-1.2.0.tgz"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@veriff/react-native-sdk@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/@veriff/react-native-sdk/-/react-native-sdk-6.0.0.tgz"
-  integrity sha512-5MRl9Je5pzS4Js87+lJtF0feeTjwC5WQ2urpB5c9KT34ME+g8DKmlTUPfyJoXi9hhTe/WJ+Bi1QLjBWrXSkKfA==
-  dependencies:
-    eslint-plugin-ft-flow "^2.0.3"
+"@veriff/react-native-sdk@^7.2.0":
+  version "7.2.0"
+  resolved "https://registry.npmjs.org/@veriff/react-native-sdk/-/react-native-sdk-7.2.0.tgz"
+  integrity sha512-XR0EusF3NHWHYUxvZKcSvKl1EB7r2ag1Ic0lM22UUy49soU9ChHMgDATR5gYcAneE4F6o2S46rfPKfEJz6tOLg==
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
@@ -4276,7 +4274,7 @@ eslint-plugin-flowtype@2.50.3:
   dependencies:
     lodash "^4.17.10"
 
-eslint-plugin-ft-flow@^2.0.1, eslint-plugin-ft-flow@^2.0.3:
+eslint-plugin-ft-flow@^2.0.1:
   version "2.0.3"
   resolved "https://registry.npmjs.org/eslint-plugin-ft-flow/-/eslint-plugin-ft-flow-2.0.3.tgz"
   integrity sha512-Vbsd/b+LYA99jUbsL6viEUWShFaYQt2YQs3QN3f+aeszOhh2sgdcU0mjzDyD4yyBvMc8qy2uwvBBWfMzEX06tg==
@@ -8227,7 +8225,7 @@ react-native-web@*, react-native-web@0.9.x:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.4"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.73.0, "react-native@>= 0.62", "react-native@>= 0.64.3", react-native@>=0.40.0, react-native@>=0.46, react-native@>=0.47.1, react-native@>=0.48.0, react-native@>=0.50.0, react-native@>=0.55, react-native@>=0.57.0, react-native@>=0.59, react-native@>=0.59.0, react-native@>=0.60, react-native@>=0.60.0, react-native@>=0.63.4, react-native@>=0.65.0, react-native@>=0.70.0, react-native@>=v0.40.0, react-native@0.73.6:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.74.0, "react-native@>= 0.62", "react-native@>= 0.64.3", react-native@>=0.40.0, react-native@>=0.46, react-native@>=0.47.1, react-native@>=0.48.0, react-native@>=0.50.0, react-native@>=0.55, react-native@>=0.57.0, react-native@>=0.59, react-native@>=0.59.0, react-native@>=0.60, react-native@>=0.60.0, react-native@>=0.63.4, react-native@>=0.65.0, react-native@>=0.70.0, react-native@>=v0.40.0, react-native@0.73.6:
   version "0.73.6"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.73.6.tgz"
   integrity sha512-oqmZe8D2/VolIzSPZw+oUd6j/bEmeRHwsLn1xLA5wllEYsZ5zNuMsDus235ONOnCRwexqof/J3aztyQswSmiaA==

@@ -15,6 +15,7 @@ import LinearGradients from "../../components/GradientsPanel/LinearGradient";
 import { Text } from 'react-native';
 import { addConsent } from "../../utils/consentApis";
 import CustomPopup from "../../components/Loader/customPopup";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const data = [
   { label: " 1", value: "1" },
   { label: " 2", value: "2" },
@@ -53,6 +54,25 @@ export const QrScannerMaskedWidget = ({ createVerifiableCredentials,
     setPopupContent({ title, message, buttons });
     setPopupVisible(true);
   };
+
+  const [dob, setDob] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDOB = async () => {
+      try {
+        const storedDob = await AsyncStorage.getItem("userDOB");
+        if (storedDob !== null) {
+          setDob(storedDob);
+        }
+        console.log('This is data------', storedDob);
+      } catch (error) {
+        console.error('Error fetching userDOB from AsyncStorage', error);
+      }
+    };
+
+    fetchDOB();
+  }, []); // Empty dependency array ensures the effect runs once on mount
+
 
   useEffect(() => {
     const datas = documentsDetailsList?.responseData ?? [];
@@ -337,7 +357,7 @@ export const QrScannerMaskedWidget = ({ createVerifiableCredentials,
 
                                 }}
                               >
-                                {barCodeDataDetails?.requestType?.request === 'minAge' ? showVisibleDOB ? '09/01/1998' : '../../....' : showVisibleBalance ? "$ " + item?.amount : '$_ _ _ _'}
+                                {barCodeDataDetails?.requestType?.request === 'minAge' ? showVisibleDOB ? dob : '..../../..' : showVisibleBalance ? "$ " + item?.amount : '$_ _ _ _'}
                               </GenericText>
 
                               <TouchableOpacity onPress={() => barCodeDataDetails?.requestType?.request === 'minAge' ? setshowVisibleDOB(!showVisibleDOB) : setshowVisibleBalance(!showVisibleBalance)}>

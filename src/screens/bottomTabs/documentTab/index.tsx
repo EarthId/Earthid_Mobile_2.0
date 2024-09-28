@@ -804,8 +804,8 @@ const s3DocFullPath =  await getFullPath(item.docName)
 
   const onPressNavigateTo = async () => {
 
-    //await alertUploadDoc()
-    navigation.navigate("uploadDocumentsScreen")
+    await alertUploadDoc()
+    //navigation.navigate("uploadDocumentsScreen")
 
       }
 

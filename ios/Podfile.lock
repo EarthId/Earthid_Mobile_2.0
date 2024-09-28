@@ -46,19 +46,19 @@ PODS:
     - GoogleToolboxForMac/Defines (= 4.2.1)
   - "GoogleToolboxForMac/NSData+zlib (4.2.1)":
     - GoogleToolboxForMac/Defines (= 4.2.1)
-  - GoogleUtilities/Environment (7.13.0):
+  - GoogleUtilities/Environment (7.13.3):
     - GoogleUtilities/Privacy
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/Logger (7.13.0):
+  - GoogleUtilities/Logger (7.13.3):
     - GoogleUtilities/Environment
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (7.13.0)
-  - GoogleUtilities/UserDefaults (7.13.0):
+  - GoogleUtilities/Privacy (7.13.3)
+  - GoogleUtilities/UserDefaults (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GoogleUtilitiesComponents (1.1.0):
     - GoogleUtilities/Logger
-  - GTMSessionFetcher/Core (3.4.1)
+  - GTMSessionFetcher/Core (3.5.0)
   - hermes-engine (0.73.6):
     - hermes-engine/Pre-built (= 0.73.6)
   - hermes-engine/Pre-built (0.73.6)
@@ -1004,9 +1004,9 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.10.1):
     - React-Core
-  - react-native-sdk (6.0.0):
+  - react-native-sdk (7.2.0):
     - React
-    - VeriffSDK (= 6.23.0)
+    - VeriffSDK (= 7.6.0)
   - react-native-splash-screen (3.3.0):
     - React-Core
   - react-native-version-check (3.4.7):
@@ -1235,7 +1235,7 @@ PODS:
   - TOCropViewController (2.7.4)
   - TouchID (4.4.1):
     - React
-  - VeriffSDK (6.23.0)
+  - VeriffSDK (7.6.0)
   - Yoga (1.14.0)
   - ZXingObjC (3.6.9):
     - ZXingObjC/All (= 3.6.9)
@@ -1554,13 +1554,13 @@ SPEC CHECKSUMS:
   FBLazyVector: f64d1e2ea739b4d8f7e4740cde18089cd97fe864
   FBReactNativeSpec: 9f2b8b243131565335437dba74923a8d3015e780
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 035f1e36e53b355cf70f6434d161b36e7d21fecd
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleMLKit: 97ac7af399057e99182ee8edfa8249e3226a4065
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
-  GoogleUtilities: d053d902a8edaa9904e1bd00c37535385b8ed152
+  GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
-  GTMSessionFetcher: 8000756fc1c19d2e5697b90311f7832d2e33f6cd
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   hermes-engine: 9cecf9953a681df7556b8cc9c74905de8f3293c0
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
@@ -1606,7 +1606,7 @@ SPEC CHECKSUMS:
   react-native-plaid-link-sdk: 16c6c09bbe2bab1e343b72b5fbca107f39f45f1e
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
-  react-native-sdk: c9e667e09e39c10b8c3d6271fbad1f952152c9b8
+  react-native-sdk: 17778990bf5dcbe365d90f87c47e77601cc3d00c
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-version-check: 6cd36aad4e30b8e3216747e3b4ddeb09e0647af8
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
@@ -1650,7 +1650,7 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
-  VeriffSDK: 5ea1d34c3a1b761b7d4a77660cdf122d2e88fdf2
+  VeriffSDK: 10fe8c3ca499dba71a0a2439361e0d5465a30187
   Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
