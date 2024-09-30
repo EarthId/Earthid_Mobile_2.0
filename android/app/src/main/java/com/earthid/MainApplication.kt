@@ -1,4 +1,4 @@
-package com.globalidiqtechandroid
+package com.earthid
 
 import android.app.Application
 import com.facebook.react.PackageList

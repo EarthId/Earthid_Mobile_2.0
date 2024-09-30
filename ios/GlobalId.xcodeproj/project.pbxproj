@@ -756,7 +756,7 @@
 				MARKETING_VERSION = 2.9.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.globalidiq.main.ShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main-w.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -802,7 +802,7 @@
 				);
 				MARKETING_VERSION = 2.9.5;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.globalidiq.main.ShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main-w.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -820,18 +820,18 @@
 			baseConfigurationReference = 1EBF1673F9CD63D1F881200C /* Pods-GlobalId.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GlobalId/GlobalId.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UAHJPQ428K;
+				DEVELOPMENT_TEAM = 7M7YH3F5XK;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = GlobalId/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = GlobalIdNew;
+				INFOPLIST_KEY_CFBundleDisplayName = "EarthID-WU";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -844,7 +844,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.globalidiq.main;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main-w";
 				PRODUCT_NAME = GlobalId;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -858,17 +858,17 @@
 			baseConfigurationReference = 79FDDF8DDE542A5D7B21F554 /* Pods-GlobalId.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GlobalId/GlobalId.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UAHJPQ428K;
+				DEVELOPMENT_TEAM = 7M7YH3F5XK;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = GlobalId/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = GlobalIdNew;
+				INFOPLIST_KEY_CFBundleDisplayName = "EarthID-WU";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -881,7 +881,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.globalidiq.main;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main-w";
 				PRODUCT_NAME = GlobalId;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

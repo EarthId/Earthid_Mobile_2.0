@@ -85,7 +85,7 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-    namespace "com.globalidiqtechandroid"
+    namespace "com.earthid"
     configurations {
     all*.exclude module: 'bcprov-jdk15to18'
     all*.exclude module: 'bcutil-jdk18on'
@@ -96,7 +96,7 @@ android {
         javaMaxHeapSize "4G"
     }
     defaultConfig {
-        applicationId "com.globalidiqtechandroid"
+        applicationId "com.earthid"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy 'react-native-camera', 'mlkit' 
