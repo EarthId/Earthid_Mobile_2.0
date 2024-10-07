@@ -63,3 +63,7 @@ Views/LoginModule/Start.js
 .vscode/.react/index.bundle
 
 .env
+
+# Ignore APK and AAB files
+android/app/release/*.apk
+android/app/release/*.aab
