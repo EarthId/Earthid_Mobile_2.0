@@ -63,3 +63,6 @@ Views/LoginModule/Start.js
 .vscode/.react/index.bundle
 
 .env
+
+android/app/release/*.apk
+android/app/release/*.aab

@@ -101,8 +101,8 @@ const Payment = (props) => {
   const generateBasicToken = async () => {
     try {
 //MasterCard Keys
-      const key = OPEN_BANK_KEYS_WOCCU.Client_Id;
-  const secret = OPEN_BANK_KEYS_WOCCU.Client_Secret;
+      const key = OPEN_BANK_KEYS_MASTERCARD.Client_Id;
+  const secret = OPEN_BANK_KEYS_MASTERCARD.Client_Secret;
       // Concatenate the key and secret with a colon
       const combined = `${key}:${secret}`;
       

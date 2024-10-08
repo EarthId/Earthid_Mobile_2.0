@@ -57,7 +57,7 @@ const Info = ({
                     <View style={styles.titleTextContainer}>
                       <View
                         style={{
-                          paddingHorizontal: 10,
+                          paddingHorizontal: 2,
                           justifyContent: "center",
                           alignItems: "center",
                         }}
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   sublogoContainers: {
     width: 15,
     height: 15,
-    marginRight: 8,
+    marginRight: -8,
   },
   titleTextContainer: {
     flexDirection: "row",

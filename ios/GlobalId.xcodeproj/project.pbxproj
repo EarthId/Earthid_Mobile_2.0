@@ -756,7 +756,7 @@
 				MARKETING_VERSION = 2.9.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main-w.ShareExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -802,7 +802,7 @@
 				);
 				MARKETING_VERSION = 2.9.5;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main-w.ShareExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -831,7 +831,7 @@
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = GlobalId/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "EarthID-WU";
+				INFOPLIST_KEY_CFBundleDisplayName = "EarthID-MC";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -844,7 +844,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main-w";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main";
 				PRODUCT_NAME = GlobalId;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -868,7 +868,7 @@
 				DEVELOPMENT_TEAM = 7M7YH3F5XK;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = GlobalId/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "EarthID-WU";
+				INFOPLIST_KEY_CFBundleDisplayName = "EarthID-MC";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -881,7 +881,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main-w";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.earthid-main";
 				PRODUCT_NAME = GlobalId;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
