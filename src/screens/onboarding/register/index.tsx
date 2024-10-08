@@ -375,7 +375,7 @@ console.log('Consent Api response------:', consentApiCall)
     if (superAdminResponse && superAdminResponse[0]?.Id) {
       const payLoad: IUserAccountRequest = {
         firstname: firstName,
-        username:firstName+" "+lastName,
+        username:email,
         lastname: lastName,
         deviceID: token + Math.random(),
         deviceIMEI: token,

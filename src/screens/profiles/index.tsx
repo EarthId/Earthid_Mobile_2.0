@@ -8,8 +8,8 @@ import {
   Platform,
   PermissionsAndroid,
   Alert,
-  AsyncStorage,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import DocumentPicker from "react-native-document-picker";
 import { ScrollView } from "react-native-gesture-handler";
 import Avatar from "../../components/Avatar";
@@ -68,6 +68,10 @@ const ProfileScreen = ({ navigation }: IHomeScreenProps) => {
   const _navigateEditEmail = () => {
     navigation.navigate("EditEmailAddress");
   };
+
+  useEffect(() => {
+    getImage();
+  }, []);
 
   const _renderItem = ({ item }: any) => {
     return (
@@ -143,10 +147,10 @@ const ProfileScreen = ({ navigation }: IHomeScreenProps) => {
   const openCamera = async () => {
     const options = { quality: 0.1, base64: true };
     const data = await camRef.current.takePictureAsync(options);
-    console.log("data", data);
+    console.log("data", data.uri);
     if (data) {
       auditFlowApi();
-      AsyncStorage.setItem("profilePic", data?.uri);
+    await AsyncStorage.setItem("profilePic", data?.uri);
       disPatch(savingProfilePictures(data?.uri));
       setIsCameraVisible(false);
       setcameraDataUri(data?.uri);
@@ -196,9 +200,7 @@ const ProfileScreen = ({ navigation }: IHomeScreenProps) => {
     }
   };
 
-  useEffect(() => {
-    getImage();
-  }, []);
+  
 
   const getImage = async () => {
     const profilePic = await AsyncStorage.getItem("profilePic");
